@@ -24,6 +24,10 @@ apis:
       - type: Documentation
         url: https://coralogix.com/docs
 common:
+  - type: GitHubOrganization
+    url: https://github.com/coralogix
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/coralogix
   - type: Website
     url: https://coralogix.com
   - type: Documentation
