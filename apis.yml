@@ -10,7 +10,7 @@ tags:
 url: >-
   https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/apis.yml
 created: '2026-03-27'
-modified: '2026-03-27'
+modified: '2026-05-29'
 specificationVersion: '0.19'
 apis:
   - aid: coralogix:coralogix
@@ -23,6 +23,8 @@ apis:
     properties:
       - type: Documentation
         url: https://coralogix.com/docs
+      - type: AsyncAPI
+        url: https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/asyncapi/coralogix-asyncapi.yml
 common:
   - type: GitHubOrganization
     url: https://github.com/coralogix

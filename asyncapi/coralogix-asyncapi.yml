@@ -1,0 +1,426 @@
+asyncapi: 2.6.0
+info:
+  title: Coralogix Streaming Surfaces
+  version: 1.0.0
+  description: |
+    AsyncAPI description of Coralogix's publicly documented streaming and
+    event-driven surfaces. This document covers only what Coralogix publishes
+    in https://coralogix.com/docs/ and does not enumerate undocumented
+    internal transports.
+
+    Three surfaces are modeled:
+
+    1. OpenTelemetry ingress (OTLP) - Coralogix accepts OpenTelemetry signals
+       (logs, metrics, traces) on the regional `ingress.<domain>:443` endpoint.
+       OTLP itself defines both gRPC and HTTP/Protobuf transports; the
+       Coralogix endpoint documentation lists the regional ingress host and
+       port only.
+    2. Prometheus Remote Write - Coralogix accepts Prometheus remote_write
+       traffic at `https://ingress.<domain>/prometheus/v1`. This is a
+       streaming push of metric samples.
+    3. Outbound Alert Webhooks - Coralogix pushes alert notifications to a
+       customer-supplied HTTP endpoint via configurable Generic Outbound
+       Webhooks. Method (GET/POST/PUT) and body template are user-defined;
+       Coralogix documents the placeholder set that may appear in the
+       rendered payload.
+
+    Live Tail is the streaming log viewer inside the Coralogix UI. The public
+    documentation describes it as a UI feature (filterable real-time log
+    view in the Explore section); Coralogix does NOT publish a customer-facing
+    Live Tail wire protocol, endpoint URL, or message schema. It is therefore
+    not enumerated as a channel below. Any Live Tail wire format would be
+    fabricated speculation and is intentionally omitted.
+
+    Generic Incoming Webhooks are an HTTP-ingest mechanism (a user-generated
+    URL accepting application/json or application/x-ndjson telemetry) and are
+    request/response, not asynchronous event delivery, so they are documented
+    as a server but not as a publish/subscribe channel.
+  contact:
+    name: Coralogix
+    url: https://coralogix.com/docs/
+  license:
+    name: Coralogix Terms of Service
+    url: https://coralogix.com/terms-of-service/
+  tags:
+    - name: Observability
+    - name: OpenTelemetry
+    - name: Prometheus
+    - name: Webhooks
+    - name: Alerts
+    - name: Streaming
+
+defaultContentType: application/json
+
+servers:
+  otlp-ingress-us1:
+    url: 'ingress.us1.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the US1 region (AWS us-east-2,
+      Ohio). Accepts OTLP signals (logs, metrics, traces). Documented in
+      https://coralogix.com/docs/integrations/coralogix-endpoints/ as
+      "OpenTelemetry ingress.<domain>:443".
+  otlp-ingress-us2:
+    url: 'ingress.us2.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the US2 region (AWS us-west-2,
+      Oregon).
+  otlp-ingress-eu1:
+    url: 'ingress.eu1.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the EU1 region (AWS eu-west-1,
+      Ireland).
+  otlp-ingress-eu2:
+    url: 'ingress.eu2.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the EU2 region (AWS
+      eu-north-1, Stockholm).
+  otlp-ingress-ap1:
+    url: 'ingress.ap1.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the AP1 region (AWS
+      ap-south-1, Mumbai).
+  otlp-ingress-ap2:
+    url: 'ingress.ap2.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the AP2 region (AWS
+      ap-southeast-1, Singapore).
+  otlp-ingress-ap3:
+    url: 'ingress.ap3.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the AP3 region (AWS
+      ap-southeast-3, Jakarta).
+  otlp-ingress-us3:
+    url: 'ingress.us3.coralogix.com:443'
+    protocol: grpc
+    description: |
+      OpenTelemetry (OTLP) ingress endpoint for the US3 region (GCP
+      us-central1, Iowa).
+  prometheus-remote-write:
+    url: 'ingress.{domain}/prometheus/v1'
+    protocol: https
+    description: |
+      Prometheus remote_write ingress endpoint. Coralogix documents a hard
+      limit of 2,411,724 bytes per request to this endpoint. Customers POST
+      snappy-compressed protobuf batches per the Prometheus remote_write
+      specification.
+    variables:
+      domain:
+        description: Regional Coralogix domain (e.g. eu1.coralogix.com).
+        default: eu1.coralogix.com
+        enum:
+          - us1.coralogix.com
+          - us2.coralogix.com
+          - us3.coralogix.com
+          - eu1.coralogix.com
+          - eu2.coralogix.com
+          - ap1.coralogix.com
+          - ap2.coralogix.com
+          - ap3.coralogix.com
+  customer-webhook-target:
+    url: '{webhookUrl}'
+    protocol: https
+    description: |
+      Customer-supplied HTTPS endpoint that Coralogix invokes when a
+      configured Generic Outbound Webhook is triggered by an alert. The
+      target URL is configured per webhook in the Coralogix UI. Coralogix
+      documents GET, POST, and PUT as the selectable HTTP methods.
+    variables:
+      webhookUrl:
+        description: |
+          The customer-defined target URL configured when creating a Generic
+          Outbound Webhook.
+        default: https://example.com/coralogix-alert
+
+channels:
+  otlp/logs:
+    description: |
+      OpenTelemetry Logs (OTLP) ingest channel. Customers publish OTLP log
+      records to the regional `ingress.<domain>:443` endpoint. Coralogix
+      documents a hard limit of 10MB per request and recommends batches
+      under 2MB.
+    publish:
+      operationId: ingestOtlpLogs
+      summary: Send OTLP logs to Coralogix.
+      description: |
+        Push OpenTelemetry log records to Coralogix's regional ingress
+        endpoint. Payload shape is defined by the OpenTelemetry Protocol
+        specification; Coralogix does not publish an alternative schema.
+      message:
+        $ref: '#/components/messages/OtlpLogsRequest'
+  otlp/metrics:
+    description: |
+      OpenTelemetry Metrics (OTLP) ingest channel. Customers publish OTLP
+      metric data points to the regional `ingress.<domain>:443` endpoint.
+    publish:
+      operationId: ingestOtlpMetrics
+      summary: Send OTLP metrics to Coralogix.
+      description: |
+        Push OpenTelemetry metric data to Coralogix's regional ingress
+        endpoint. Payload shape is defined by the OpenTelemetry Protocol
+        specification.
+      message:
+        $ref: '#/components/messages/OtlpMetricsRequest'
+  otlp/traces:
+    description: |
+      OpenTelemetry Traces (OTLP) ingest channel. Customers publish OTLP
+      spans to the regional `ingress.<domain>:443` endpoint.
+    publish:
+      operationId: ingestOtlpTraces
+      summary: Send OTLP trace spans to Coralogix.
+      description: |
+        Push OpenTelemetry trace span data to Coralogix's regional ingress
+        endpoint. Payload shape is defined by the OpenTelemetry Protocol
+        specification.
+      message:
+        $ref: '#/components/messages/OtlpTracesRequest'
+  prometheus/v1:
+    description: |
+      Prometheus remote_write ingest channel. Customers POST snappy-compressed
+      protobuf write requests to `https://ingress.<domain>/prometheus/v1`.
+      Coralogix documents a hard limit of 2,411,724 bytes per request.
+    publish:
+      operationId: ingestPrometheusRemoteWrite
+      summary: Stream Prometheus samples to Coralogix.
+      description: |
+        Standard Prometheus remote_write request. Payload format is defined
+        by the Prometheus remote_write specification; Coralogix's
+        documentation lists only the endpoint and request-size limit.
+      message:
+        $ref: '#/components/messages/PrometheusRemoteWriteRequest'
+  outbound/alert-webhook:
+    description: |
+      Generic Outbound Webhook channel. When an alert is configured to fire
+      through a Generic Outbound Webhook integration, Coralogix renders the
+      user-defined body template against the alert event and dispatches it
+      to the customer's configured URL using the configured HTTP method
+      (GET, POST, or PUT).
+
+      The schema below mirrors the example body Coralogix publishes in
+      https://coralogix.com/docs/user-guides/alerting/outbound-webhooks/generic-outbound-webhooks-alert-webhooks/.
+      Customers may freely customize the rendered body; field presence is
+      not guaranteed and depends on the alert type (e.g. ratio, metric,
+      flow, new-value) and the template the customer authored.
+    subscribe:
+      operationId: receiveAlertWebhook
+      summary: Receive an alert notification at a customer endpoint.
+      description: |
+        Coralogix delivers an alert event to the configured customer
+        endpoint. Coralogix additionally documents notification-delivery
+        controls (`Notify Every` cadence + `Notify When Resolved` toggle)
+        configured per alert.
+      message:
+        $ref: '#/components/messages/GenericOutboundWebhook'
+
+components:
+  messages:
+    OtlpLogsRequest:
+      name: OtlpLogsRequest
+      title: OpenTelemetry Logs export request
+      summary: OTLP ExportLogsServiceRequest envelope.
+      description: |
+        Coralogix accepts the standard OTLP logs payload defined by the
+        OpenTelemetry Protocol. Coralogix's own documentation defines the
+        endpoint and per-request size limit (10MB hard, 2MB recommended) but
+        defers to upstream OTLP schemas for the message body.
+      contentType: application/grpc
+      payload:
+        type: object
+        description: |
+          OTLP ExportLogsServiceRequest. See
+          https://github.com/open-telemetry/opentelemetry-proto for the
+          authoritative schema.
+        properties:
+          resourceLogs:
+            type: array
+            description: Per-resource batches of log records.
+            items:
+              type: object
+    OtlpMetricsRequest:
+      name: OtlpMetricsRequest
+      title: OpenTelemetry Metrics export request
+      summary: OTLP ExportMetricsServiceRequest envelope.
+      description: |
+        Coralogix accepts the standard OTLP metrics payload defined by the
+        OpenTelemetry Protocol.
+      contentType: application/grpc
+      payload:
+        type: object
+        description: |
+          OTLP ExportMetricsServiceRequest. See
+          https://github.com/open-telemetry/opentelemetry-proto for the
+          authoritative schema.
+        properties:
+          resourceMetrics:
+            type: array
+            description: Per-resource batches of metric data.
+            items:
+              type: object
+    OtlpTracesRequest:
+      name: OtlpTracesRequest
+      title: OpenTelemetry Traces export request
+      summary: OTLP ExportTraceServiceRequest envelope.
+      description: |
+        Coralogix accepts the standard OTLP traces payload defined by the
+        OpenTelemetry Protocol.
+      contentType: application/grpc
+      payload:
+        type: object
+        description: |
+          OTLP ExportTraceServiceRequest. See
+          https://github.com/open-telemetry/opentelemetry-proto for the
+          authoritative schema.
+        properties:
+          resourceSpans:
+            type: array
+            description: Per-resource batches of spans.
+            items:
+              type: object
+    PrometheusRemoteWriteRequest:
+      name: PrometheusRemoteWriteRequest
+      title: Prometheus remote_write request
+      summary: Prometheus WriteRequest delivered to Coralogix.
+      description: |
+        Snappy-compressed protobuf WriteRequest per the Prometheus
+        remote_write specification. Coralogix documents a 2,411,724-byte
+        hard limit per request; payload shape is otherwise defined upstream.
+      contentType: application/x-protobuf
+      payload:
+        type: object
+        description: |
+          Prometheus WriteRequest. See
+          https://prometheus.io/docs/specs/remote_write_spec/ for the
+          authoritative schema.
+        properties:
+          timeseries:
+            type: array
+            description: Time series samples being written.
+            items:
+              type: object
+    GenericOutboundWebhook:
+      name: GenericOutboundWebhook
+      title: Generic Outbound Webhook (alert event)
+      summary: Alert event delivered to a customer-configured webhook URL.
+      description: |
+        Alert event payload rendered from the user-defined Generic Outbound
+        Webhook body template. The fields below mirror the canonical example
+        Coralogix publishes; in practice the rendered body is whatever the
+        customer wrote in the template, and `fields` is a free-form array
+        of `{key, value}` pairs populated from Coralogix placeholders.
+
+        Documented placeholders (rendered into `fields[].value` or directly
+        into top-level keys per the customer template) include:
+
+          - $ALERT_NAME, $ALERT_ACTION, $ALERT_URL, $ALERT_ID,
+            $ALERT_DESCRIPTION, $ALERT_UNIQUE_IDENTIFIER, $ALERT_THRESHOLD,
+            $ALERT_TIMEWINDOW_MINUTES, $ALERT_GROUPBY_LABELS,
+            $ALERT_GROUP_BY_VALUES
+          - $EVENT_TIMESTAMP, $EVENT_TIMESTAMP_MS, $EVENT_TIMESTAMP_ISO,
+            $EVENT_SEVERITY, $EVENT_SEVERITY_LOWERCASE, $OPSGENIE_PRIORITY
+          - $META_LABELS, $META_LABELS_JSON, $META_LABELS_LIST
+          - $GROUP_BY_FIELD_1..N, $GROUP_BY_VALUE_1..N
+          - $HIT_COUNT, $RELATIVE_HIT_COUNT, $QUERY_TEXT,
+            $RELATIVE_QUERY_TEXT, $DEFINED_RATIO_THRESHOLD, $ACTUAL_RATIO
+          - $METRIC_KEY, $METRIC_OPERATOR, $TIMEFRAME,
+            $TIMEFRAME_OVER_THRESHOLD, $METRIC_CRITERIA
+          - $RATIO_QUERY_ONE, $RATIO_QUERY_TWO, $RATIO_TIMEFRAME,
+            $RATIO_GROUP_BY_KEYS, $RATIO_GROUP_BY_TABLE
+          - $UNIQUE_COUNT_VALUES_LIST, $NEW_VALUE_TRACKED_KEY
+          - $TEAM_NAME, $APPLICATION_NAME, $SUBSYSTEM_NAME, $COMPUTER_NAME,
+            $IP_ADDRESS, $THREAD_ID, $CATEGORY, $LOG_TEXT, $LOG_URL,
+            $CORALOGIX_ICON_URL
+          - $SERVICE, $DURATION, $ERRORS, $SPANS
+          - $COMPANY_ID, $DEDUP_KEY, $ALERT_PRIORITY,
+            $FLOW_ALERT_RELATED_ALERTS, $JSON_KEY
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AlertWebhookBody'
+  schemas:
+    AlertWebhookBody:
+      type: object
+      description: |
+        Default body template Coralogix ships for a Generic Outbound Webhook.
+        Field types reflect what the placeholder is documented to produce;
+        because every value is template-rendered as text, all fields are
+        modeled as strings except `fields` (a key/value array).
+      properties:
+        alert_id:
+          type: string
+          description: Alert ID; rotates when a significant alert parameter changes.
+        name:
+          type: string
+          description: Name of the alert.
+        description:
+          type: string
+          description: Description configured on the alert.
+        threshold:
+          type: string
+          description: Threshold defined in the alert.
+        timewindow:
+          type: string
+          description: Alert evaluation timeframe in minutes.
+        group_by_labels:
+          type: string
+          description: Group-by labels defined on the alert.
+        alert_action:
+          type: string
+          description: Whether the alert was triggered or resolved.
+          enum:
+            - triggered
+            - resolved
+        alert_url:
+          type: string
+          description: URL to view the alert in the Coralogix UI.
+          format: uri
+        log_url:
+          type: string
+          description: URL to view the matching logs in Coralogix.
+          format: uri
+        icon_url:
+          type: string
+          description: Coralogix icon URL ($CORALOGIX_ICON_URL).
+          format: uri
+        service:
+          type: string
+          description: Service associated with the event ($SERVICE).
+        duration:
+          type: string
+          description: Event duration ($DURATION).
+        errors:
+          type: string
+          description: Error count ($ERRORS).
+        spans:
+          type: string
+          description: Span count ($SPANS).
+        fields:
+          type: array
+          description: |
+            Free-form key/value entries rendered from Coralogix placeholders.
+            The canonical example template emits entries such as team,
+            application, subsystem, severity, priority, severityLowercase,
+            computer, ipAddress, timestamp, hitCount, text, Group-by
+            Field/Value pairs, metricKey, metricOperator, timeframe,
+            timeframePercentageOverThreshold, metricCriteria, ratioQueryOne,
+            ratioQueryTwo, ratioTimeframe, ratioGroupByKeys,
+            ratioGroupByTable, uniqueCountValuesList, newValueTrackedKey,
+            metaLabels, timestampMs, timestampISO, threadId, category,
+            queryText, definedRatioThreshold, metaLabelsJson, metaLabelsList,
+            opsgeniePriority, companyId, dedupKey, alertUniqueIdentifier,
+            relativeQueryText, actualRatio, relativeHitCount,
+            flowAlertRelatedAlerts, and alertGroupByValues.
+          items:
+            type: object
+            required:
+              - key
+              - value
+            properties:
+              key:
+                type: string
+              value:
+                type: string
