@@ -26,6 +26,8 @@ apis:
       - type: AsyncAPI
         url: https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/asyncapi/coralogix-asyncapi.yml
 common:
+  - type: DomainSecurity
+    url: security/coralogix-domain-security.yml
   - type: GitHubOrganization
     url: https://github.com/coralogix
   - type: LinkedIn
@@ -34,6 +36,8 @@ common:
     url: https://coralogix.com
   - type: Documentation
     url: https://coralogix.com/docs
+  - url: https://coralogix.com/feed/
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
