@@ -41,7 +41,7 @@ info:
   license:
     name: Coralogix Terms of Service
     url: https://coralogix.com/terms-of-service/
-  tags:
+  x-tags:
     - name: Observability
     - name: OpenTelemetry
     - name: Prometheus

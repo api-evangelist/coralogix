@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/coralogix/main/json-schema/coralogix-post-mgmt-openapi5-request-schema.json",
+  "title": "PostMgmtOpenapi5Request",
+  "x-generated": "2026-10-03",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostMgmtOpenapi5Request",
+  "type": "object",
+  "properties": {
+    "applicationNames": {
+      "type": "array",
+      "description": "The application names. Possible values: <= 1000"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description. Possible values: <= 65535 characters, must match ^[\\s\\S]*$"
+    },
+    "dpxlFilter": {
+      "type": "string",
+      "description": "The dpxl filter. Possible values: <= 65535 characters, must match ^[\\s\\S]*$"
+    },
+    "isPrivate": {
+      "type": "boolean",
+      "description": "The is private."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name. Non-empty and <= 50 characters, must match ^[\\s\\S]*$"
+    },
+    "sourceType": {
+      "type": "string",
+      "description": "Source type. Possible values: SOURCE_TYPE_UNSPECIFIED, SOURCE_TYPE_LOG, SOURCE_TYPE_DATA_MAP"
+    },
+    "subsystemNames": {
+      "type": "array",
+      "description": "The subsystem names. Possible values: <= 1000"
+    },
+    "url": {
+      "type": "string",
+      "description": "URL. Must start with http:// or https://. Non-empty and <= 32768 characters, must match ^https?://.*$"
+    },
+    "urlFields": {
+      "type": "array",
+      "description": "The url fields. Each field requires both name and required, and names must be unique within the list. Possible values: <= 1000"
+    }
+  }
+}

@@ -1,8 +1,14 @@
 aid: coralogix
+
 name: Coralogix
-description: >-
-  Coralogix is an observability platform providing log analytics, metrics, tracing, and AI-powered insights.
+
+description: Coralogix is a comprehensive observability platform that delivers real‑time log analytics, metrics, tracing, and AI‑driven insights.
+  It enables developers, DevOps, and SRE teams to monitor applications, infrastructure, and services across cloud, on‑premise, and hybrid environments.
+  Features include infinite data retention, customizable dashboards, alerting, OpenTelemetry support, and integrations with major cloud providers
+  and third‑party tools, helping organizations ensure performance, reliability, and security at scale.
+
 type: Index
+
 deliveryModel:
   model: unknown
   open_source: false
@@ -14,6 +20,7 @@ deliveryModel:
   - none
   generated: '2026-08-28'
   method: derived
+
 accessModel:
   pricing: freemium
   onboarding: unknown
@@ -26,41 +33,138 @@ accessModel:
   - plans
   generated: '2026-07-22'
   method: derived
+
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/coralogix.png
+
 tags:
-  - AIOps
-  - Observability
-url: >-
-  https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/apis.yml
+- AIOps
+- Observability
+- Monitoring
+- Cloud
+- DevOps
+
+url: https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/apis.yml
+
 created: '2026-03-27'
+
 modified: '2026-05-29'
+
 specificationVersion: '0.23'
-apis:
-  - aid: coralogix:coralogix
-    name: Coralogix
-    description: >-
-      Coralogix is an observability platform providing log analytics, metrics, tracing, and AI-powered insights.
-    humanURL: https://coralogix.com
-    tags:
-      - AIOps
-    properties:
-      - type: Documentation
-        url: https://coralogix.com/docs
-      - type: AsyncAPI
-        url: https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/asyncapi/coralogix-asyncapi.yml
+
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+
 common:
-  - type: DomainSecurity
-    url: security/coralogix-domain-security.yml
-  - type: GitHubOrganization
-    url: https://github.com/coralogix
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/coralogix
-  - type: Website
-    url: https://coralogix.com
+- type: FinOps
+  url: finops/coralogix-finops.yml
+- type: RateLimits
+  url: rate-limits/coralogix-rate-limits.yml
+- type: Plans
+  url: plans/coralogix-plans-pricing.yml
+- type: Spectral
+  url: rules/coralogix-rules.yml
+- type: Spectral
+  url: rules/coralogix-asyncapi-spectral-rules.yml
+- type: JSONLD
+  url: json-ld/coralogix-context.jsonld
+- type: Vocabulary
+  url: vocabulary/coralogix-vocabulary.yml
+- type: AsyncAPI
+  url: asyncapi/coralogix-asyncapi.yml
+- type: DataModel
+  url: data-model/coralogix-data-model.yml
+- type: ChangeLog
+  url: changelog/coralogix-changelog.yml
+- type: Compliance
+  url: https://trust.coralogix.com/
+- type: Conformance
+  url: conformance/coralogix-conformance.yml
+- type: LLMsTxt
+  url: llms/coralogix-llms.txt
+- type: AgentCard
+  url: a2a/coralogix-a2a.yml
+- type: WellKnown
+  url: well-known/coralogix-well-known.yml
+- type: Hosts
+  url: hosts/coralogix-hosts.yml
+- type: Vendors
+  url: vendors/coralogix-vendors.yml
+- type: SDKs
+  url: packages/coralogix-packages.yml
+- type: Packages
+  url: packages/coralogix-packages.yml
+- type: Newsroom
+  url: https://coralogix.com/newsroom/
+- type: DeveloperPortal
+  url: https://coralogix.com/developers/
+- type: TrustCenter
+  url: security/coralogix-trust-center.yml
+- type: DomainSecurity
+  url: security/coralogix-domain-security.yml
+- type: GitHubOrganization
+  url: https://github.com/coralogix
+- type: LinkedIn
+  url: https://www.linkedin.com/company/coralogix
+- type: Website
+  url: https://coralogix.com
+- type: Documentation
+  url: https://coralogix.com/docs
+- type: APIReference
+  url: https://coralogix.com/docs/api-reference/
+- type: GettingStarted
+  url: https://coralogix.com/docs/user-guides/getting-started/
+- type: Support
+  url: https://coralogix.com/support/
+- type: Pricing
+  url: https://coralogix.com/pricing/
+- type: SignUp
+  url: https://signup.coralogix.com/
+- type: TermsOfService
+  url: https://coralogix.com/terms-conditions/
+- type: PrivacyPolicy
+  url: https://coralogix.com/privacy-policy/
+- url: https://coralogix.com/feed/
+  type: Blog
+
+apis:
+- aid: coralogix:coralogix
+  name: Coralogix
+  description: Coralogix is an observability platform providing log analytics, metrics, tracing, and AI-powered insights.
+  humanURL: https://coralogix.com
+  tags:
+  - AIOps
+  properties:
   - type: Documentation
     url: https://coralogix.com/docs
-  - url: https://coralogix.com/feed/
-    type: Blog
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+  - type: AsyncAPI
+    url: https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/asyncapi/coralogix-asyncapi.yml
+- aid: coralogix:coralogix-api
+  name: Coralogix API
+  description: 'Coralogix API as documented publicly: 13 operations. Contract generated from the documentation by API Evangelist (2026-10-03);
+
+    not the provider''s own document.'
+  humanURL: https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+  baseURL: https://api.eu2.coralogix.com
+  properties:
+  - type: OpenAPI
+    url: openapi/_ae-authored/coralogix-openapi-generated.yml
+    x-provenance: generated
+  - type: JSONSchema
+    url: json-schema/coralogix-post-mgmt-openapi5-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-put-dashboards-dashboards-v1-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-post-dashboards-dashboards-v1-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-get-dashboards-dashboards-v1-dashboardid-response-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-post-dashboards-dashboards-v1-response-schema.json
+x-enrichment:
+  date: '2026-10-03'
+  status: enriched
+  artifacts_added: 28
+  pass: modular-v1
+  engine: identity=local,contract=local,surfaces=local,docs=local,regulatory=local

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/coralogix/main/json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json",
+  "title": "GetDashboardsDashboardsV1SlugsSlugResponse",
+  "x-generated": "2026-10-03",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/GetDashboardsDashboardsV1SlugsSlugResponse",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "slug_name": {
+      "type": "string"
+    },
+    "layout": {
+      "type": "object"
+    },
+    "variables_v2": {
+      "type": "array"
+    },
+    "variables": {
+      "type": "array"
+    },
+    "filters": {
+      "type": "array"
+    },
+    "annotations": {
+      "type": "array"
+    },
+    "actions": {
+      "type": "array"
+    },
+    "folder_id": {
+      "type": "string"
+    },
+    "folder_path": {
+      "type": "string"
+    },
+    "time_frame": {
+      "type": "object"
+    },
+    "auto_refresh": {
+      "type": "string"
+    }
+  }
+}

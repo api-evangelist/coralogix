@@ -1,0 +1,28 @@
+generated: '2026-10-03'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://coralogix.com/docs/user-guides/security/security-data-sources/okta-contextual-logs/
+sources:
+- https://coralogix.com/docs/user-guides/security/security-data-sources/okta-contextual-logs/
+- https://coralogix.com/docs/user-guides/account-management/data-privacy/handling-pii-and-sensitive-data/
+- https://coralogix.com/docs/user-guides/account-management/data-privacy/fedramp/
+- https://coralogix.com/docs/integrations/security/NHI/aws-stale-resources-lambda/
+standards:
+- id: fapi
+  conforms: true
+  evidence: The Coralogix FedRAMP environment is a FedRAMP Authorized observability environment in AWS GovCloud, assessed against the FedRAMP
+    Class C (formerly Moderate) control baseline by an independent Third Party Assessment Organization.
+- id: openapi-3.1
+  conforms: true
+  evidence: the document declares 3.1.0
+- id: oauth2
+  conforms: false
+  evidence: 'securitySchemes: bearer (http)'
+- id: rfc9457
+  conforms: false
+  evidence: no response declares application/problem+json
+- id: idempotency
+  conforms: false
+  evidence: no idempotency key parameter on mutating operations
+docs: https://coralogix.com/docs/user-guides/security/security-data-sources/okta-contextual-logs/
+note: 70 extracted row(s) were dropped because their quote was not on the page.

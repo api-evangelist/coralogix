@@ -1,0 +1,655 @@
+openapi: 3.1.0
+info:
+  title: Coralogix API
+  version: '2026-10-03'
+  description: 'GENERATED FROM DOCUMENTATION by API Evangelist on 2026-10-03: 13 operation(s) read from 10 public documentation page(s) (each
+    operation names its page in x-source). This is not the provider''s published contract; Coralogix has published no machine-readable contract
+    that the pipeline could find. Engine: local.'
+  x-evidence-tiers:
+    code-example: 5
+    documentation: 8
+    pages-with-code: 1
+    pages-read: 10
+  x-generated-from: documentation
+  x-provenance: generated
+  x-authored-by: API Evangelist
+  x-generated: '2026-10-03'
+  x-generator: generate-contract-from-docs.py
+  x-engine: local
+  x-sources:
+  - https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+  - https://coralogix.com/docs/api-reference/v5/actions-service/get-action
+  - https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+  - https://coralogix.com/docs/api-reference/v5/actions-service/list-actions
+  - https://coralogix.com/docs/api-reference/v5/api-keys-service/get-api-key
+  - https://coralogix.com/docs/api-reference/v5/actions-service/create-action
+  - https://coralogix.com/docs/api-reference/v5/actions-service/delete-action
+  - https://coralogix.com/docs/api-reference/v5/actions-service/order-actions
+  - https://coralogix.com/docs/api-reference/v5/api-keys-service/get-api-keys
+  - https://coralogix.com/docs/api-reference/v5/actions-service/replace-action
+servers:
+- url: https://api.eu2.coralogix.com
+paths:
+  /api/v1/dataprime/background-query/{backgroundqueryid}:
+    post:
+      operationId: post_api_v1_dataprime_background_query_backgroundqueryid
+      tags:
+      - Api
+      summary: POST /api/v1/dataprime/background-query/cancel
+      x-source: https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+      parameters:
+      - name: backgroundqueryid
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest'
+      responses:
+        '201':
+          description: Success (status as documented)
+      x-evidence:
+        kind: code-example
+        language: curl
+        snippet: 'curl Python JavaScript Go PHP Java C# curl --location ''https://api.eu2.coralogix.com/api/v1/dataprime/background-query/cancel''
+          \ --header ''Content-Type: application/json'' \ --header ''Authorization: Bearer <cx_api_key>'' \ --data ''{"queryId": "c80fa3e7-fa5b-441a-b0d4-acdbdbe36e64"}''
+          import requests import json endpoint = "https://api.eu2.coralogix.com/api/v1/dataprime/background-query/cancel" api_ke'
+        collapsed_from: 3 example path(s) differing only at backgroundqueryId
+  /api/v1/dataprime/{dataprimeid}:
+    post:
+      operationId: post_api_v1_dataprime_dataprimeid
+      tags:
+      - Api
+      summary: POST /api/v1/dataprime/background-query
+      x-source: https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+      parameters:
+      - name: dataprimeid
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostApiV1DataprimeDataprimeidRequest'
+      responses:
+        '201':
+          description: Success (status as documented)
+      x-evidence:
+        kind: code-example
+        language: curl
+        snippet: 'curl Python JavaScript Go PHP Java C# curl --location ''https://api.eu2.coralogix.com/api/v1/dataprime/background-query'' \
+          --header ''Content-Type: application/json'' \ --header ''Authorization: Bearer <cx_api_key>'' \ --data ''{ "query": "source logs | limit
+          101", "syntax": "QUERY_SYNTAX_DATAPRIME", "startDate": "2025-01-20T00:00:00Z", "endDate": "2025-01-20T01:00:00Z", "nowDate": "2025-01-20T02:00:00Z'
+        collapsed_from: 2 example path(s) differing only at dataprimeId
+  /dashboards/dashboards/v1:
+    post:
+      operationId: post_dashboards_dashboards_v1
+      tags:
+      - Dashboards
+      summary: Create a new dashboard
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostDashboardsDashboardsV1Request'
+      responses:
+        '201':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDashboardsDashboardsV1Response'
+      x-evidence:
+        kind: documentation
+    put:
+      operationId: put_dashboards_dashboards_v1
+      tags:
+      - Dashboards
+      summary: Replace a dashboard
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutDashboardsDashboardsV1Request'
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutDashboardsDashboardsV1Response'
+      x-evidence:
+        kind: documentation
+  /dashboards/dashboards/v1/slugs/{slug}:
+    get:
+      operationId: get_dashboards_dashboards_v1_slugs_slug
+      tags:
+      - Dashboards
+      summary: Get a dashboard by URL slug
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDashboardsDashboardsV1SlugsSlugResponse'
+      x-evidence:
+        kind: documentation
+  /dashboards/dashboards/v1/{dashboardId}:
+    get:
+      operationId: get_dashboards_dashboards_v1_dashboardId
+      tags:
+      - Dashboards
+      summary: Get a dashboard
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      parameters:
+      - name: dashboardId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDashboardsDashboardsV1DashboardidResponse'
+      x-evidence:
+        kind: documentation
+  /dashboards/dashboards/v1/{dashboardId}/default:
+    put:
+      operationId: put_dashboards_dashboards_v1_dashboardId_default
+      tags:
+      - Dashboards
+      summary: Replace the default dashboard
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      parameters:
+      - name: dashboardId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutDashboardsDashboardsV1DashboardidDefaultRequest'
+      responses:
+        '200':
+          description: Success (status as documented)
+      x-evidence:
+        kind: documentation
+  /dashboards/dashboards/v1/{dashboardId}/folder:
+    post:
+      operationId: post_dashboards_dashboards_v1_dashboardId_folder
+      tags:
+      - Dashboards
+      summary: Assign a dashboard to a folder
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      parameters:
+      - name: dashboardId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostDashboardsDashboardsV1DashboardidFolderRequest'
+      responses:
+        '201':
+          description: Success (status as documented)
+      x-evidence:
+        kind: documentation
+  /dashboards/pinned/v1/{dashboardId}:
+    put:
+      operationId: put_dashboards_pinned_v1_dashboardId
+      tags:
+      - Dashboards
+      summary: Add dashboard to favorites
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      parameters:
+      - name: dashboardId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success (status as documented)
+      x-evidence:
+        kind: documentation
+  /dashboards/{dashboardid}/v1/{dashboardId}:
+    delete:
+      operationId: delete_dashboards_dashboardid_v1_dashboardId
+      tags:
+      - Dashboards
+      summary: Delete a dashboard
+      x-source: https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+      parameters:
+      - name: dashboardid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: dashboardId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success (status as documented)
+      x-evidence:
+        kind: documentation
+        collapsed_from: 2 example path(s) differing only at dashboardId
+  /mgmt/openapi/5:
+    delete:
+      operationId: delete_mgmt_openapi_5
+      tags:
+      - Mgmt
+      summary: Deletes the action with the specified ID.
+      description: Deletes the action with the specified ID.
+      x-source: https://coralogix.com/docs/api-reference/v5/actions-service/delete-action
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMgmtOpenapi5Response'
+      x-evidence:
+        kind: documentation
+    post:
+      operationId: post_mgmt_openapi_5
+      tags:
+      - Mgmt
+      summary: Creates a new action.
+      x-source: https://coralogix.com/docs/api-reference/v5/actions-service/create-action
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: API key authentication. The value is a Coralogix API key.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostMgmtOpenapi5Request'
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostMgmtOpenapi5Response'
+      x-evidence:
+        kind: documentation
+    put:
+      operationId: put_mgmt_openapi_5
+      tags:
+      - Mgmt
+      summary: Replaces all actions with the provided set.
+      description: Replaces all actions with the provided set.
+      x-source: https://coralogix.com/docs/api-reference/v5/actions-service/replace-action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutMgmtOpenapi5Request'
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutMgmtOpenapi5Response'
+      x-evidence:
+        kind: documentation
+components:
+  schemas:
+    PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest:
+      type: object
+      properties:
+        queryId:
+          type: string
+    PostApiV1DataprimeDataprimeidRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        syntax:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        nowDate:
+          type: string
+          format: date-time
+    PostDashboardsDashboardsV1Request:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+      required:
+      - name
+      - layout
+    PostDashboardsDashboardsV1Response:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+    PutDashboardsDashboardsV1Request:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+      required:
+      - id
+      - name
+      - layout
+    PutDashboardsDashboardsV1Response:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+    GetDashboardsDashboardsV1SlugsSlugResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+    GetDashboardsDashboardsV1DashboardidResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+    PutDashboardsDashboardsV1DashboardidDefaultRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        layout:
+          type: object
+      required:
+      - id
+      - name
+      - layout
+    PostDashboardsDashboardsV1DashboardidFolderRequest:
+      type: object
+      properties:
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+    DeleteMgmtOpenapi5Response:
+      type: object
+      properties:
+        '200':
+          type: string
+          description: Successful deletion.
+        '400':
+          type: string
+          description: Bad request.
+        '401':
+          type: string
+          description: Unauthorized.
+        '500':
+          type: string
+          description: Internal server error.
+    PostMgmtOpenapi5Request:
+      type: object
+      properties:
+        applicationNames:
+          type: array
+          description: 'The application names. Possible values: <= 1000'
+        description:
+          type: string
+          description: 'Human-readable description. Possible values: <= 65535 characters, must match ^[\s\S]*$'
+        dpxlFilter:
+          type: string
+          description: 'The dpxl filter. Possible values: <= 65535 characters, must match ^[\s\S]*$'
+        isPrivate:
+          type: boolean
+          description: The is private.
+        name:
+          type: string
+          description: Display name. Non-empty and <= 50 characters, must match ^[\s\S]*$
+        sourceType:
+          type: string
+          description: 'Source type. Possible values: SOURCE_TYPE_UNSPECIFIED, SOURCE_TYPE_LOG, SOURCE_TYPE_DATA_MAP'
+        subsystemNames:
+          type: array
+          description: 'The subsystem names. Possible values: <= 1000'
+        url:
+          type: string
+          description: URL. Must start with http:// or https://. Non-empty and <= 32768 characters, must match ^https?://.*$
+        urlFields:
+          type: array
+          description: 'The url fields. Each field requires both name and required, and names must be unique within the list. Possible values:
+            <= 1000'
+    PostMgmtOpenapi5Response:
+      type: object
+      properties:
+        action:
+          type: object
+          description: Action object returned on success.
+    PutMgmtOpenapi5Request:
+      type: object
+      properties:
+        body:
+          type: string
+          description: action object
+      required:
+      - body
+    PutMgmtOpenapi5Response:
+      type: object
+      properties:
+        '200':
+          type: string
+          description: action object
+        '400':
+          type: string
+          description: action object
+        '401':
+          type: string
+          description: action object
+        '500':
+          type: string
+          description: action object
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+security:
+- bearer: []
+tags:
+- name: Api
+- name: Dashboards
+- name: Mgmt

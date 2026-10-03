@@ -1,0 +1,92 @@
+generated: '2026-10-03'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/_ae-authored/coralogix-openapi-generated.yml
+vocabulary:
+  name: Coralogix Domain Vocabulary
+  description: 'Terms declared by Coralogix''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-03'
+  terms:
+  - term: PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest
+    definition: 'Object declared by the contract with fields: queryId.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest
+  - term: PostApiV1DataprimeDataprimeidRequest
+    definition: 'Object declared by the contract with fields: query, syntax, startDate, endDate, nowDate.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostApiV1DataprimeDataprimeidRequest
+  - term: PostDashboardsDashboardsV1Request
+    definition: 'Object declared by the contract with fields: id, name, description, slug_name, layout, variables_v2, variables, filters, annotations,
+      actions, folder_id, folder_path. (2 more)'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostDashboardsDashboardsV1Request
+  - term: PostDashboardsDashboardsV1Response
+    definition: 'Object declared by the contract with fields: id, name, description, slug_name, layout, variables_v2, variables, filters, annotations,
+      actions, folder_id, folder_path. (2 more)'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostDashboardsDashboardsV1Response
+  - term: PutDashboardsDashboardsV1Request
+    definition: 'Object declared by the contract with fields: id, name, description, slug_name, layout, variables_v2, variables, filters, annotations,
+      actions, folder_id, folder_path. (2 more)'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PutDashboardsDashboardsV1Request
+  - term: PutDashboardsDashboardsV1Response
+    definition: 'Object declared by the contract with fields: id, name, description, slug_name, layout, variables_v2, variables, filters, annotations,
+      actions, folder_id, folder_path. (2 more)'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PutDashboardsDashboardsV1Response
+  - term: GetDashboardsDashboardsV1SlugsSlugResponse
+    definition: 'Object declared by the contract with fields: id, name, description, slug_name, layout, variables_v2, variables, filters, annotations,
+      actions, folder_id, folder_path. (2 more)'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/GetDashboardsDashboardsV1SlugsSlugResponse
+  - term: GetDashboardsDashboardsV1DashboardidResponse
+    definition: 'Object declared by the contract with fields: id, name, description, slug_name, layout, variables_v2, variables, filters, annotations,
+      actions, folder_id, folder_path. (2 more)'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/GetDashboardsDashboardsV1DashboardidResponse
+  - term: PutDashboardsDashboardsV1DashboardidDefaultRequest
+    definition: 'Object declared by the contract with fields: id, name, layout.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PutDashboardsDashboardsV1DashboardidDefaultRequest
+  - term: PostDashboardsDashboardsV1DashboardidFolderRequest
+    definition: 'Object declared by the contract with fields: folder_id, folder_path.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostDashboardsDashboardsV1DashboardidFolderRequest
+  - term: DeleteMgmtOpenapi5Response
+    definition: 'Object declared by the contract with fields: 200, 400, 401, 500.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/DeleteMgmtOpenapi5Response
+  - term: PostMgmtOpenapi5Request
+    definition: 'Object declared by the contract with fields: applicationNames, description, dpxlFilter, isPrivate, name, sourceType, subsystemNames,
+      url, urlFields.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostMgmtOpenapi5Request
+  - term: PostMgmtOpenapi5Response
+    definition: 'Object declared by the contract with fields: action.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PostMgmtOpenapi5Response
+  - term: PutMgmtOpenapi5Request
+    definition: 'Object declared by the contract with fields: body.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PutMgmtOpenapi5Request
+  - term: PutMgmtOpenapi5Response
+    definition: 'Object declared by the contract with fields: 200, 400, 401, 500.'
+    tags:
+    - Object
+    source: openapi/_ae-authored/coralogix-openapi-generated.yml#/components/schemas/PutMgmtOpenapi5Response

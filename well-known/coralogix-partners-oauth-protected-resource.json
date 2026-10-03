@@ -1,0 +1,13 @@
+{
+  "resource": "https://partners.coralogix.com/mcp",
+  "authorization_servers": [
+    "https://partners.coralogix.com"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "scopes_supported": [
+    "mcp:read",
+    "mcp:write"
+  ]
+}

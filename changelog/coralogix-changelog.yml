@@ -1,0 +1,71 @@
+generated: '2026-10-03'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://coralogix.com/docs/user-guides/release-notes/
+sources:
+- https://coralogix.com/docs/user-guides/release-notes/
+- https://coralogix.com/docs/api-reference/changelog/
+- https://coralogix.com/docs/user-guides/latest-updates/deprecations/
+entries:
+- breaking: false
+  highlights:
+  - 'Fields that tell "not set" apart from false , 0 , or "" now carry x-coralogix-presence: true .'
+  - Omitting such a field leaves it unset, which is different from sending its zero value.
+  - 'Declared field defaults now appear as typed default values, for example default: false on the include_dashboard_binaries and include_testing_revision
+    query parameters of GET /integrations/extensions/v1/catalog/{id} , and default: [] on the item_ids , applications , and subsystems query parameters
+    of PUT /integrations/extensions/v1/deployed and POST /integrations/extensions/v1/deployed .'
+  - Request and response shapes are unchanged. Non-breaking; documentation only.
+  date: '2026-10-01'
+- breaking: false
+  highlights:
+  - 'Published the alert caseSettings object as experimental (preview) — it carries an x-stability: preview extension and may change or break
+    without notice.'
+  - caseSettings is an optional object on alertDefProperties , exposed in the request and response of POST /alerts/alerts/v3 , PUT /alerts/alerts/v3
+    , POST /alerts/alerts/v3/all/create and PUT /alerts/alerts/v3/all/replace , and in the 200 response of GET /alerts/alerts/v3 , GET /alerts/alerts/v3/{id}
+    and GET /alerts/alerts/v3/version-ids/{alert_version_id} .
+  - 'It has three optional properties: autoResolveMode (string enum ...), enrichmentQueries (array of at most 1 object ...), and destinations
+    (array of up to 100 objects ...).'
+  - Non-breaking; additive.
+  date: '2026-09-30'
+- breaking: true
+  highlights:
+  - Analytics alerts are now published as experimental (preview) rather than stable.
+  - 'The analyticsImmediate and analyticsThreshold objects on the alert payload carry an x-stability: preview extension; the ALERT_DEF_TYPE_ANALYTICS_IMMEDIATE
+    and ALERT_DEF_TYPE_ANALYTICS_THRESHOLD values of the AlertDefType string enum remain plain strings and are marked preview through - <VALUE>:
+    preview lines in the enum''s description.'
+  - Both objects were optional and remain optional, in both requests and responses; no field is added, removed, renamed or retyped, and the two
+    enum values remain accepted and returned.
+  - 'Non-breaking at runtime — no request or response that was accepted before is rejected — but a breaking change to the published contract :
+    these fields and enum values leave the stable tier, so they are no longer covered by the backward-compatibility guarantee and may change or
+    be removed in a future release without a compatibility gate.'
+  date: '2026-09-24'
+- breaking: false
+  highlights:
+  - 'User (returned by GET /aaa/teams/v2/{team_id}/members/{user_account_id} , GET /aaa/teams/v2/{team_id}/search , and GET /aaa/team-groups/v2/{group_id}/users/list
+    ) gains three optional fields: accessType (an object with a required string accessType of "permanent" or "temporary" , and either a permanentAccess
+    object with no properties or a temporaryAccess object with a string expireAt timestamp, matching whichever accessType value is set), groupIds
+    (array of integers, the team groups the user belongs to), and allowedLoginMode (array of up to 2 strings: ALLOWED_LOGIN_MODE_UNSPECIFIED ,
+    ALLOWED_LOGIN_MODE_SSO , ALLOWED_LOGIN_MODE_LOCAL ).'
+  - POST /aaa/teams/v2/{team_id}/members 's per-user results entries gain an optional user object (the same User shape as above) with the full
+    created user, present whenever the entry's outcome produced an account (absent for an entry that only sent an invitation, which has no account
+    until it is accepted).
+  - 'PUT /aaa/teams/v2/{team_id}/members accepts an optional string userId on each request array item, an alternative to the existing userAccountId
+    : set exactly one of the two, setting both or neither is rejected. Its response gains an optional users array (the same User shape as above),
+    the full updated users alongside the existing userAccountIds .'
+  - Non-breaking; additive.
+  date: '2026-09-23'
+- breaking: false
+  highlights:
+  - 'Published the Fleet Manager configuration-groups API as preview (experimental — each operation is badged x-stability: preview and may change
+    or break without notice).'
+  - 'Four operations now appear in the API reference: POST /fleet-management/configuration-groups/v1 (create), GET /fleet-management/configuration-groups/v1/{id}
+    (get), PUT /fleet-management/configuration-groups/v1/{id} (update), and POST /fleet-management/configuration-groups/v1/{id}/archive (archive).'
+  - A configuration group is returned under a group object with an id string, a tags array of strings, optional name and description strings,
+    an optional priorityOrder integer, and a families array of objects.
+  - Create and update both send a singular family object, not the returned families; Create additionally accepts an optional basedOnConfigurationFamilyId
+    string and requires remoteConfigurations to contain at least one item; PUT's family omits that field and allows an empty remoteConfigurations
+    array.
+  date: '2026-09-10'
+current_version: '2026-10-01'
+note: Versioning scheme is date-based (YYYY-MM-DD).
+docs: https://coralogix.com/docs/user-guides/release-notes/

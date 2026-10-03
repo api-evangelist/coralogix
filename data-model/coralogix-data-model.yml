@@ -1,0 +1,42 @@
+generated: '2026-10-03'
+method: derived
+generator: derive-data-model.py
+source:
+- openapi/_ae-authored/coralogix-openapi-generated.yml
+notation: has_one = property $ref; has_many = array of $ref; belongs_to = <entity>_id field
+summary:
+  entities: 15
+  entities_in_spec: 15
+  relationships: 0
+entities:
+- name: DeleteMgmtOpenapi5Response
+  fields: 4
+- name: GetDashboardsDashboardsV1DashboardidResponse
+  fields: 14
+- name: GetDashboardsDashboardsV1SlugsSlugResponse
+  fields: 14
+- name: PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest
+  fields: 1
+- name: PostApiV1DataprimeDataprimeidRequest
+  fields: 5
+- name: PostDashboardsDashboardsV1DashboardidFolderRequest
+  fields: 2
+- name: PostDashboardsDashboardsV1Request
+  fields: 14
+- name: PostDashboardsDashboardsV1Response
+  fields: 14
+- name: PostMgmtOpenapi5Request
+  fields: 9
+- name: PostMgmtOpenapi5Response
+  fields: 1
+- name: PutDashboardsDashboardsV1DashboardidDefaultRequest
+  fields: 3
+- name: PutDashboardsDashboardsV1Request
+  fields: 14
+- name: PutDashboardsDashboardsV1Response
+  fields: 14
+- name: PutMgmtOpenapi5Request
+  fields: 1
+- name: PutMgmtOpenapi5Response
+  fields: 4
+relationships: []
