@@ -1,0 +1,115 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Dataprime API
+  version: '2026-10-03'
+  description: 'GENERATED FROM DOCUMENTATION by API Evangelist on 2026-10-03: 13 operation(s) read from 10 public documentation page(s) (each operation names its page in x-source). This is not the provider''s published contract; Coralogix has published no machine-readable contract that the pipeline could find. Engine: local.'
+  x-evidence-tiers:
+    code-example: 5
+    documentation: 8
+    pages-with-code: 1
+    pages-read: 10
+  x-generated-from: documentation
+  x-provenance: generated
+  x-authored-by: API Evangelist
+  x-generated: '2026-10-03'
+  x-generator: generate-contract-from-docs.py
+  x-engine: local
+  x-sources:
+  - https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+  - https://coralogix.com/docs/api-reference/v5/actions-service/get-action
+  - https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+  - https://coralogix.com/docs/api-reference/v5/actions-service/list-actions
+  - https://coralogix.com/docs/api-reference/v5/api-keys-service/get-api-key
+  - https://coralogix.com/docs/api-reference/v5/actions-service/create-action
+  - https://coralogix.com/docs/api-reference/v5/actions-service/delete-action
+  - https://coralogix.com/docs/api-reference/v5/actions-service/order-actions
+  - https://coralogix.com/docs/api-reference/v5/api-keys-service/get-api-keys
+  - https://coralogix.com/docs/api-reference/v5/actions-service/replace-action
+servers:
+- url: https://api.eu2.coralogix.com
+security:
+- bearer: []
+tags:
+- name: Dataprime
+paths:
+  /api/v1/dataprime/background-query/{backgroundqueryid}:
+    post:
+      operationId: post_api_v1_dataprime_background_query_backgroundqueryid
+      tags:
+      - Dataprime
+      summary: POST /api/v1/dataprime/background-query/cancel
+      x-source: https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+      parameters:
+      - name: backgroundqueryid
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest'
+      responses:
+        '201':
+          description: Success (status as documented)
+      x-evidence:
+        kind: code-example
+        language: curl
+        snippet: 'curl Python JavaScript Go PHP Java C# curl --location ''https://api.eu2.coralogix.com/api/v1/dataprime/background-query/cancel'' \ --header ''Content-Type: application/json'' \ --header ''Authorization: Bearer <cx_api_key>'' \ --data ''{"queryId": "c80fa3e7-fa5b-441a-b0d4-acdbdbe36e64"}'' import requests import json endpoint = "https://api.eu2.coralogix.com/api/v1/dataprime/background-query/cancel" api_ke'
+        collapsed_from: 3 example path(s) differing only at backgroundqueryId
+  /api/v1/dataprime/{dataprimeid}:
+    post:
+      operationId: post_api_v1_dataprime_dataprimeid
+      tags:
+      - Dataprime
+      summary: POST /api/v1/dataprime/background-query
+      x-source: https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+      parameters:
+      - name: dataprimeid
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostApiV1DataprimeDataprimeidRequest'
+      responses:
+        '201':
+          description: Success (status as documented)
+      x-evidence:
+        kind: code-example
+        language: curl
+        snippet: 'curl Python JavaScript Go PHP Java C# curl --location ''https://api.eu2.coralogix.com/api/v1/dataprime/background-query'' \ --header ''Content-Type: application/json'' \ --header ''Authorization: Bearer <cx_api_key>'' \ --data ''{ "query": "source logs | limit 101", "syntax": "QUERY_SYNTAX_DATAPRIME", "startDate": "2025-01-20T00:00:00Z", "endDate": "2025-01-20T01:00:00Z", "nowDate": "2025-01-20T02:00:00Z'
+        collapsed_from: 2 example path(s) differing only at dataprimeId
+components:
+  schemas:
+    PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest:
+      type: object
+      properties:
+        queryId:
+          type: string
+    PostApiV1DataprimeDataprimeidRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        syntax:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        nowDate:
+          type: string
+          format: date-time
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer

@@ -130,7 +130,8 @@ common:
 apis:
 - aid: coralogix:coralogix
   name: Coralogix
-  description: Coralogix is an observability platform providing log analytics, metrics, tracing, and AI-powered insights.
+  description: >-
+    Coralogix is an observability platform providing log analytics, metrics, tracing, and AI-powered insights.
   humanURL: https://coralogix.com
   tags:
   - AIOps
@@ -138,18 +139,18 @@ apis:
   - type: Documentation
     url: https://coralogix.com/docs
   - type: AsyncAPI
-    url: https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/asyncapi/coralogix-asyncapi.yml
-- aid: coralogix:coralogix-api
-  name: Coralogix API
-  description: 'Coralogix API as documented publicly: 13 operations. Contract generated from the documentation by API Evangelist (2026-10-03);
-
-    not the provider''s own document.'
-  humanURL: https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/coralogix/refs/heads/main/asyncapi/coralogix-asyncapi.yml
+- aid: coralogix:coralogix-dashboards-api
+  name: Coralogix Dashboards API
+  description: The Dashboards API from Coralogix — 7 operation(s) for dashboards.
+  humanURL: https://coralogix.com
   baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Dashboards
   properties:
   - type: OpenAPI
-    url: openapi/_ae-authored/coralogix-openapi-generated.yml
-    x-provenance: generated
+    url: openapi/coralogix-dashboards-api-openapi.yml
   - type: JSONSchema
     url: json-schema/coralogix-post-mgmt-openapi5-request-schema.json
   - type: JSONSchema
@@ -162,7 +163,50 @@ apis:
     url: json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json
   - type: JSONSchema
     url: json-schema/coralogix-post-dashboards-dashboards-v1-response-schema.json
-
+- aid: coralogix:coralogix-dataprime-api
+  name: Coralogix Dataprime API
+  description: The Dataprime API from Coralogix — 2 operation(s) for dataprime.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Dataprime
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-dataprime-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/coralogix-post-mgmt-openapi5-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-put-dashboards-dashboards-v1-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-post-dashboards-dashboards-v1-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-get-dashboards-dashboards-v1-dashboardid-response-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-post-dashboards-dashboards-v1-response-schema.json
+- aid: coralogix:coralogix-mgmt-api
+  name: Coralogix Mgmt API
+  description: The Mgmt API from Coralogix — 1 operation(s) for mgmt.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Mgmt
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-mgmt-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/coralogix-post-mgmt-openapi5-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-put-dashboards-dashboards-v1-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-post-dashboards-dashboards-v1-request-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-get-dashboards-dashboards-v1-dashboardid-response-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json
+  - type: JSONSchema
+    url: json-schema/coralogix-post-dashboards-dashboards-v1-response-schema.json
 x-enrichment:
   date: '2026-10-03'
   status: enriched

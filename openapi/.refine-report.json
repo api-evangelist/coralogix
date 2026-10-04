@@ -1,0 +1,23 @@
+{
+  "provider": "coralogix",
+  "sources": [
+    "_ae-authored/coralogix-openapi-generated.yml"
+  ],
+  "outputs": [
+    "coralogix-dashboards-api-openapi.yml",
+    "coralogix-dataprime-api-openapi.yml",
+    "coralogix-mgmt-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "coralogix-openapi-generated.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "coralogix-openapi-generated.yml: tagged paths POST /api/v1/dataprime/background-query/{backgroundqueryid} -> Dataprime",
+    "coralogix-openapi-generated.yml: tagged paths POST /api/v1/dataprime/{dataprimeid} -> Dataprime",
+    "coralogix-openapi-generated.yml: declared missing tag: Dataprime",
+    "apis.yml register: written (+3 apis, 4 total)"
+  ],
+  "skipped": []
+}

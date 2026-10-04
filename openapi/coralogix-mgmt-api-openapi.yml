@@ -1,0 +1,181 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Mgmt API
+  version: '2026-10-03'
+  description: 'GENERATED FROM DOCUMENTATION by API Evangelist on 2026-10-03: 13 operation(s) read from 10 public documentation page(s) (each operation names its page in x-source). This is not the provider''s published contract; Coralogix has published no machine-readable contract that the pipeline could find. Engine: local.'
+  x-evidence-tiers:
+    code-example: 5
+    documentation: 8
+    pages-with-code: 1
+    pages-read: 10
+  x-generated-from: documentation
+  x-provenance: generated
+  x-authored-by: API Evangelist
+  x-generated: '2026-10-03'
+  x-generator: generate-contract-from-docs.py
+  x-engine: local
+  x-sources:
+  - https://coralogix.com/docs/dataprime/API/direct-archive-query-http
+  - https://coralogix.com/docs/api-reference/v5/actions-service/get-action
+  - https://coralogix.com/docs/api-reference/v5/dashboard-service/overview
+  - https://coralogix.com/docs/api-reference/v5/actions-service/list-actions
+  - https://coralogix.com/docs/api-reference/v5/api-keys-service/get-api-key
+  - https://coralogix.com/docs/api-reference/v5/actions-service/create-action
+  - https://coralogix.com/docs/api-reference/v5/actions-service/delete-action
+  - https://coralogix.com/docs/api-reference/v5/actions-service/order-actions
+  - https://coralogix.com/docs/api-reference/v5/api-keys-service/get-api-keys
+  - https://coralogix.com/docs/api-reference/v5/actions-service/replace-action
+servers:
+- url: https://api.eu2.coralogix.com
+security:
+- bearer: []
+tags:
+- name: Mgmt
+paths:
+  /mgmt/openapi/5:
+    delete:
+      operationId: delete_mgmt_openapi_5
+      tags:
+      - Mgmt
+      summary: Deletes the action with the specified ID
+      description: Deletes the action with the specified ID.
+      x-source: https://coralogix.com/docs/api-reference/v5/actions-service/delete-action
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMgmtOpenapi5Response'
+      x-evidence:
+        kind: documentation
+    post:
+      operationId: post_mgmt_openapi_5
+      tags:
+      - Mgmt
+      summary: Creates a new action
+      x-source: https://coralogix.com/docs/api-reference/v5/actions-service/create-action
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: API key authentication. The value is a Coralogix API key.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostMgmtOpenapi5Request'
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostMgmtOpenapi5Response'
+      x-evidence:
+        kind: documentation
+    put:
+      operationId: put_mgmt_openapi_5
+      tags:
+      - Mgmt
+      summary: Replaces all actions with the provided set
+      description: Replaces all actions with the provided set.
+      x-source: https://coralogix.com/docs/api-reference/v5/actions-service/replace-action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutMgmtOpenapi5Request'
+      responses:
+        '200':
+          description: Success (status as documented)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutMgmtOpenapi5Response'
+      x-evidence:
+        kind: documentation
+components:
+  schemas:
+    PutMgmtOpenapi5Response:
+      type: object
+      properties:
+        '200':
+          type: string
+          description: action object
+        '400':
+          type: string
+          description: action object
+        '401':
+          type: string
+          description: action object
+        '500':
+          type: string
+          description: action object
+    DeleteMgmtOpenapi5Response:
+      type: object
+      properties:
+        '200':
+          type: string
+          description: Successful deletion.
+        '400':
+          type: string
+          description: Bad request.
+        '401':
+          type: string
+          description: Unauthorized.
+        '500':
+          type: string
+          description: Internal server error.
+    PutMgmtOpenapi5Request:
+      type: object
+      properties:
+        body:
+          type: string
+          description: action object
+      required:
+      - body
+    PostMgmtOpenapi5Response:
+      type: object
+      properties:
+        action:
+          type: object
+          description: Action object returned on success.
+    PostMgmtOpenapi5Request:
+      type: object
+      properties:
+        applicationNames:
+          type: array
+          description: 'The application names. Possible values: <= 1000'
+        description:
+          type: string
+          description: 'Human-readable description. Possible values: <= 65535 characters, must match ^[\s\S]*$'
+        dpxlFilter:
+          type: string
+          description: 'The dpxl filter. Possible values: <= 65535 characters, must match ^[\s\S]*$'
+        isPrivate:
+          type: boolean
+          description: The is private.
+        name:
+          type: string
+          description: Display name. Non-empty and <= 50 characters, must match ^[\s\S]*$
+        sourceType:
+          type: string
+          description: 'Source type. Possible values: SOURCE_TYPE_UNSPECIFIED, SOURCE_TYPE_LOG, SOURCE_TYPE_DATA_MAP'
+        subsystemNames:
+          type: array
+          description: 'The subsystem names. Possible values: <= 1000'
+        url:
+          type: string
+          description: URL. Must start with http:// or https://. Non-empty and <= 32768 characters, must match ^https?://.*$
+        urlFields:
+          type: array
+          description: 'The url fields. Each field requires both name and required, and names must be unique within the list. Possible values: <= 1000'
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
