@@ -2,10 +2,10 @@ aid: coralogix
 
 name: Coralogix
 
-description: Coralogix is a comprehensive observability platform that delivers real‑time log analytics, metrics, tracing, and AI‑driven insights.
-  It enables developers, DevOps, and SRE teams to monitor applications, infrastructure, and services across cloud, on‑premise, and hybrid environments.
-  Features include infinite data retention, customizable dashboards, alerting, OpenTelemetry support, and integrations with major cloud providers
-  and third‑party tools, helping organizations ensure performance, reliability, and security at scale.
+description: Coralogix is a comprehensive observability platform that delivers real‑time log analytics, metrics, tracing, and AI‑driven insights. It
+  enables developers, DevOps, and SRE teams to monitor applications, infrastructure, and services across cloud, on‑premise, and hybrid environments.
+  Features include infinite data retention, customizable dashboards, alerting, OpenTelemetry support, and integrations with major cloud providers and
+  third‑party tools, helping organizations ensure performance, reliability, and security at scale.
 
 type: Index
 
@@ -162,6 +162,7 @@ apis:
     url: json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json
   - type: JSONSchema
     url: json-schema/coralogix-post-dashboards-dashboards-v1-response-schema.json
+
 x-enrichment:
   date: '2026-10-03'
   status: enriched
