@@ -27,3 +27,15 @@
     detected: '2026-10-13'
   status: not-a-workflow
   arazzo: null
+- slug: coralogix-aws-marketplace
+  label: AWS Marketplace
+  partner: amazon-web-services
+  partner_name: AWS Marketplace
+  type: marketplace
+  marketplace: aws-marketplace
+  channel: distribution
+  evidence: https://aws.amazon.com/marketplace/seller-profile?id=c7f9eed5-471c-4038-992d-1d7b7b8058f5
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
