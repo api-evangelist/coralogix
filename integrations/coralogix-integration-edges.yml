@@ -6,38 +6,6 @@ checked:
 - https://github.com/open-telemetry/opentelemetry.io/blob/main/data/registry/
 marketplace_apps: []
 edges:
-- partner_name: AWS Marketplace
-  partner: amazon-web-services
-  partner_match: aggregator
-  type: marketplace
-  marketplace: aws-marketplace
-  channel: distribution
-  relationship: platform-app
-  direction: provider-built
-  evidence: https://aws.amazon.com/marketplace/seller-profile?id=c7f9eed5-471c-4038-992d-1d7b7b8058f5
-  listing_count: 3
-  apps:
-  - Coralogix
-  - Coralogix WAF Monitoring
-  - Coralogix
-  seller_name: Coralogix
-  detected_by: sweep-cloud-marketplaces.py
-  detected: '2026-10-13'
-- partner_name: AWS Marketplace
-  partner: amazon-web-services
-  partner_match: aggregator
-  type: marketplace
-  marketplace: aws-marketplace
-  channel: distribution
-  relationship: platform-app
-  direction: provider-built
-  evidence: https://aws.amazon.com/marketplace/seller-profile?id=seller-3rcovsjvz4mxk
-  listing_count: 1
-  apps:
-  - Coralogix
-  seller_name: Coralogix LTD
-  detected_by: sweep-cloud-marketplaces.py
-  detected: '2026-10-13'
 - partner_name: OpenTelemetry
   partner: null
   type: contract
@@ -60,6 +28,38 @@ edges:
     detected_by: sweep-observability.py
     detected: '2026-10-13'
   detected_by: sweep-observability.py
+  detected: '2026-10-13'
+- partner_name: AWS Marketplace
+  partner: amazon-web-services
+  partner_match: aggregator
+  type: marketplace
+  marketplace: aws-marketplace
+  channel: distribution
+  relationship: distribution-channel
+  direction: third-party
+  evidence: https://aws.amazon.com/marketplace/seller-profile?id=c7f9eed5-471c-4038-992d-1d7b7b8058f5
+  listing_count: 3
+  apps:
+  - Coralogix
+  - Coralogix WAF Monitoring
+  - Coralogix
+  seller_name: Coralogix
+  detected_by: sweep-cloud-marketplaces.py
+  detected: '2026-10-13'
+- partner_name: AWS Marketplace
+  partner: amazon-web-services
+  partner_match: aggregator
+  type: marketplace
+  marketplace: aws-marketplace
+  channel: distribution
+  relationship: distribution-channel
+  direction: third-party
+  evidence: https://aws.amazon.com/marketplace/seller-profile?id=seller-3rcovsjvz4mxk
+  listing_count: 1
+  apps:
+  - Coralogix
+  seller_name: Coralogix LTD
+  detected_by: sweep-cloud-marketplaces.py
   detected: '2026-10-13'
 source:
 - https://github.com/open-telemetry/opentelemetry.io/blob/main/data/ecosystem/vendors.yaml
