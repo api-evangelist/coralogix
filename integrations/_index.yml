@@ -39,3 +39,29 @@
   relationship: distribution-channel
   status: not-a-workflow
   arazzo: null
+- slug: coralogix-okta-own
+  label: Okta (own)
+  partner: okta
+  partner_name: Okta (own)
+  category: Single Sign-On
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://www.okta.com/integrations/coralogix/
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-palo-alto-networks-own
+  label: Palo Alto Networks (own)
+  partner: palo-alto-networks
+  partner_name: Palo Alto Networks (own)
+  category: Analytics & SIEM
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://cortex.marketplace.pan.dev/marketplace/details/Coralogix/
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
