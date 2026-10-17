@@ -101,50 +101,6 @@ paths:
         kind: documentation
 components:
   schemas:
-    PutMgmtOpenapi5Response:
-      type: object
-      properties:
-        '200':
-          type: string
-          description: action object
-        '400':
-          type: string
-          description: action object
-        '401':
-          type: string
-          description: action object
-        '500':
-          type: string
-          description: action object
-    DeleteMgmtOpenapi5Response:
-      type: object
-      properties:
-        '200':
-          type: string
-          description: Successful deletion.
-        '400':
-          type: string
-          description: Bad request.
-        '401':
-          type: string
-          description: Unauthorized.
-        '500':
-          type: string
-          description: Internal server error.
-    PutMgmtOpenapi5Request:
-      type: object
-      properties:
-        body:
-          type: string
-          description: action object
-      required:
-      - body
-    PostMgmtOpenapi5Response:
-      type: object
-      properties:
-        action:
-          type: object
-          description: Action object returned on success.
     PostMgmtOpenapi5Request:
       type: object
       properties:
@@ -175,6 +131,50 @@ components:
         urlFields:
           type: array
           description: 'The url fields. Each field requires both name and required, and names must be unique within the list. Possible values: <= 1000'
+    PutMgmtOpenapi5Response:
+      type: object
+      properties:
+        '200':
+          type: string
+          description: action object
+        '400':
+          type: string
+          description: action object
+        '401':
+          type: string
+          description: action object
+        '500':
+          type: string
+          description: action object
+    DeleteMgmtOpenapi5Response:
+      type: object
+      properties:
+        '200':
+          type: string
+          description: Successful deletion.
+        '400':
+          type: string
+          description: Bad request.
+        '401':
+          type: string
+          description: Unauthorized.
+        '500':
+          type: string
+          description: Internal server error.
+    PostMgmtOpenapi5Response:
+      type: object
+      properties:
+        action:
+          type: object
+          description: Action object returned on success.
+    PutMgmtOpenapi5Request:
+      type: object
+      properties:
+        body:
+          type: string
+          description: action object
+      required:
+      - body
   securitySchemes:
     bearer:
       type: http

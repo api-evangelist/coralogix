@@ -17,7 +17,11 @@
     "coralogix-openapi-generated.yml: tagged paths POST /api/v1/dataprime/background-query/{backgroundqueryid} -> Dataprime",
     "coralogix-openapi-generated.yml: tagged paths POST /api/v1/dataprime/{dataprimeid} -> Dataprime",
     "coralogix-openapi-generated.yml: declared missing tag: Dataprime",
-    "apis.yml register: written (+3 apis, 4 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "coralogix-dashboards-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "coralogix-dataprime-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "coralogix-mgmt-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

@@ -211,106 +211,6 @@ paths:
         collapsed_from: 2 example path(s) differing only at dashboardId
 components:
   schemas:
-    GetDashboardsDashboardsV1DashboardidResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug_name:
-          type: string
-        layout:
-          type: object
-        variables_v2:
-          type: array
-        variables:
-          type: array
-        filters:
-          type: array
-        annotations:
-          type: array
-        actions:
-          type: array
-        folder_id:
-          type: string
-        folder_path:
-          type: string
-        time_frame:
-          type: object
-        auto_refresh:
-          type: string
-    PostDashboardsDashboardsV1Request:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug_name:
-          type: string
-        layout:
-          type: object
-        variables_v2:
-          type: array
-        variables:
-          type: array
-        filters:
-          type: array
-        annotations:
-          type: array
-        actions:
-          type: array
-        folder_id:
-          type: string
-        folder_path:
-          type: string
-        time_frame:
-          type: object
-        auto_refresh:
-          type: string
-      required:
-      - name
-      - layout
-    PutDashboardsDashboardsV1Request:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug_name:
-          type: string
-        layout:
-          type: object
-        variables_v2:
-          type: array
-        variables:
-          type: array
-        filters:
-          type: array
-        annotations:
-          type: array
-        actions:
-          type: array
-        folder_id:
-          type: string
-        folder_path:
-          type: string
-        time_frame:
-          type: object
-        auto_refresh:
-          type: string
-      required:
-      - id
-      - name
-      - layout
     PutDashboardsDashboardsV1DashboardidDefaultRequest:
       type: object
       properties:
@@ -324,37 +224,6 @@ components:
       - id
       - name
       - layout
-    PostDashboardsDashboardsV1Response:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug_name:
-          type: string
-        layout:
-          type: object
-        variables_v2:
-          type: array
-        variables:
-          type: array
-        filters:
-          type: array
-        annotations:
-          type: array
-        actions:
-          type: array
-        folder_id:
-          type: string
-        folder_path:
-          type: string
-        time_frame:
-          type: object
-        auto_refresh:
-          type: string
     GetDashboardsDashboardsV1SlugsSlugResponse:
       type: object
       properties:
@@ -423,6 +292,137 @@ components:
         folder_id:
           type: string
         folder_path:
+          type: string
+    GetDashboardsDashboardsV1DashboardidResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+    PutDashboardsDashboardsV1Request:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+      required:
+      - id
+      - name
+      - layout
+    PostDashboardsDashboardsV1Request:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+      required:
+      - name
+      - layout
+    PostDashboardsDashboardsV1Response:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
           type: string
   securitySchemes:
     bearer:
