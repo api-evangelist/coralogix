@@ -1,0 +1,3200 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Incidents service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Incidents service
+  description: Handle all operations related to incident management within Coralogix. Identify, manage, and resolve incidents efficiently through automated workflows and team collaboration.
+  externalDocs:
+    description: Find out more about incident management in our documentation
+    url: https://coralogix.com/docs/user-guides/alerting/incidents/
+paths:
+  /incidents/aggregations/v1:
+    get:
+      description: 'Retrieve aggregated incident data with support for grouping and filtering.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_ListIncidentAggregations
+      parameters:
+      - description: Filter for incidents
+        in: query
+        name: filter
+        required: false
+        schema:
+          description: Filter configuration for incidents
+          properties:
+            applicationName:
+              description: Filter by application names
+              items:
+                description: Filter by application names
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+            assignee:
+              description: Filter by assignee
+              items:
+                description: Filter by assignee
+                maxLength: 300
+                minLength: 1
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+            contextualLabels:
+              additionalProperties:
+                $ref: '#/components/schemas/ContextualLabelValues'
+              description: Filter by contextual labels
+              type: object
+            createdAtRange:
+              allOf:
+              - $ref: '#/components/schemas/v1.TimeRange'
+              description: Filters all incidents created at the given time range
+            displayLabels:
+              additionalProperties:
+                $ref: '#/components/schemas/DisplayLabelValues'
+              description: Filter by display labels
+              type: object
+            endTime:
+              deprecated: true
+              description: Filters all incidents that were open in the given timeframe end time (deprecated, use incident_open_range instead)
+              format: date-time
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+            incidentDurationRange:
+              allOf:
+              - $ref: '#/components/schemas/v1.TimeRange'
+              description: Filters all active) incidents with the given duration range
+            isMuted:
+              description: Indicates if the incident is muted
+              type: boolean
+              x-coralogix-presence: true
+            metaLabels:
+              description: Filters all incidents with the given meta labels
+              items:
+                $ref: '#/components/schemas/incidents.v1.MetaLabel'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            metaLabelsOp:
+              allOf:
+              - $ref: '#/components/schemas/v1.FilterOperator'
+              description: The operator for the meta labels filter
+            searchQuery:
+              description: Incident search query.
+              oneOf:
+              - required:
+                - incidentField
+                type: object
+              - required:
+                - contextualLabel
+                type: object
+              properties:
+                contextualLabel:
+                  description: The contextual label to search in.
+                  maxLength: 256
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                incidentField:
+                  allOf:
+                  - $ref: '#/components/schemas/IncidentFields'
+                  description: The field to search in
+                  examples:
+                  - INCIDENTS_FIELDS_STATUS
+                query:
+                  description: The search query
+                  examples:
+                  - error
+                  maxLength: 4096
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - query
+              title: Incident search query
+              type: object
+            severity:
+              description: Filter by incident severity
+              items:
+                $ref: '#/components/schemas/IncidentSeverity'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            startTime:
+              deprecated: true
+              description: Filters all incidents that were open in the given timeframe start time (deprecated, use incident_open_range instead)
+              format: date-time
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+            state:
+              description: Filter by incident state
+              items:
+                $ref: '#/components/schemas/IncidentState'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            status:
+              description: Filter by incident status
+              items:
+                $ref: '#/components/schemas/IncidentStatus'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            subsystemName:
+              description: Filter by subsystem names
+              items:
+                description: Filter by subsystem names
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+          title: Incident query filter
+          type: object
+      - description: Group by fields for aggregation
+        in: query
+        name: group_bys
+        required: false
+        schema:
+          description: Group by fields for aggregation
+          items:
+            oneOf:
+            - required:
+              - incidentField
+              type: object
+            - required:
+              - contextualLabel
+              type: object
+            properties:
+              contextualLabel:
+                description: The contextual label to group by.
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\s\S]*$
+                type: string
+                x-coralogix-presence: true
+              incidentField:
+                allOf:
+                - $ref: '#/components/schemas/IncidentFields'
+                description: The field to group by
+                examples:
+                - INCIDENTS_FIELDS_ID
+              orderByDirection:
+                allOf:
+                - $ref: '#/components/schemas/v1.OrderByDirection'
+                description: The order by direction.
+                examples:
+                - ORDER_BY_DIRECTION_ASC
+            title: Incident group by
+            type: object
+          maxItems: 100
+          minItems: 0
+          type: array
+      - description: Pagination parameters
+        in: query
+        name: pagination
+        required: false
+        schema:
+          description: Pagination parameters for list requests
+          properties:
+            pageSize:
+              description: Number of items to return per page.
+              examples:
+              - 10
+              format: int64
+              maximum: 10000
+              minimum: 1
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: Token for the next page of results
+              examples:
+              - next_page_token
+              maxLength: 4096
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+          required:
+          - pageSize
+          title: Pagination request
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIncidentAggregationsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get incident aggregations
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/events/v1:
+    get:
+      description: 'List incident events with support for filtering, pagination, and ordering. This operation accepts a page size of at most 1000 (it defaults to 100 when pageSize is omitted) and rejects larger values, even though the shared pagination schema documents a maximum of 10000.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_ListIncidentEvents
+      parameters:
+      - description: Filter for incident events
+        in: query
+        name: filter
+        required: false
+        schema:
+          description: Filter configuration for incident events
+          properties:
+            contextualLabels:
+              additionalProperties:
+                description: Represents contextual label values for filtering incidents
+                properties:
+                  contextualLabelValues:
+                    description: The contextual label values.
+                    items:
+                      description: The contextual label values.
+                      maxLength: 4096
+                      minLength: 0
+                      pattern: ^[\s\S]*$
+                      type: string
+                    maxItems: 1000
+                    minItems: 0
+                    type: array
+                required:
+                - contextualLabelValues
+                title: Contextual label values
+                type: object
+              description: The contextual labels of the incident
+              type: object
+            displayLabels:
+              additionalProperties:
+                description: Represents display label values for filtering incidents
+                properties:
+                  displayLabelValues:
+                    description: The display label values.
+                    items:
+                      description: The display label values.
+                      maxLength: 4096
+                      minLength: 0
+                      pattern: ^[\s\S]*$
+                      type: string
+                    maxItems: 1000
+                    minItems: 0
+                    type: array
+                required:
+                - displayLabelValues
+                title: Display label values
+                type: object
+              description: The display labels of the incident
+              type: object
+            isMuted:
+              description: Indicates if the incident is muted
+              type: boolean
+              x-coralogix-presence: true
+            labels:
+              allOf:
+              - $ref: '#/components/schemas/LabelsFilter'
+              description: The labels of the incident
+            name:
+              description: The name of the incident
+              maxLength: 500
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            severity:
+              description: The severity of the incident
+              items:
+                $ref: '#/components/schemas/IncidentSeverity'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            status:
+              description: The status of the incident
+              items:
+                $ref: '#/components/schemas/IncidentStatus'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            timestamp:
+              description: Represents a time range with start and end timestamps
+              properties:
+                endTime:
+                  description: End time of the range
+                  format: date-time
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                startTime:
+                  description: Start time of the range
+                  format: date-time
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - startTime
+              - endTime
+              title: Time range
+              type: object
+          title: Incident event query filter
+          type: object
+      - description: Pagination parameters. This request accepts at most 1000 items per page, and defaults to 100 when pageSize is omitted; the shared maximum of 10000 does not apply here.
+        in: query
+        name: pagination
+        required: false
+        schema:
+          description: Pagination parameters for list requests
+          properties:
+            pageSize:
+              description: Number of items to return per page.
+              examples:
+              - 10
+              format: int64
+              maximum: 10000
+              minimum: 1
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: Token for the next page of results
+              examples:
+              - next_page_token
+              maxLength: 4096
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+          required:
+          - pageSize
+          title: Pagination request
+          type: object
+      - description: Order by fields for incident events
+        in: query
+        name: order_by
+        required: false
+        schema:
+          properties:
+            direction:
+              allOf:
+              - $ref: '#/components/schemas/v1.OrderByDirection'
+              description: Sort direction (ascending or descending)
+              examples:
+              - ORDER_BY_DIRECTION_ASC
+            field:
+              allOf:
+              - $ref: '#/components/schemas/IncidentEventOrderByFieldType'
+              description: Field to order by
+              examples:
+              - INCIDENT_EVENT_ORDER_BY_FIELD_TYPE_TIMESTAMP_OR_UNSPECIFIED
+          title: List incident events order by request
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIncidentEventsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List incident events with filters
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/events/v1/all/count:
+    get:
+      description: 'Retrieve the total count of incident events matching a filter.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_ListIncidentEventsTotalCount
+      parameters:
+      - description: Filter for incident events
+        in: query
+        name: filter
+        required: false
+        schema:
+          description: Filter configuration for incident events
+          properties:
+            contextualLabels:
+              additionalProperties:
+                description: Represents contextual label values for filtering incidents
+                properties:
+                  contextualLabelValues:
+                    description: The contextual label values.
+                    items:
+                      description: The contextual label values.
+                      maxLength: 4096
+                      minLength: 0
+                      pattern: ^[\s\S]*$
+                      type: string
+                    maxItems: 1000
+                    minItems: 0
+                    type: array
+                required:
+                - contextualLabelValues
+                title: Contextual label values
+                type: object
+              description: The contextual labels of the incident
+              type: object
+            displayLabels:
+              additionalProperties:
+                description: Represents display label values for filtering incidents
+                properties:
+                  displayLabelValues:
+                    description: The display label values.
+                    items:
+                      description: The display label values.
+                      maxLength: 4096
+                      minLength: 0
+                      pattern: ^[\s\S]*$
+                      type: string
+                    maxItems: 1000
+                    minItems: 0
+                    type: array
+                required:
+                - displayLabelValues
+                title: Display label values
+                type: object
+              description: The display labels of the incident
+              type: object
+            isMuted:
+              description: Indicates if the incident is muted
+              type: boolean
+              x-coralogix-presence: true
+            labels:
+              allOf:
+              - $ref: '#/components/schemas/LabelsFilter'
+              description: The labels of the incident
+            name:
+              description: The name of the incident
+              maxLength: 500
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            severity:
+              description: The severity of the incident
+              items:
+                $ref: '#/components/schemas/IncidentSeverity'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            status:
+              description: The status of the incident
+              items:
+                $ref: '#/components/schemas/IncidentStatus'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            timestamp:
+              description: Represents a time range with start and end timestamps
+              properties:
+                endTime:
+                  description: End time of the range
+                  format: date-time
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                startTime:
+                  description: Start time of the range
+                  format: date-time
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - startTime
+              - endTime
+              title: Time range
+              type: object
+          title: Incident event query filter
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIncidentEventsTotalCountResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get total count of incident events
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/events/v1/{event_id}:
+    get:
+      description: 'Retrieve detailed information about a single incident by related alert event id.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_GetIncidentByEventId
+      parameters:
+      - $ref: '#/components/parameters/event_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIncidentByEventIdResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get incident by event ID
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/events/v1/{event_id}/acknowledge:
+    post:
+      description: 'Mark incident as acknowledged by event id.
+
+
+        Requires the following permissions:
+
+        - `incidents:acknowledge`'
+      operationId: IncidentsService_AcknowledgeIncidentByEventId
+      parameters:
+      - $ref: '#/components/parameters/event_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcknowledgeIncidentByEventIdResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Acknowledge incident by event id
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:acknowledge
+  /incidents/events/v1/{event_id}/resolve:
+    post:
+      description: 'Mark incident as resolved by event id.
+
+
+        Requires the following permissions:
+
+        - `incidents:close`'
+      operationId: IncidentsService_ResolveIncidentByEventId
+      parameters:
+      - description: Event ID associated to the Incident to resolve
+        in: path
+        name: event_id
+        required: true
+        schema:
+          description: Event ID associated to the Incident to resolve
+          examples:
+          - event_id_1
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResolveIncidentByEventIdResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Resolve incident by event id
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:close
+  /incidents/filter-values/v1:
+    post:
+      description: 'Returns filter values for incidents based on the provided criteria.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_GetFilterValues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to get available filter values for incidents
+              properties:
+                filter:
+                  allOf:
+                  - $ref: '#/components/schemas/IncidentQueryFilter'
+                  description: Filter for incidents
+              title: Get filter values request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/incidents.v1.GetFilterValuesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get available filter values
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/filter-values/v1/events:
+    get:
+      description: 'Returns available filter values for incident events.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_ListIncidentEventsFilterValues
+      parameters:
+      - description: Filter for incident events
+        in: query
+        name: filter
+        required: false
+        schema:
+          description: Filter configuration for incident events
+          properties:
+            contextualLabels:
+              additionalProperties:
+                description: Represents contextual label values for filtering incidents
+                properties:
+                  contextualLabelValues:
+                    description: The contextual label values.
+                    items:
+                      description: The contextual label values.
+                      maxLength: 4096
+                      minLength: 0
+                      pattern: ^[\s\S]*$
+                      type: string
+                    maxItems: 1000
+                    minItems: 0
+                    type: array
+                required:
+                - contextualLabelValues
+                title: Contextual label values
+                type: object
+              description: The contextual labels of the incident
+              type: object
+            displayLabels:
+              additionalProperties:
+                description: Represents display label values for filtering incidents
+                properties:
+                  displayLabelValues:
+                    description: The display label values.
+                    items:
+                      description: The display label values.
+                      maxLength: 4096
+                      minLength: 0
+                      pattern: ^[\s\S]*$
+                      type: string
+                    maxItems: 1000
+                    minItems: 0
+                    type: array
+                required:
+                - displayLabelValues
+                title: Display label values
+                type: object
+              description: The display labels of the incident
+              type: object
+            isMuted:
+              description: Indicates if the incident is muted
+              type: boolean
+              x-coralogix-presence: true
+            labels:
+              allOf:
+              - $ref: '#/components/schemas/LabelsFilter'
+              description: The labels of the incident
+            name:
+              description: The name of the incident
+              maxLength: 500
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            severity:
+              description: The severity of the incident
+              items:
+                $ref: '#/components/schemas/IncidentSeverity'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            status:
+              description: The status of the incident
+              items:
+                $ref: '#/components/schemas/IncidentStatus'
+              maxItems: 1000
+              minItems: 0
+              type: array
+            timestamp:
+              description: Represents a time range with start and end timestamps
+              properties:
+                endTime:
+                  description: End time of the range
+                  format: date-time
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                startTime:
+                  description: Start time of the range
+                  format: date-time
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - startTime
+              - endTime
+              title: Time range
+              type: object
+          title: Incident event query filter
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIncidentEventsFilterValuesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get available incident event filter values
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/incidents/v1:
+    get:
+      description: 'Retrieve multiple incidents by their IDs in a single request.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_BatchGetIncident
+      parameters:
+      - description: The ids.
+        in: query
+        name: ids
+        required: false
+        schema:
+          description: The ids.
+          items:
+            description: The ids.
+            maxLength: 36
+            minLength: 36
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+          maxItems: 10000
+          minItems: 1
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetIncidentResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get multiple incidents by IDs
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+    post:
+      description: 'Lists all available incidents based on specified filters and order. The list is ordered in an unspecified direction and sorted by creation time.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_ListIncidents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to list incidents with filtering, pagination and ordering options
+              properties:
+                filter:
+                  allOf:
+                  - $ref: '#/components/schemas/IncidentQueryFilter'
+                  description: Filter for incidents
+                orderBys:
+                  description: Order by fields
+                  items:
+                    $ref: '#/components/schemas/v1.OrderBy'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                pagination:
+                  allOf:
+                  - $ref: '#/components/schemas/incidents.v1.PaginationRequest'
+                  description: Pagination parameters
+              title: List incidents request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIncidentsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List incidents with filters
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/incidents/v1/all/acknowledge:
+    post:
+      description: 'Mark one or more incidents as acknowledged.
+
+
+        Requires the following permissions:
+
+        - `incidents:acknowledge`'
+      operationId: IncidentsService_AcknowledgeIncidents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to acknowledge one or more incidents
+              properties:
+                incidentIds:
+                  description: List of incident IDs to acknowledge
+                  examples:
+                  - - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+                    - 9c858901-8a57-4791-81fe-4c455b099bc9
+                  items:
+                    description: List of incident IDs to acknowledge
+                    maxLength: 36
+                    minLength: 36
+                    pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                    type: string
+                  maxItems: 10000
+                  minItems: 1
+                  type: array
+              required:
+              - incidentIds
+              title: Acknowledge incidents request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcknowledgeIncidentsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Acknowledge incidents
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:acknowledge
+  /incidents/incidents/v1/all/by-user:
+    post:
+      description: 'Assign one or more incidents to a specific user.
+
+
+        Requires the following permissions:
+
+        - `incidents:assign`'
+      operationId: IncidentsService_AssignIncidents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to assign one or more incidents to a user
+              properties:
+                assignedTo:
+                  allOf:
+                  - $ref: '#/components/schemas/incidents.v1.UserDetails'
+                  description: User to assign the incidents to
+                incidentIds:
+                  description: List of incident IDs to assign
+                  examples:
+                  - - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+                    - 9c858901-8a57-4791-81fe-4c455b099bc9
+                  items:
+                    description: List of incident IDs to assign
+                    maxLength: 36
+                    minLength: 36
+                    pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                    type: string
+                  maxItems: 10000
+                  minItems: 1
+                  type: array
+              required:
+              - incidentIds
+              - assignedTo
+              title: Assign incidents request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignIncidentsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Assign incidents to a user
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:assign
+    delete:
+      description: 'Remove user assignments from one or more incidents.
+
+
+        Requires the following permissions:
+
+        - `incidents:assign`'
+      operationId: IncidentsService_UnassignIncidents
+      parameters:
+      - description: List of incident IDs to unassign
+        in: query
+        name: incident_ids
+        required: true
+        schema:
+          description: List of incident IDs to unassign
+          examples:
+          - - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+            - 9c858901-8a57-4791-81fe-4c455b099bc9
+          items:
+            description: List of incident IDs to unassign
+            maxLength: 36
+            minLength: 36
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+          maxItems: 10000
+          minItems: 1
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnassignIncidentsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Remove incident user assignments
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:assign
+  /incidents/incidents/v1/all/closed:
+    post:
+      description: 'Closes all incidents matching the given criteria.
+
+
+        Requires the following permissions:
+
+        - `incidents:close`'
+      operationId: IncidentsService_CloseIncidents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to close one or more incidents
+              properties:
+                incidentIds:
+                  description: List of incident IDs to close
+                  examples:
+                  - - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+                    - 9c858901-8a57-4791-81fe-4c455b099bc9
+                  items:
+                    description: List of incident IDs to close
+                    maxLength: 36
+                    minLength: 36
+                    pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                    type: string
+                  maxItems: 10000
+                  minItems: 1
+                  type: array
+              required:
+              - incidentIds
+              title: Close incidents request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseIncidentsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Close incidents
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:close
+  /incidents/incidents/v1/all/resolve:
+    post:
+      description: 'Mark one or more incidents as resolved.
+
+
+        Requires the following permissions:
+
+        - `incidents:close`'
+      operationId: IncidentsService_ResolveIncidents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to resolve one or more incidents
+              properties:
+                incidentIds:
+                  description: List of incident IDs to resolve
+                  examples:
+                  - - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+                    - 9c858901-8a57-4791-81fe-4c455b099bc9
+                  items:
+                    description: List of incident IDs to resolve
+                    maxLength: 36
+                    minLength: 36
+                    pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                    type: string
+                  maxItems: 10000
+                  minItems: 1
+                  type: array
+              required:
+              - incidentIds
+              title: Resolve incidents request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResolveIncidentsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Resolve incidents
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:close
+  /incidents/incidents/v1/{id}:
+    get:
+      description: 'Retrieve detailed information about a single incident by its unique identifier.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_GetIncident
+      parameters:
+      - description: Unique identifier.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier.
+          examples:
+          - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIncidentResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get incident by ID
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+  /incidents/incidents/v1/{incident_id}/events:
+    get:
+      description: 'Retrieve a chronological list of all events associated with a specific incident. Includes state changes, assignments, acknowledgments, and resolutions.
+
+
+        Requires the following permissions:
+
+        - `incidents:read`'
+      operationId: IncidentsService_GetIncidentEvents
+      parameters:
+      - description: ID of the incident to retrieve events for
+        in: path
+        name: incident_id
+        required: true
+        schema:
+          description: ID of the incident to retrieve events for
+          examples:
+          - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIncidentEventsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get incident events
+      tags:
+      - Incidents service
+      x-coralogixPermissions:
+      - incidents:read
+components:
+  schemas:
+    IncidentFields:
+      enum:
+      - INCIDENTS_FIELDS_UNSPECIFIED
+      - INCIDENTS_FIELDS_ID
+      - INCIDENTS_FIELDS_SEVERITY
+      - INCIDENTS_FIELDS_NAME
+      - INCIDENTS_FIELDS_CREATED_TIME
+      - INCIDENTS_FIELDS_CLOSED_TIME
+      - INCIDENTS_FIELDS_STATE
+      - INCIDENTS_FIELDS_STATUS
+      - INCIDENTS_FIELDS_LAST_STATE_UPDATE_TIME
+      - INCIDENTS_FIELDS_APPLICATION_NAME
+      - INCIDENTS_FIELDS_SUBSYSTEM_NAME
+      - INCIDENTS_FIELDS_DURATION
+      type: string
+      description: Incident fields.
+    IncidentStateWithCount:
+      title: Incident state with count
+      required:
+      - state
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/IncidentState'
+          description: The state.
+    IncidentEventClose:
+      type: object
+      properties:
+        closedBy:
+          $ref: '#/components/schemas/incidents.v1.UserDetails'
+      description: Incident event close.
+    IncidentEventAlertType:
+      enum:
+      - INCIDENT_EVENT_ALERT_TYPE_STANDARD_OR_UNSPECIFIED
+      - INCIDENT_EVENT_ALERT_TYPE_METRIC
+      - INCIDENT_EVENT_ALERT_TYPE_NEW_VALUE
+      - INCIDENT_EVENT_ALERT_TYPE_RATIO
+      - INCIDENT_EVENT_ALERT_TYPE_TIME_RELATIVE
+      - INCIDENT_EVENT_ALERT_TYPE_UNIQUE_COUNT
+      - INCIDENT_EVENT_ALERT_TYPE_TRACING
+      - INCIDENT_EVENT_ALERT_TYPE_FLOW
+      - INCIDENT_EVENT_ALERT_TYPE_SLO
+      type: string
+      description: Incident event alert type.
+    ResolveIncidentByEventIdResponse:
+      title: Acknowledge incident by event id response
+      required:
+      - incident
+      type: object
+      properties:
+        incident:
+          allOf:
+          - $ref: '#/components/schemas/Incident'
+          description: Incident after resolution
+      description: Response containing the updated incident after resolution
+    incidents.v1.PaginationResponse:
+      title: Pagination response
+      required:
+      - totalSize
+      type: object
+      properties:
+        nextPageToken:
+          description: Token for the next page of results
+          examples:
+          - next_page_token
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        totalSize:
+          description: Total number of items available
+          examples:
+          - 100
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Pagination information for list responses
+    GetIncidentEventsResponse:
+      title: Get incident events response
+      type: object
+      properties:
+        incidentEvents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentEvent'
+          description: List of incident events
+      description: Response containing all events associated with the requested incident
+    IncidentEventOriginatorAdministrative:
+      type: object
+      properties:
+        userId:
+          description: The user id.
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Incident event originator administrative.
+    IncidentEvent:
+      title: Incident event
+      required:
+      - id
+      - incidentEventType
+      - originatorType
+      type: object
+      allOf:
+      - oneOf:
+        - required:
+          - snoozeIndicator
+          type: object
+        - required:
+          - assignment
+          type: object
+        - required:
+          - unassign
+          type: object
+        - required:
+          - upsertState
+          type: object
+        - required:
+          - acknowledge
+          type: object
+        - required:
+          - close
+          type: object
+      - oneOf:
+        - required:
+          - administrativeEvent
+          type: object
+        - required:
+          - operationalEvent
+          type: object
+      properties:
+        acknowledge:
+          $ref: '#/components/schemas/IncidentEventAcknowledge'
+        administrativeEvent:
+          $ref: '#/components/schemas/IncidentEventOriginatorAdministrative'
+        assignment:
+          $ref: '#/components/schemas/IncidentEventAssign'
+        close:
+          $ref: '#/components/schemas/IncidentEventClose'
+        id:
+          description: The ID of the incident event
+          examples:
+          - incident_event_id
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        incidentEventType:
+          allOf:
+          - $ref: '#/components/schemas/IncidentEventType'
+          examples:
+          - INCIDENT_EVENT_TYPE_ACKNOWLEDGE
+        operationalEvent:
+          $ref: '#/components/schemas/IncidentEventOriginatorOperational'
+        originatorType:
+          allOf:
+          - $ref: '#/components/schemas/OriginatorType'
+          examples:
+          - ORIGINATOR_TYPE_OPERATIONAL
+        snoozeIndicator:
+          $ref: '#/components/schemas/IncidentEventSnoozeIndicator'
+        unassign:
+          $ref: '#/components/schemas/IncidentEventUnassign'
+        upsertState:
+          $ref: '#/components/schemas/IncidentEventUpsertState'
+      description: Incident event.
+    v1.FilterOperator:
+      enum:
+      - FILTER_OPERATOR_OR_OR_UNSPECIFIED
+      - FILTER_OPERATOR_AND
+      type: string
+      description: Filter operator.
+    GroupByValues:
+      type: object
+      oneOf:
+      - required:
+        - incidentField
+        type: object
+      - required:
+        - contextualLabels
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - incidentField
+            type: object
+          - required:
+            - contextualLabels
+            type: object
+      properties:
+        contextualLabels:
+          allOf:
+          - $ref: '#/components/schemas/ContextualLabels'
+          description: The contextual labels.
+        incidentField:
+          $ref: '#/components/schemas/IncidentFieldOneOf'
+    IncidentEventSnoozeIndicator:
+      title: Incident event snooze indicator
+      type: object
+      properties:
+        durationMinutes:
+          description: Duration of the snooze in minutes.
+          format: int32
+          maximum: 525960
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        startTime:
+          description: Start time.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        userId:
+          description: The user id.
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Incident event snooze indicator.
+    IncidentEventAcknowledge:
+      type: object
+      properties:
+        acknowledgedBy:
+          $ref: '#/components/schemas/incidents.v1.UserDetails'
+      description: Incident event acknowledge.
+    v1.OrderBy:
+      title: Incident order by
+      required:
+      - direction
+      type: object
+      oneOf:
+      - required:
+        - incidentField
+        type: object
+      - required:
+        - contextualLabel
+        type: object
+      properties:
+        contextualLabel:
+          description: A contextual label key to order by.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        direction:
+          $ref: '#/components/schemas/v1.OrderByDirection'
+        incidentField:
+          $ref: '#/components/schemas/IncidentFields'
+    AcknowledgeIncidentsResponse:
+      title: Acknowledge incidents response
+      required:
+      - incidents
+      type: object
+      properties:
+        incidents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+          description: List of incidents after acknowledgment
+      description: Response containing the updated incidents after acknowledgment
+    IncidentAssignmentCount:
+      title: Incident assignment count
+      required:
+      - assignedTo
+      - count
+      type: object
+      properties:
+        assignedTo:
+          $ref: '#/components/schemas/incidents.v1.UserDetails'
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+    IncidentMetaLabelsCount:
+      title: Incident meta labels count
+      required:
+      - metaLabel
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        metaLabel:
+          $ref: '#/components/schemas/incidents.v1.MetaLabel'
+    IncidentEventOrderByFieldType:
+      enum:
+      - INCIDENT_EVENT_ORDER_BY_FIELD_TYPE_TIMESTAMP_OR_UNSPECIFIED
+      type: string
+      description: Incident event order by field type.
+    Assignment:
+      title: Assignment
+      required:
+      - assignedTo
+      - assignedBy
+      type: object
+      properties:
+        assignedBy:
+          $ref: '#/components/schemas/incidents.v1.UserDetails'
+        assignedTo:
+          $ref: '#/components/schemas/incidents.v1.UserDetails'
+      description: Details of the user who assigned the incident and the user to whom it was assigned
+    IncidentSeverity:
+      enum:
+      - INCIDENT_SEVERITY_UNSPECIFIED
+      - INCIDENT_SEVERITY_INFO
+      - INCIDENT_SEVERITY_WARNING
+      - INCIDENT_SEVERITY_ERROR
+      - INCIDENT_SEVERITY_CRITICAL
+      - INCIDENT_SEVERITY_LOW
+      type: string
+      description: Incident severity.
+    ContextualLabelValuesWithCount:
+      title: Contextual label values with count
+      required:
+      - valuesWithCount
+      type: object
+      properties:
+        valuesWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ContextualLabelValueWithCount'
+          description: The values with count.
+    ContextualLabels:
+      title: Incident contextual labels
+      required:
+      - fieldName
+      - fieldValue
+      type: object
+      properties:
+        fieldName:
+          description: The field name.
+          examples:
+          - field_name
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        fieldValue:
+          description: The field value.
+          examples:
+          - field_value
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Contextual labels.
+    ListIncidentAggregationsResponse:
+      title: List incident aggregations response
+      required:
+      - incidentAggs
+      - pagination
+      type: object
+      properties:
+        incidentAggs:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentAggregation'
+          description: List of incident aggregations
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/incidents.v1.PaginationResponse'
+          description: Pagination information for the response
+      description: Response containing aggregated incident data and pagination information
+    DisplayLabelValuesWithCount:
+      title: Display label values with count
+      required:
+      - valuesWithCount
+      type: object
+      properties:
+        valuesWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/DisplayLabelValueWithCount'
+          description: The values with count.
+    IncidentQueryFilter:
+      title: Incident query filter
+      type: object
+      properties:
+        applicationName:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 256
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Filter by application names
+          description: Filter by application names
+        assignee:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 300
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Filter by assignee
+          description: Filter by assignee
+        contextualLabels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContextualLabelValues'
+          description: Filter by contextual labels
+        createdAtRange:
+          allOf:
+          - $ref: '#/components/schemas/v1.TimeRange'
+          description: Filters all incidents created at the given time range
+        displayLabels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DisplayLabelValues'
+          description: Filter by display labels
+        endTime:
+          deprecated: true
+          description: Filters all incidents that were open in the given timeframe end time (deprecated, use incident_open_range instead)
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        incidentDurationRange:
+          allOf:
+          - $ref: '#/components/schemas/v1.TimeRange'
+          description: Filters all active) incidents with the given duration range
+        isMuted:
+          description: Indicates if the incident is muted
+          type: boolean
+          x-coralogix-presence: true
+        metaLabels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/incidents.v1.MetaLabel'
+          description: Filters all incidents with the given meta labels
+        metaLabelsOp:
+          allOf:
+          - $ref: '#/components/schemas/v1.FilterOperator'
+          description: The operator for the meta labels filter
+        searchQuery:
+          allOf:
+          - $ref: '#/components/schemas/IncidentSearchQuery'
+          description: Search query for incidents
+        severity:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentSeverity'
+          description: Filter by incident severity
+        startTime:
+          deprecated: true
+          description: Filters all incidents that were open in the given timeframe start time (deprecated, use incident_open_range instead)
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        state:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentState'
+          description: Filter by incident state
+        status:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentStatus'
+          description: Filter by incident status
+        subsystemName:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 256
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Filter by subsystem names
+          description: Filter by subsystem names
+      description: Filter configuration for incidents
+    incidents.v1.UserDetails:
+      title: User details
+      required:
+      - userId
+      type: object
+      properties:
+        userId:
+          description: The user id.
+          examples:
+          - user_id
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: User details.
+    IncidentEventOriginatorOperational:
+      type: object
+      properties:
+        systemName:
+          description: The system name.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Incident event originator operational.
+    incidents.v1.GetFilterValuesResponse:
+      title: Get filter values response
+      required:
+      - filtersValues
+      type: object
+      properties:
+        filtersValues:
+          $ref: '#/components/schemas/IncidentQueryFiltersValues'
+      description: Response containing available filter values for incidents
+    LabelsFilter:
+      title: Label filter configuration
+      required:
+      - metaLabels
+      type: object
+      properties:
+        metaLabels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/incidents.v1.MetaLabel'
+          description: The meta labels of the incident
+        operator:
+          allOf:
+          - $ref: '#/components/schemas/v1.FilterOperator'
+          description: The operator for the labels filter
+      description: Filter configuration for incident events based on meta labels and their combination operator.
+    OriginatorType:
+      enum:
+      - ORIGINATOR_TYPE_UNSPECIFIED
+      - ORIGINATOR_TYPE_OPERATIONAL
+      - ORIGINATOR_TYPE_ADMINISTRATIVE
+      type: string
+      description: Originator type.
+    DisplayLabelValueWithCount:
+      title: Display label value with count
+      required:
+      - displayLabelValue
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        displayLabelValue:
+          description: The display label value.
+          examples:
+          - display_label_value
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ContextualLabelValueWithCount:
+      title: Contextual label value with count
+      required:
+      - contextualLabelValue
+      - count
+      type: object
+      properties:
+        contextualLabelValue:
+          description: The contextual label value.
+          examples:
+          - contextual_label_value
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+    DisplayLabelValues:
+      title: Display label values
+      required:
+      - displayLabelValues
+      type: object
+      properties:
+        displayLabelValues:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The display label values.
+          description: The display label values.
+      description: Represents display label values for filtering incidents
+    UnassignIncidentsResponse:
+      title: Unassign incidents response
+      required:
+      - incidents
+      type: object
+      properties:
+        incidents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+          description: List of incidents after unassignment
+      description: Response containing the updated incidents after unassignment
+    IncidentSeverityCount:
+      title: Incident severity count
+      required:
+      - severity
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        severity:
+          $ref: '#/components/schemas/IncidentSeverity'
+    ListIncidentsResponse:
+      title: List incidents response
+      required:
+      - incidents
+      - pagination
+      type: object
+      properties:
+        incidents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+          description: Incidents.
+        pagination:
+          $ref: '#/components/schemas/incidents.v1.PaginationResponse'
+      description: Response containing a list of incidents and pagination information
+    UpsertIncidentStateType:
+      enum:
+      - UPSERT_INCIDENT_STATE_TYPE_UNSPECIFIED
+      - UPSERT_INCIDENT_STATE_TYPE_TRIGGERED
+      - UPSERT_INCIDENT_STATE_TYPE_RESOLVED
+      type: string
+      description: Upsert incident state type.
+    CloseIncidentsResponse:
+      title: Close incidents response
+      required:
+      - incidents
+      type: object
+      properties:
+        incidents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+          description: List of incidents after closing
+      description: Response containing the updated incidents after closing
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    IncidentAggregation:
+      title: Incident aggregation
+      required:
+      - groupBysValue
+      - aggStateCount
+      - aggStatusCount
+      - aggSeverityCount
+      - aggAssignmentsCount
+      - firstCreatedAt
+      - lastClosedAt
+      - allValuesCount
+      - listIncidentsId
+      - lastStateUpdateTime
+      - aggMetaLabelsCount
+      type: object
+      properties:
+        aggAssignmentsCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentAssignmentCount'
+          description: The agg assignments count.
+        aggMetaLabelsCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentMetaLabelsCount'
+          description: The agg meta labels count.
+        aggSeverityCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentSeverityCount'
+          description: The agg severity count.
+        aggStateCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentStateCount'
+          description: The agg state count.
+        aggStatusCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentStatusCount'
+          description: The agg status count.
+        allValuesCount:
+          description: The all values count.
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        firstCreatedAt:
+          description: The first created at.
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        groupBysValue:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupByValues'
+          description: The group bys value.
+        lastClosedAt:
+          description: The last closed at.
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        lastStateUpdateTime:
+          description: The last state update time.
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        listIncidentsId:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 36
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: The list incidents id.
+          description: The list incidents id.
+    IncidentEventExtendedMetadata:
+      type: object
+      properties:
+        alertGroupByFields:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 256
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The alert group by fields.
+          description: The alert group by fields.
+        alertId:
+          description: Unique identifier of the alert.
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        alertLabels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/incidents.v1.MetaLabel'
+          description: The alert labels.
+        alertName:
+          description: The alert name.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        alertType:
+          $ref: '#/components/schemas/IncidentEventAlertType'
+        incidentPermutation:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The incident permutation.
+        incidentSeverity:
+          $ref: '#/components/schemas/IncidentSeverity'
+        incidentState:
+          $ref: '#/components/schemas/IncidentState'
+        incidentStatus:
+          $ref: '#/components/schemas/IncidentStatus'
+        isMuted:
+          description: The is muted.
+          type: boolean
+          x-coralogix-presence: true
+      description: Incident event extended metadata.
+    IncidentSearchQuery:
+      title: Incident search query
+      required:
+      - query
+      type: object
+      oneOf:
+      - required:
+        - incidentField
+        type: object
+      - required:
+        - contextualLabel
+        type: object
+      properties:
+        contextualLabel:
+          description: The contextual label to search in.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        incidentField:
+          allOf:
+          - $ref: '#/components/schemas/IncidentFields'
+          description: The field to search in
+          examples:
+          - INCIDENTS_FIELDS_STATUS
+        query:
+          description: The search query
+          examples:
+          - error
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Incident search query.
+    IncidentEventExtended:
+      title: Extended incident event
+      required:
+      - cxEventKey
+      - incidentEvent
+      - cxEventTimestamp
+      type: object
+      properties:
+        cxEventKey:
+          description: The cx event key.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        cxEventTimestamp:
+          description: The cx event timestamp.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        incidentEvent:
+          $ref: '#/components/schemas/IncidentEvent'
+        incidentEventExtendedMetadata:
+          $ref: '#/components/schemas/IncidentEventExtendedMetadata'
+    AssigneeWithCount:
+      title: Assignee with count
+      required:
+      - assignee
+      - count
+      type: object
+      properties:
+        assignee:
+          description: Assignee.
+          examples:
+          - assignee
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+    IncidentEventType:
+      enum:
+      - INCIDENT_EVENT_TYPE_UNSPECIFIED
+      - INCIDENT_EVENT_TYPE_UPSERT_STATE
+      - INCIDENT_EVENT_TYPE_OPEN
+      - INCIDENT_EVENT_TYPE_CLOSE
+      - INCIDENT_EVENT_TYPE_SNOOZE_INDICATOR
+      - INCIDENT_EVENT_TYPE_ASSIGN
+      - INCIDENT_EVENT_TYPE_UNASSIGN
+      - INCIDENT_EVENT_TYPE_ACKNOWLEDGE
+      type: string
+      description: Incident event type.
+    ListIncidentEventsTotalCountResponse:
+      title: List incident events total count response
+      type: object
+      properties:
+        count:
+          description: Total number of incident events matching the filter
+          examples:
+          - '100'
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        reachedLimit:
+          description: Indicates if the count reached the system limit
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+      description: A response containing the total count of matching incident events and whether the count limit was reached
+    incidents.v1.MetaLabel:
+      title: Incident meta label
+      type: object
+      properties:
+        key:
+          description: The key.
+          examples:
+          - key
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        value:
+          description: The value.
+          examples:
+          - value
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Meta label.
+    UpsertIncidentStatePayload:
+      type: object
+      properties:
+        cxEventKey:
+          description: The CX event key.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Upsert incident state payload.
+    IncidentEventUpsertState:
+      title: Incident event upsert state
+      required:
+      - stateType
+      - payload
+      type: object
+      properties:
+        isMuted:
+          description: The is muted.
+          type: boolean
+          x-coralogix-presence: true
+        payload:
+          $ref: '#/components/schemas/UpsertIncidentStatePayload'
+        stateType:
+          $ref: '#/components/schemas/UpsertIncidentStateType'
+      description: Incident event upsert state.
+    IncidentQueryFiltersValues:
+      title: Incident query filter values
+      required:
+      - assigneeWithCount
+      - statusWithCount
+      - stateWithCount
+      - severityWithCount
+      - contextualLabels
+      - displayLabels
+      - metaLabelsWithCount
+      - metaLabelsOp
+      type: object
+      properties:
+        assigneeWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AssigneeWithCount'
+          description: The assignee with count.
+        contextualLabels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContextualLabelValuesWithCount'
+          description: The contextual labels.
+        displayLabels:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DisplayLabelValuesWithCount'
+          description: The display labels.
+        metaLabelsOp:
+          $ref: '#/components/schemas/v1.FilterOperator'
+        metaLabelsWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentMetaLabelsWithCount'
+          description: The meta labels with count.
+        severityWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentSeverityWithCount'
+          description: The severity with count.
+        stateWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentStateWithCount'
+          description: The state with count.
+        statusWithCount:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentStatusWithCount'
+          description: The status with count.
+      description: Incident query filters values.
+    v1.OrderByDirection:
+      enum:
+      - ORDER_BY_DIRECTION_UNSPECIFIED
+      - ORDER_BY_DIRECTION_ASC
+      - ORDER_BY_DIRECTION_DESC
+      type: string
+      description: Order by direction.
+    ListIncidentEventsResponse:
+      title: List incident events response
+      required:
+      - items
+      type: object
+      properties:
+        items:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentEventExtended'
+          description: List of incident events
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/incidents.v1.PaginationResponse'
+          description: Pagination information for the response
+      description: A response containing a list of incident events and pagination information
+    v1.TimeRange:
+      title: Time range
+      required:
+      - startTime
+      - endTime
+      type: object
+      properties:
+        endTime:
+          description: End time of the range
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        startTime:
+          description: Start time of the range
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Represents a time range with start and end timestamps
+    ListIncidentEventsFilterValuesResponse:
+      title: List incident events filter values response
+      type: object
+      properties:
+        filtersValues:
+          allOf:
+          - $ref: '#/components/schemas/IncidentQueryFiltersValues'
+          description: Available filter values for incident events
+      description: A response containing available filter values for incident events
+    IncidentEventUnassign:
+      type: object
+      additionalProperties: false
+      description: Incident event unassign.
+    IncidentState:
+      enum:
+      - INCIDENT_STATE_UNSPECIFIED
+      - INCIDENT_STATE_TRIGGERED
+      - INCIDENT_STATE_RESOLVED
+      type: string
+      description: Incident state.
+    IncidentStatus:
+      enum:
+      - INCIDENT_STATUS_UNSPECIFIED
+      - INCIDENT_STATUS_TRIGGERED
+      - INCIDENT_STATUS_ACKNOWLEDGED
+      - INCIDENT_STATUS_RESOLVED
+      type: string
+      description: Incident status.
+    GetIncidentByEventIdResponse:
+      title: Get incident by event id response
+      required:
+      - incident
+      type: object
+      properties:
+        incident:
+          allOf:
+          - $ref: '#/components/schemas/Incident'
+          description: The requested incident
+      description: Response containing the requested incident
+    ContextualLabelValues:
+      title: Contextual label values
+      required:
+      - contextualLabelValues
+      type: object
+      properties:
+        contextualLabelValues:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The contextual label values.
+          description: The contextual label values.
+      description: Represents contextual label values for filtering incidents
+    IncidentFieldOneOf:
+      type: object
+      oneOf:
+      - required:
+        - id
+        type: object
+      - required:
+        - severity
+        type: object
+      - required:
+        - name
+        type: object
+      - required:
+        - createdAt
+        type: object
+      - required:
+        - closedAt
+        type: object
+      - required:
+        - state
+        type: object
+      - required:
+        - status
+        type: object
+      - required:
+        - lastStateUpdateTime
+        type: object
+      - required:
+        - applicationName
+        type: object
+      - required:
+        - subsystemName
+        type: object
+      - required:
+        - duration
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - id
+            type: object
+          - required:
+            - severity
+            type: object
+          - required:
+            - name
+            type: object
+          - required:
+            - createdAt
+            type: object
+          - required:
+            - closedAt
+            type: object
+          - required:
+            - state
+            type: object
+          - required:
+            - status
+            type: object
+          - required:
+            - lastStateUpdateTime
+            type: object
+          - required:
+            - applicationName
+            type: object
+          - required:
+            - subsystemName
+            type: object
+          - required:
+            - duration
+            type: object
+      properties:
+        applicationName:
+          description: Application associated with the incident.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        closedAt:
+          description: Timestamp when the incident was closed.
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        createdAt:
+          description: Timestamp when the incident was created.
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        duration:
+          description: Duration.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier of the incident.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        lastStateUpdateTime:
+          description: Timestamp of the most recent state change.
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name of the incident.
+          maxLength: 500
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        severity:
+          allOf:
+          - $ref: '#/components/schemas/IncidentSeverity'
+          description: Severity level of the incident.
+        state:
+          allOf:
+          - $ref: '#/components/schemas/IncidentState'
+          description: Current internal state of the incident.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/IncidentStatus'
+          description: Current status of the incident.
+        subsystemName:
+          description: Subsystem associated with the incident.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Incident field one of.
+    IncidentStateCount:
+      title: Incident state count
+      required:
+      - state
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        state:
+          $ref: '#/components/schemas/IncidentState'
+    BatchGetIncidentResponse:
+      title: Batch get incidents response
+      required:
+      - incidents
+      - notFoundIds
+      type: object
+      properties:
+        incidents:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Incident'
+          description: Map of incident IDs to their corresponding incidents
+        notFoundIds:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 36
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: List of IDs that were not found
+          description: List of IDs that were not found
+          examples:
+          - - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+            - 9c858901-8a57-4791-81fe-4c455b099bc9
+      description: Response containing the requested incidents and any IDs that weren't found
+    ResolveIncidentsResponse:
+      title: Resolve incidents response
+      required:
+      - incidents
+      type: object
+      properties:
+        incidents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+          description: List of incidents after resolution
+      description: Response containing the updated incidents after resolution
+    IncidentStatusWithCount:
+      title: Incident status with count
+      required:
+      - status
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/IncidentStatus'
+          examples:
+          - incident_status
+    Incident:
+      title: Incident
+      required:
+      - id
+      - state
+      - status
+      - assignments
+      - severity
+      - contextualLabels
+      - displayLabels
+      - events
+      - createdAt
+      - lastStateUpdateTime
+      - lastStateUpdateKey
+      - duration
+      type: object
+      properties:
+        assignments:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+          description: The assignments.
+        closedAt:
+          description: The closed at.
+          examples:
+          - '2024-01-01T00:00:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        contextualLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The contextual labels.
+        createdAt:
+          description: Creation timestamp.
+          examples:
+          - '2024-01-01T00:00:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          examples:
+          - incident_description
+          maxLength: 2000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        displayLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The display labels.
+        duration:
+          description: Duration.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        events:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentEvent'
+          description: List of events.
+        id:
+          description: Unique identifier.
+          examples:
+          - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        isMuted:
+          description: The is muted.
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+        lastStateUpdateKey:
+          description: The last state update key.
+          examples:
+          - last_state_update_key
+          maxLength: 2000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        lastStateUpdateTime:
+          description: The last state update time.
+          examples:
+          - '2024-01-01T00:00:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        metaLabels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/incidents.v1.MetaLabel'
+          description: Metadata labels.
+        name:
+          description: Display name.
+          examples:
+          - incident_name
+          maxLength: 500
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        severity:
+          $ref: '#/components/schemas/IncidentSeverity'
+        state:
+          allOf:
+          - $ref: '#/components/schemas/IncidentState'
+          description: The incident's current internal state, usually derived from the operational events of the incident
+        status:
+          $ref: '#/components/schemas/IncidentStatus'
+      description: Incident.
+    IncidentEventAssign:
+      title: Incident event assignment details
+      type: object
+      properties:
+        assignment:
+          $ref: '#/components/schemas/Assignment'
+      description: Incident event assign.
+    IncidentMetaLabelsWithCount:
+      title: Incident meta labels with count
+      required:
+      - metaLabel
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        metaLabel:
+          $ref: '#/components/schemas/incidents.v1.MetaLabel'
+    AssignIncidentsResponse:
+      title: Assign incidents response
+      required:
+      - incidents
+      type: object
+      properties:
+        incidents:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+          description: List of incidents after assignment
+      description: Response containing the updated incidents after assignment
+    IncidentStatusCount:
+      title: Incident status count
+      required:
+      - status
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int64
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        status:
+          $ref: '#/components/schemas/IncidentStatus'
+    IncidentSeverityWithCount:
+      title: Incident severity with count
+      required:
+      - severity
+      - count
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - 10
+          format: int32
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        severity:
+          $ref: '#/components/schemas/IncidentSeverity'
+    AcknowledgeIncidentByEventIdResponse:
+      title: Acknowledge incident by event id response
+      required:
+      - incident
+      type: object
+      properties:
+        incident:
+          allOf:
+          - $ref: '#/components/schemas/Incident'
+          description: Incident after acknowledgment
+      description: Response containing the updated incident after acknowledgment
+    incidents.v1.PaginationRequest:
+      title: Pagination request
+      required:
+      - pageSize
+      type: object
+      properties:
+        pageSize:
+          description: Number of items to return per page.
+          examples:
+          - 10
+          format: int64
+          maximum: 10000
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        pageToken:
+          description: Token for the next page of results
+          examples:
+          - next_page_token
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Pagination parameters for list requests
+    GetIncidentResponse:
+      title: Get incident response
+      required:
+      - incident
+      type: object
+      properties:
+        incident:
+          allOf:
+          - $ref: '#/components/schemas/Incident'
+          description: The requested incident
+      description: Response containing the requested incident
+  parameters:
+    event_id:
+      name: event_id
+      in: path
+      description: Event ID associated to the Incident to acknowledge
+      required: true
+      schema:
+        description: Event ID associated to the Incident to acknowledge
+        examples:
+        - event_id_1
+        maxLength: 64
+        minLength: 1
+        pattern: ^[\s\S]*$
+        type: string
+        x-coralogix-presence: true
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

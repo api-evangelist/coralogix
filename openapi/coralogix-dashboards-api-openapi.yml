@@ -224,7 +224,45 @@ components:
       - id
       - name
       - layout
+    PostDashboardsDashboardsV1DashboardidFolderRequest:
+      type: object
+      properties:
+        folder_id:
+          type: string
+        folder_path:
+          type: string
     GetDashboardsDashboardsV1SlugsSlugResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug_name:
+          type: string
+        layout:
+          type: object
+        variables_v2:
+          type: array
+        variables:
+          type: array
+        filters:
+          type: array
+        annotations:
+          type: array
+        actions:
+          type: array
+        folder_id:
+          type: string
+        folder_path:
+          type: string
+        time_frame:
+          type: object
+        auto_refresh:
+          type: string
+    PostDashboardsDashboardsV1Response:
       type: object
       properties:
         id:
@@ -285,13 +323,6 @@ components:
         time_frame:
           type: object
         auto_refresh:
-          type: string
-    PostDashboardsDashboardsV1DashboardidFolderRequest:
-      type: object
-      properties:
-        folder_id:
-          type: string
-        folder_path:
           type: string
     GetDashboardsDashboardsV1DashboardidResponse:
       type: object
@@ -393,37 +424,6 @@ components:
       required:
       - name
       - layout
-    PostDashboardsDashboardsV1Response:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug_name:
-          type: string
-        layout:
-          type: object
-        variables_v2:
-          type: array
-        variables:
-          type: array
-        filters:
-          type: array
-        annotations:
-          type: array
-        actions:
-          type: array
-        folder_id:
-          type: string
-        folder_path:
-          type: string
-        time_frame:
-          type: object
-        auto_refresh:
-          type: string
   securitySchemes:
     bearer:
       type: http

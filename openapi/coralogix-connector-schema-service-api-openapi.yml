@@ -1,0 +1,235 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Connector Schema service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Connector Schema service
+  description: Retrieve connector schemas for notification center integrations
+  externalDocs:
+    description: Learn more about connectors in our documentation
+    url: https://coralogix.com/docs/user-guides/notification-center/connectors/introduction/
+paths:
+  /notifications/notification-center/v1/connector-schemas:
+    get:
+      description: Returns the schema definition for notification connectors.
+      operationId: ConnectorSchemaService_GetConnectorSchema
+      parameters:
+      - description: Connector type whose schema to retrieve.
+        in: query
+        name: type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.ConnectorType'
+          description: Connector type whose schema to retrieve.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConnectorSchemaResponse'
+          description: ''
+      summary: Get Connector Schema
+      tags:
+      - Connector Schema service
+components:
+  schemas:
+    FieldType:
+      enum:
+      - FIELD_TYPE_UNSPECIFIED
+      - STRING
+      - NON_EMPTY_STRING
+      - KEY_VALUE_PAIRS
+      - JSON_OBJECT
+      - DATE
+      - URL
+      - ARRAY_OF_STRINGS
+      - BOOLEAN
+      type: string
+      description: Field type.
+    notification_center.ConnectorType:
+      enum:
+      - CONNECTOR_TYPE_UNSPECIFIED
+      - SLACK
+      - GENERIC_HTTPS
+      - PAGERDUTY
+      - IBM_EVENT_NOTIFICATIONS
+      - SERVICE_NOW
+      - EMAIL
+      - PAGERDUTY_INCIDENTS
+      - MICROSOFT_TEAMS
+      - EVENTBRIDGE
+      - INCIDENT_IO
+      type: string
+      description: Connector type.
+    ConnectorSchema:
+      type: object
+      properties:
+        connectorConfigSchema:
+          $ref: '#/components/schemas/ConnectorConfigSchema'
+        messageConfigSchemas:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageConfigSchema'
+          description: The message config schemas.
+        supportedPayloadTypes:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The supported payload types.
+          description: The supported payload types.
+        type:
+          $ref: '#/components/schemas/notification_center.ConnectorType'
+      description: Connector schema.
+    MessageConfigSchemaField:
+      type: object
+      properties:
+        allowedValues:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The allowed values.
+          description: The allowed values.
+        default:
+          description: The default.
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        disableOverride:
+          description: The disable override.
+          type: boolean
+          x-coralogix-presence: true
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        fieldType:
+          $ref: '#/components/schemas/FieldType'
+        renderingMode:
+          $ref: '#/components/schemas/TemplateRenderingMode'
+        required:
+          type: boolean
+          description: The required.
+    GetConnectorSchemaResponse:
+      type: object
+      properties:
+        connectorSchema:
+          $ref: '#/components/schemas/ConnectorSchema'
+      description: Response containing the schema definition for a notification connector type.
+    ConnectorConfigSchema:
+      type: object
+      properties:
+        fields:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectorConfigSchemaField'
+          description: List of fields.
+      description: Connector config schema.
+    MessageConfigSchema:
+      type: object
+      properties:
+        fields:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageConfigSchemaField'
+          description: List of fields.
+        payloadType:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Type of the payload.
+    TemplateRenderingMode:
+      enum:
+      - TEMPLATE_RENDERING_MODE_UNSPECIFIED
+      - RELAXED
+      - STRICT
+      type: string
+      description: Template rendering mode.
+    ConnectorConfigSchemaField:
+      type: object
+      properties:
+        allowOverrides:
+          type: boolean
+          description: The allow overrides.
+        allowedValues:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The allowed values.
+          description: The allowed values.
+        default:
+          description: The default.
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        fieldType:
+          $ref: '#/components/schemas/FieldType'
+        required:
+          type: boolean
+          description: The required.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

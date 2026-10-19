@@ -1,0 +1,371 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management SAML Configuration Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: SAML Configuration Service
+  description: Manage your SAML configuration
+paths:
+  /aaa/team-saml/v1/active:
+    post:
+      description: Activates or deactivates SAML for the team.
+      operationId: SamlConfigurationService_SetActive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                isActive:
+                  description: The is active.
+                  type: boolean
+                teamId:
+                  description: Team identifier.
+                  format: int64
+                  minimum: 0
+                  type: integer
+              title: Set Active Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v2.SetActiveResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Activate/Deactivate SAML
+      tags:
+      - SAML Configuration Service
+  /aaa/team-saml/v1/configuration:
+    get:
+      description: Returns the current SAML configuration for the team.
+      operationId: SamlConfigurationService_GetConfiguration
+      parameters:
+      - description: The unique identifier of the team whose SAML configuration to retrieve.
+        in: query
+        name: team_id
+        required: false
+        schema:
+          description: The unique identifier of the team whose SAML configuration to retrieve.
+          format: int64
+          minimum: 0
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConfigurationResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get SAML Configuration
+      tags:
+      - SAML Configuration Service
+  /aaa/team-saml/v1/idp_parameters:
+    post:
+      description: Sets the identity provider parameters for SAML.
+      operationId: SamlConfigurationService_SetIDPParameters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                params:
+                  $ref: '#/components/schemas/IDPParameters'
+                teamId:
+                  description: Team identifier.
+                  format: int64
+                  minimum: 0
+                  type: integer
+              title: Set IDP Parameters Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetIDPParametersResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Set IDP Parameters
+      tags:
+      - SAML Configuration Service
+  /aaa/team-saml/v1/sp_parameters:
+    get:
+      description: Returns the service provider parameters for SAML.
+      operationId: SamlConfigurationService_GetSPParameters
+      parameters:
+      - description: Team identifier.
+        in: query
+        name: team_id
+        required: false
+        schema:
+          description: Team identifier.
+          examples:
+          - 1234567
+          format: int64
+          minimum: 0
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSPParametersResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get SP Parameters
+      tags:
+      - SAML Configuration Service
+components:
+  schemas:
+    SPParameters:
+      title: Service Provider Parameters
+      type: object
+      properties:
+        assertionConsumerServiceUrl:
+          minLength: 0
+          type: string
+          description: The assertion consumer service url.
+          examples:
+          - assertion
+        binding:
+          minLength: 0
+          type: string
+          description: The binding.
+          examples:
+          - binding
+        metadataUrl:
+          minLength: 0
+          type: string
+          description: The metadata url.
+          examples:
+          - https://<...>.okta.com/app/<...>/sso/saml/metadata
+        nameIdFormat:
+          minLength: 0
+          type: string
+          description: The name id format.
+          examples:
+          - name_id
+        signingCertPem:
+          minLength: 0
+          type: string
+          description: The signing cert pem.
+          examples:
+          - certificate
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    SetIDPParametersResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully setting the identity provider parameters.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    IDPDetails:
+      type: object
+      properties:
+        icon:
+          minLength: 0
+          type: string
+          description: Icon identifier.
+        name:
+          minLength: 0
+          type: string
+          description: Display name.
+      description: Idp details.
+    GetSPParametersResponse:
+      title: Get SP Parameters Response
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/SPParameters'
+      description: This data structure is obtained as a response to a request to retrieve the parameters of a SAML service provider
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    GetConfigurationResponse:
+      title: Get Configuration Response
+      type: object
+      properties:
+        idpDetails:
+          $ref: '#/components/schemas/IDPDetails'
+        idpParameters:
+          $ref: '#/components/schemas/IDPParameters'
+        spParameters:
+          $ref: '#/components/schemas/SPParameters'
+        teamId:
+          minimum: 0
+          type: integer
+          description: The team id.
+          format: int64
+      description: This data structure is obtained as a response to a request to retrieve the configuration of a SAML service provider and identity provider
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    v2.SetActiveResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after updating the SAML active state.
+    IDPParameters:
+      title: IDP Parameters
+      type: object
+      oneOf:
+      - required:
+        - metadataUrl
+        type: object
+      - required:
+        - metadataContent
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - metadataUrl
+            type: object
+          - required:
+            - metadataContent
+            type: object
+      properties:
+        active:
+          type: boolean
+          description: Whether SAML SSO is currently active for this team.
+          examples:
+          - true
+        groupNames:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of group names mapped from the identity provider for role-based access.
+            examples:
+            - group1
+          description: List of group names mapped from the identity provider for role-based access.
+        metadataContent:
+          minLength: 0
+          type: string
+          description: Raw XML content of the identity provider SAML metadata document.
+          examples:
+          - <?xml version= ...
+        metadataUrl:
+          minLength: 0
+          type: string
+          description: URL to the identity provider SAML metadata XML document.
+          examples:
+          - https://<...>.okta.com/app/<...>/sso/saml/metadata
+        teamEntityId:
+          description: Coralogix team entity identifier used as the SAML service provider entity ID.
+          examples:
+          - 1234567
+          format: int64
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

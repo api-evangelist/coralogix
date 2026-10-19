@@ -1,0 +1,963 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Events Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Events Service
+  description: A service for querying events.
+  externalDocs:
+    description: Learn more about alerts in our documentation
+    url: https://coralogix.com/docs/user-guides/alerting/introduction-to-alerts/
+paths:
+  /alerts/alerts/v3/all/events:
+    get:
+      description: Returns all alert events.
+      operationId: EventsService_ListAlertEvents
+      parameters:
+      - description: Alert version IDs to filter events by
+        in: query
+        name: alert_ids
+        required: true
+        schema:
+          description: Alert version IDs to filter events by
+          examples:
+          - - 32144a8a-7ee0-4c16-a093-2bf1f9c12e1e
+          items:
+            description: Alert version IDs to filter events by
+            minLength: 0
+            type: string
+          minItems: 0
+          type: array
+      - description: Time range to search for events
+        in: query
+        name: timestamp_range
+        required: true
+        schema:
+          properties:
+            from:
+              description: Inclusive start of the time range.
+              format: date-time
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+            to:
+              description: Inclusive end of the time range.
+              format: date-time
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+          required:
+          - from
+          - to
+          title: TimestampRange
+          type: object
+      - description: Optional event labels to filter by (e.g., app, subsystem, region)
+        in: query
+        name: cx_event_labels
+        required: false
+        schema:
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Optional event labels to filter by (e.g., app, subsystem, region)
+          type: object
+      - description: Ordering criteria for the returned events.
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: Ordering criteria for the returned events.
+          items:
+            properties:
+              direction:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByDirection'
+                examples:
+                - ORDER_BY_DIRECTION_ASC
+              fieldName:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByFields'
+                examples:
+                - ORDER_BY_FIELDS_TIMESTAMP
+            type: object
+          minItems: 0
+          type: array
+      - description: Pagination parameters for the response.
+        in: query
+        name: pagination
+        required: false
+        schema:
+          properties:
+            pageSize:
+              description: Maximum number of results to return per page.
+              examples:
+              - 10
+              format: int64
+              minimum: 0
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: Opaque token for fetching the next page of results.
+              examples:
+              - test
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAlertEventsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Alert Events
+      tags:
+      - Events Service
+  /alerts/events/v3:
+    get:
+      description: Returns a list of alert events matching the specified filters.
+      operationId: EventsService_ListEvents
+      parameters:
+      - description: Filter criteria for events.
+        in: query
+        name: filter
+        required: true
+        schema:
+          properties:
+            cxEventKeys:
+              description: List of event attribute keys to include when retrieving event data.
+              examples:
+              - - test_key
+              items:
+                description: List of event attribute keys to include when retrieving event data.
+                minLength: 0
+                type: string
+              minItems: 0
+              type: array
+            cxEventLabelsFilters:
+              allOf:
+              - $ref: '#/components/schemas/Filters'
+              description: Filters applied to event label fields.
+            cxEventMetadataFilters:
+              allOf:
+              - $ref: '#/components/schemas/Filters'
+              description: Filters applied to event metadata fields.
+            cxEventTypes:
+              description: List of event type identifiers to include in the results.
+              examples:
+              - - test_type
+              items:
+                description: List of event type identifiers to include in the results.
+                minLength: 0
+                type: string
+              minItems: 0
+              type: array
+            timestamp:
+              allOf:
+              - $ref: '#/components/schemas/TimestampRange'
+              description: Time range to filter events by their occurrence timestamp.
+          required:
+          - timestamp
+          - cxEventTypes
+          - cxEventKeys
+          title: EventsFilter
+          type: object
+      - description: Pagination parameters for the response.
+        in: query
+        name: pagination
+        required: true
+        schema:
+          properties:
+            pageSize:
+              description: Maximum number of results to return per page.
+              examples:
+              - 10
+              format: int64
+              minimum: 0
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: Opaque token for fetching the next page of results.
+              examples:
+              - test
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+          type: object
+      - description: Ordering criteria for the returned events.
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: Ordering criteria for the returned events.
+          items:
+            properties:
+              direction:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByDirection'
+                examples:
+                - ORDER_BY_DIRECTION_ASC
+              fieldName:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByFields'
+                examples:
+                - ORDER_BY_FIELDS_TIMESTAMP
+            type: object
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v3.ListEventsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Events
+      tags:
+      - Events Service
+  /alerts/events/v3/all/count:
+    get:
+      description: Returns the count of alert events matching the given filters.
+      operationId: EventsService_ListEventsCount
+      parameters:
+      - description: Filter criteria for events.
+        in: query
+        name: filter
+        required: true
+        schema:
+          properties:
+            cxEventKeys:
+              description: List of event attribute keys to include when retrieving event data.
+              examples:
+              - - test_key
+              items:
+                description: List of event attribute keys to include when retrieving event data.
+                minLength: 0
+                type: string
+              minItems: 0
+              type: array
+            cxEventLabelsFilters:
+              allOf:
+              - $ref: '#/components/schemas/Filters'
+              description: Filters applied to event label fields.
+            cxEventMetadataFilters:
+              allOf:
+              - $ref: '#/components/schemas/Filters'
+              description: Filters applied to event metadata fields.
+            cxEventTypes:
+              description: List of event type identifiers to include in the results.
+              examples:
+              - - test_type
+              items:
+                description: List of event type identifiers to include in the results.
+                minLength: 0
+                type: string
+              minItems: 0
+              type: array
+            timestamp:
+              allOf:
+              - $ref: '#/components/schemas/TimestampRange'
+              description: Time range to filter events by their occurrence timestamp.
+          required:
+          - timestamp
+          - cxEventTypes
+          - cxEventKeys
+          title: EventsFilter
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEventsCountResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Events Count
+      tags:
+      - Events Service
+  /alerts/events/v3/all/list:
+    get:
+      description: Returns a list of alert events matching the given filters.
+      operationId: EventsService_BatchGetEvent
+      parameters:
+      - description: The ids.
+        in: query
+        name: ids
+        required: false
+        schema:
+          description: The ids.
+          items:
+            description: The ids.
+            minLength: 0
+            type: string
+          minItems: 0
+          type: array
+      - description: Ordering criteria for the returned events.
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: Ordering criteria for the returned events.
+          items:
+            properties:
+              direction:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByDirection'
+                examples:
+                - ORDER_BY_DIRECTION_ASC
+              fieldName:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByFields'
+                examples:
+                - ORDER_BY_FIELDS_TIMESTAMP
+            type: object
+          minItems: 0
+          type: array
+      - description: Pagination parameters for the response.
+        in: query
+        name: pagination
+        required: false
+        schema:
+          properties:
+            pageSize:
+              description: Maximum number of results to return per page.
+              examples:
+              - 10
+              format: int64
+              minimum: 0
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: Opaque token for fetching the next page of results.
+              examples:
+              - test
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+          type: object
+      - description: Optional filter to narrow the set of returned events.
+        in: query
+        name: filter
+        required: false
+        schema:
+          properties:
+            timestamp:
+              allOf:
+              - $ref: '#/components/schemas/TimestampRange'
+              description: Time range to filter events by their occurrence timestamp.
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetEventResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Batch Get Event
+      tags:
+      - Events Service
+  /alerts/events/v3/all/statistics:
+    get:
+      description: Returns statistical aggregates for alert events.
+      operationId: EventsService_GetEventsStatistics
+      parameters:
+      - description: Filter criteria for events.
+        in: query
+        name: filter
+        required: true
+        schema:
+          properties:
+            cxEventKeys:
+              description: List of event attribute keys to include when retrieving event data.
+              examples:
+              - - test_key
+              items:
+                description: List of event attribute keys to include when retrieving event data.
+                minLength: 0
+                type: string
+              minItems: 0
+              type: array
+            cxEventLabelsFilters:
+              allOf:
+              - $ref: '#/components/schemas/Filters'
+              description: Filters applied to event label fields.
+            cxEventMetadataFilters:
+              allOf:
+              - $ref: '#/components/schemas/Filters'
+              description: Filters applied to event metadata fields.
+            cxEventTypes:
+              description: List of event type identifiers to include in the results.
+              examples:
+              - - test_type
+              items:
+                description: List of event type identifiers to include in the results.
+                minLength: 0
+                type: string
+              minItems: 0
+              type: array
+            timestamp:
+              allOf:
+              - $ref: '#/components/schemas/TimestampRange'
+              description: Time range to filter events by their occurrence timestamp.
+          required:
+          - timestamp
+          - cxEventTypes
+          - cxEventKeys
+          title: EventsFilter
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEventsStatisticsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Events Statistics
+      tags:
+      - Events Service
+  /alerts/events/v3/{id}:
+    get:
+      description: Returns the alert event with the specified ID.
+      operationId: EventsService_GetEvent
+      parameters:
+      - description: Unique identifier of the alert event to retrieve.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier of the alert event to retrieve.
+          examples:
+          - test
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      - description: The order bys.
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: The order bys.
+          items:
+            properties:
+              direction:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByDirection'
+                examples:
+                - ORDER_BY_DIRECTION_ASC
+              fieldName:
+                allOf:
+                - $ref: '#/components/schemas/events.v3.OrderByFields'
+                examples:
+                - ORDER_BY_FIELDS_TIMESTAMP
+            type: object
+          minItems: 0
+          type: array
+      - description: Pagination parameters for the response.
+        in: query
+        name: pagination
+        required: false
+        schema:
+          properties:
+            pageSize:
+              description: Maximum number of results to return per page.
+              examples:
+              - 10
+              format: int64
+              minimum: 0
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: Opaque token for fetching the next page of results.
+              examples:
+              - test
+              minLength: 0
+              type: string
+              x-coralogix-presence: true
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v3.GetEventResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Event
+      tags:
+      - Events Service
+components:
+  schemas:
+    Filters:
+      title: Filters
+      required:
+      - pathAndValues
+      type: object
+      properties:
+        operator:
+          allOf:
+          - $ref: '#/components/schemas/v3.FilterOperator'
+          examples:
+          - FILTER_OPERATOR_OR
+        pathAndValues:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterPathAndValues'
+    events.v3.FilterMatcher:
+      enum:
+      - FILTER_MATCHER_TEXT_OR_UNSPECIFIED
+      - FILTER_MATCHER_REGEXP
+      type: string
+    TimestampRange:
+      title: TimestampRange
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          description: Inclusive start of the time range.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        to:
+          description: Inclusive end of the time range.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+    v3.ListEventsResponse:
+      title: ListEventsResponse
+      required:
+      - events
+      type: object
+      properties:
+        events:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CxEvent'
+          description: List of events.
+        pagination:
+          $ref: '#/components/schemas/events.v3.PaginationResponse'
+    CxEvent:
+      title: Event
+      required:
+      - cxEventKey
+      - cxEventType
+      - cxEventLabels
+      - companyId
+      - cxEventTimestamp
+      - cxEventPayloadType
+      - cxEventPayload
+      type: object
+      properties:
+        companyId:
+          description: The company id.
+          examples:
+          - 1
+          format: int32
+          type: integer
+          x-coralogix-presence: true
+        cxEventDedupKey:
+          description: The cx event dedup key.
+          examples:
+          - test_dedup_key
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        cxEventKey:
+          description: The cx event key.
+          examples:
+          - test
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        cxEventLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The cx event labels.
+        cxEventMetadata:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The cx event metadata.
+        cxEventPayload:
+          type: object
+          description: The cx event payload.
+        cxEventPayloadType:
+          description: The cx event payload type.
+          examples:
+          - test_payload_type
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        cxEventTimestamp:
+          description: The cx event timestamp.
+          examples:
+          - '2024-05-05T00:00:00.000Z'
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        cxEventType:
+          description: The cx event type.
+          examples:
+          - test_type
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about events
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    v3.GetEventResponse:
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/CxEventSingleOrMultiple'
+        pagination:
+          $ref: '#/components/schemas/events.v3.PaginationResponse'
+      description: Response containing the details of an alert event.
+    events.v3.PaginationResponse:
+      type: object
+      properties:
+        nextPageToken:
+          description: Token for fetching the next page of results.
+          examples:
+          - test
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        totalSize:
+          description: Total number of results.
+          examples:
+          - 10
+          format: int64
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Pagination metadata returned alongside paginated list responses.
+    ListEventsCountResponse:
+      title: ListEventsCountResponse
+      required:
+      - count
+      - reachedLimit
+      type: object
+      properties:
+        count:
+          description: Number of items.
+          examples:
+          - '10'
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        reachedLimit:
+          description: The reached limit.
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+    FieldStatistics:
+      type: object
+      properties:
+        fieldStatistics:
+          type: object
+          additionalProperties:
+            maxLength: 20
+            minLength: 1
+            pattern: ^-?[0-9]+$
+            type: string
+          description: The field statistics.
+    v3.FilterOperator:
+      enum:
+      - FILTER_OPERATOR_AND_OR_UNSPECIFIED
+      - FILTER_OPERATOR_OR
+      type: string
+      description: Filter operator.
+    FilterPathAndValues:
+      title: FilterPathAndValues
+      required:
+      - path
+      type: object
+      oneOf:
+      - required:
+        - multipleValues
+        type: object
+      - required:
+        - filters
+        type: object
+      properties:
+        filters:
+          allOf:
+          - $ref: '#/components/schemas/Filters'
+          description: The filters.
+        multipleValues:
+          $ref: '#/components/schemas/MultipleValues'
+        path:
+          examples:
+          - test
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+    GetEventsStatisticsResponse:
+      title: GetEventsStatisticsResponse
+      type: object
+      properties:
+        cxEventLabelsFieldStatistics:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldStatistics'
+          description: The cx event labels field statistics.
+        cxEventMetadataFieldStatistics:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldStatistics'
+          description: The cx event metadata field statistics.
+    MultipleValues:
+      type: object
+      properties:
+        matcher:
+          $ref: '#/components/schemas/events.v3.FilterMatcher'
+        values:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    ListAlertEventsResponse:
+      title: ListAlertEventsResponse
+      required:
+      - events
+      type: object
+      properties:
+        events:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CxEvent'
+          description: List of events.
+        pagination:
+          $ref: '#/components/schemas/events.v3.PaginationResponse'
+      description: Response containing events associated with the alert
+    CxEventSingleOrMultiple:
+      title: CxEventSingleOrMultiple
+      type: object
+      oneOf:
+      - required:
+        - singleEvent
+        type: object
+      - required:
+        - multipleEvents
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - singleEvent
+            type: object
+          - required:
+            - multipleEvents
+            type: object
+      properties:
+        multipleEvents:
+          $ref: '#/components/schemas/CxEventArray'
+        singleEvent:
+          $ref: '#/components/schemas/CxEvent'
+    CxEventArray:
+      title: CxEventArray
+      required:
+      - events
+      type: object
+      properties:
+        events:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CxEvent'
+          description: List of events.
+      externalDocs:
+        description: Find out more about events
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    events.v3.OrderByFields:
+      enum:
+      - ORDER_BY_FIELDS_UNSPECIFIED
+      - ORDER_BY_FIELDS_TIMESTAMP
+      type: string
+      description: Order by fields.
+    events.v3.OrderByDirection:
+      enum:
+      - ORDER_BY_DIRECTION_UNSPECIFIED
+      - ORDER_BY_DIRECTION_ASC
+      - ORDER_BY_DIRECTION_DESC
+      type: string
+      description: Order by direction.
+    BatchGetEventResponse:
+      type: object
+      properties:
+        events:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CxEventSingleOrMultiple'
+          description: List of events.
+        notFoundIds:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The not found ids.
+          description: The not found ids.
+        pagination:
+          $ref: '#/components/schemas/events.v3.PaginationResponse'
+      description: Response containing the details of an alert event.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

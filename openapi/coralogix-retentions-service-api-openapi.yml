@@ -1,0 +1,282 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Retentions Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Retentions Service
+  description: View and manage retentions
+paths:
+  /dataengine/retention-tags/v1:
+    get:
+      description: Returns all available retention tags.
+      operationId: RetentionsService_GetRetentions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRetentionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Retentions
+      tags:
+      - Retentions Service
+    post:
+      description: Creates a new retention tag.
+      operationId: RetentionsService_UpdateRetentions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                retentionUpdateElements:
+                  description: List of retention tag updates to apply.
+                  items:
+                    $ref: '#/components/schemas/RetentionUpdateElement'
+                  minItems: 0
+                  type: array
+              required:
+              - retentionUpdateElements
+              title: Update Retentions Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRetentionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update Retentions
+      tags:
+      - Retentions Service
+  /dataengine/retention-tags/v1/activate:
+    post:
+      description: Activates the specified retention tags.
+      operationId: RetentionsService_ActivateRetentions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivateRetentionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Activate Retentions
+      tags:
+      - Retentions Service
+  /dataengine/retention-tags/v1/enabled:
+    get:
+      description: Returns the enabled retention tags for the team.
+      operationId: RetentionsService_GetRetentionsEnabled
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRetentionsEnabledResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Retentions Enabled
+      tags:
+      - Retentions Service
+components:
+  schemas:
+    GetRetentionsResponse:
+      type: object
+      properties:
+        retentions:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/archive.v1.Retention'
+          description: The retentions.
+      description: Response containing the current data retention settings.
+    GetRetentionsEnabledResponse:
+      title: Get Retentions Enabled Response
+      type: object
+      properties:
+        enableTags:
+          description: The enable tags.
+          type: boolean
+          x-coralogix-presence: true
+      description: This data structure is obtained when retrieving the active status of retentions
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    ActivateRetentionsResponse:
+      title: Activate Retentions Response
+      type: object
+      properties:
+        activateRetentions:
+          description: List of retentions to activate.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: This data structure is obtained after setting the active status of retentions
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    RetentionUpdateElement:
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+    UpdateRetentionsResponse:
+      title: Update Retentions Response
+      required:
+      - retentions
+      type: object
+      properties:
+        retentions:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/archive.v1.Retention'
+          description: The retentions.
+      description: This data structure is obtained after updating retentions
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    archive.v1.Retention:
+      title: Retention
+      type: object
+      properties:
+        editable:
+          description: The editable.
+          type: boolean
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        order:
+          description: Sort order.
+          format: int32
+          type: integer
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

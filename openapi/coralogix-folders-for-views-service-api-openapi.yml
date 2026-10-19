@@ -1,0 +1,217 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Folders for views service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Folders for views service
+  description: Create and manage view folders.
+paths:
+  /data-exploration/views/v1/folders:
+    get:
+      description: List view's folders
+      operationId: ViewsFoldersService_ListViewFolders
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                folders:
+                - id: 0cd4ed54-9b59-4eef-b329-151a167e2304
+                  name: My Folder
+              schema:
+                $ref: '#/components/schemas/ListViewFoldersResponse'
+          description: ''
+      summary: List view folders service
+      tags:
+      - Folders for views service
+    put:
+      description: Replaces an existing view folder
+      operationId: ViewsFoldersService_ReplaceViewFolder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: View folder.
+              properties:
+                id:
+                  description: Unique identifier for folders
+                  examples:
+                  - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+                  maxLength: 36
+                  minLength: 36
+                  pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+                  type: string
+                  x-coralogix-presence: true
+                name:
+                  description: Folder name
+                  examples:
+                  - My Folder
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - id
+              - name
+              title: ViewFolder
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 0cd4ed54-9b59-4eef-b329-151a167e2304
+                name: My Folder
+              schema:
+                $ref: '#/components/schemas/ViewFolder'
+          description: ''
+      summary: Replace View Folder service
+      tags:
+      - Folders for views service
+    post:
+      description: Create view folder
+      operationId: ViewsFoldersService_CreateViewFolder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Create view folder.
+              properties:
+                name:
+                  description: Folder name
+                  examples:
+                  - My Folder
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - name
+              title: CreateViewFolderRequest
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 0cd4ed54-9b59-4eef-b329-151a167e2304
+                name: My Folder
+              schema:
+                $ref: '#/components/schemas/ViewFolder'
+          description: ''
+      summary: Create View Folder service
+      tags:
+      - Folders for views service
+  /data-exploration/views/v1/folders/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: Unique identifier for folders
+      required: true
+      schema:
+        description: Unique identifier for folders
+        examples:
+        - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+        maxLength: 36
+        minLength: 36
+        pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        type: string
+        x-coralogix-presence: true
+    get:
+      description: Create view folder
+      operationId: ViewsFoldersService_GetViewFolder
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 0cd4ed54-9b59-4eef-b329-151a167e2304
+                name: My Folder
+              schema:
+                $ref: '#/components/schemas/ViewFolder'
+          description: ''
+      summary: Get View Folder service
+      tags:
+      - Folders for views service
+    delete:
+      description: Deletes a view folder by ID
+      operationId: ViewsFoldersService_DeleteViewFolder
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteViewFolderResponse'
+          description: ''
+      summary: Delete View Folder service
+      tags:
+      - Folders for views service
+components:
+  schemas:
+    ViewFolder:
+      title: ViewFolder
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          description: Unique identifier for folders
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Folder name
+          examples:
+          - My Folder
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: View folder.
+    DeleteViewFolderResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a view folder.
+    ListViewFoldersResponse:
+      type: object
+      properties:
+        folders:
+          maxItems: 100000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewFolder'
+          description: The folders.
+      description: Response containing a list of view folders.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

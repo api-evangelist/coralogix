@@ -1,0 +1,1536 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Case Events service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Case Events service
+  description: Manage case events, comments, and external thread synchronization.
+paths:
+  /cases/cases/v1/{case_id}/comments:
+    post:
+      description: 'Create a new comment event for a case.
+
+
+        Requires the following permissions:
+
+        - `case:Comment`'
+      operationId: CaseEventsService_CreateComment
+      parameters:
+      - description: ID of the case to add the event to. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: case_id
+        required: true
+        schema:
+          description: ID of the case to add the event to. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for creating a comment on a case.
+              properties:
+                attachments:
+                  description: Attachments to the comment
+                  items:
+                    $ref: '#/components/schemas/CommentAttachment'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                text:
+                  description: Comment text to update. Leading and trailing whitespace is trimmed before the length limits are applied.
+                  examples:
+                  - This is updated text
+                  maxLength: 10000
+                  minLength: 1
+                  pattern: ^[\s\S]*\S[\s\S]*$
+                  type: string
+              required:
+              - text
+              title: Create comment event request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCommentResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create a comment event
+      tags:
+      - Case Events service
+      x-coralogixPermissions:
+      - case:Comment
+  /cases/cases/v1/{case_id}/events:
+    get:
+      description: 'Retrieve all events associated with a specific case.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CaseEventsService_ListEvents
+      parameters:
+      - $ref: '#/components/parameters/case_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.ListEventsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List events for a case
+      tags:
+      - Case Events service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/cases/v1/{case_id}/sync-external-thread-comments:
+    post:
+      description: 'Synchronize events from an external source (e.g. Slack) into the case.
+
+
+        Requires the following permissions:
+
+        - `case:Comment`'
+      operationId: CaseEventsService_SyncExternalCaseEvents
+      parameters:
+      - description: ID of the case to sync external case events for. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: case_id
+        required: true
+        schema:
+          description: ID of the case to sync external case events for. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncExternalCaseEventsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Case not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Sync external Case events
+      tags:
+      - Case Events service
+      x-coralogixPermissions:
+      - case:Comment
+  /cases/events/v1/{event_id}:
+    get:
+      description: 'Retrieve a single event by its unique identifier.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CaseEventsService_GetEvent
+      parameters:
+      - description: ID of the event to fetch
+        in: path
+        name: event_id
+        required: true
+        schema:
+          description: ID of the event to fetch
+          examples:
+          - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.GetEventResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Event not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get an event by ID
+      tags:
+      - Case Events service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/events/v1/{event_id}/comments:
+    put:
+      description: 'Modify the content of an existing comment event.
+
+
+        Requires the following permissions:
+
+        - `case:Comment`'
+      operationId: CaseEventsService_UpdateComment
+      parameters:
+      - description: ID of the comment event to update
+        in: path
+        name: event_id
+        required: true
+        schema:
+          description: ID of the comment event to update
+          examples:
+          - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for updating a comment on a case event.
+              properties:
+                attachments:
+                  description: Attachments to the comment
+                  items:
+                    $ref: '#/components/schemas/CommentAttachment'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                text:
+                  description: Comment text to update. Leading and trailing whitespace is trimmed before the length limits are applied.
+                  examples:
+                  - This is updated text
+                  maxLength: 10000
+                  minLength: 1
+                  pattern: ^[\s\S]*\S[\s\S]*$
+                  type: string
+              required:
+              - text
+              title: Update comment event request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCommentResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Event not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update a comment event
+      tags:
+      - Case Events service
+      x-coralogixPermissions:
+      - case:Comment
+    delete:
+      description: 'Delete an existing comment event from a case.
+
+
+        Requires the following permissions:
+
+        - `case:Comment`'
+      operationId: CaseEventsService_DeleteComment
+      parameters:
+      - description: ID of the comment event to delete
+        in: path
+        name: event_id
+        required: true
+        schema:
+          description: ID of the comment event to delete
+          examples:
+          - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCommentResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Event not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete a comment event
+      tags:
+      - Case Events service
+      x-coralogixPermissions:
+      - case:Comment
+components:
+  schemas:
+    CreateCommentResponse:
+      title: Create comment event response
+      required:
+      - event
+      type: object
+      properties:
+        event:
+          allOf:
+          - $ref: '#/components/schemas/CaseEvent'
+          description: The created event
+      description: Response returned after successfully creating a comment.
+    UserActor:
+      title: User actor
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: User ID
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+      description: Information about the user who initiated the action.
+    NotificationMetadata:
+      title: Notification metadata
+      type: object
+      properties:
+        token:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Notification token/reference
+          examples:
+          - 4c8ba1ec-acee-4bc7-ad6c-d35476b58541
+    UnassignedCaseEvent:
+      title: Unassigned event
+      type: object
+      properties:
+        previousAssigneeUserId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: User ID that was unassigned
+      description: Unassigned case event.
+    CaseStatus:
+      enum:
+      - CASE_STATUS_UNSPECIFIED
+      - CASE_STATUS_PENDING_ACTIVATION
+      - CASE_STATUS_ACTIVE
+      - CASE_STATUS_ACKNOWLEDGED
+      - CASE_STATUS_RESOLVED
+      - CASE_STATUS_CLOSED
+      type: string
+      description: Case status.
+    FileAttachment:
+      title: File attachment
+      required:
+      - fileName
+      - fileId
+      - isDeleted
+      type: object
+      properties:
+        fileId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the file (same id as used in blobset flow)
+          examples:
+          - 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+        fileName:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Original name of the attached file. Leading and trailing whitespace is trimmed before the length limits are applied.
+          examples:
+          - screenshot_2025-09-22.png
+        isDeleted:
+          type: boolean
+          description: Flag indicating whether the file has been marked as deleted
+          examples:
+          - false
+      description: Attachment representing a file with metadata
+    UnknownAssigneeError:
+      title: Unknown assignee error
+      type: object
+      properties:
+        unknownAssigneeEmail:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Email of the assignee that could not be found
+          examples:
+          - unknown
+      description: Change assignee failed event.
+    NotificationSentCaseEvent:
+      title: Notification sent event
+      type: object
+      properties:
+        notificationRequestId:
+          description: The notification request ID, as sent to the notifications center.
+          examples:
+          - a1b2c3d4-5678-90ab-cdef-1234567890ab
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        notifications:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationMetadata'
+          description: List of notifications produced by this action
+      description: Notification sent case event.
+    v1.GetEventResponse:
+      title: Get event response
+      required:
+      - event
+      type: object
+      properties:
+        event:
+          allOf:
+          - $ref: '#/components/schemas/CaseEvent'
+          description: The requested event
+      description: Response containing the details of a case event.
+    MicrosoftTeamsActor:
+      title: Microsoft Teams actor
+      type: object
+      properties:
+        coralogixUserId:
+          description: If the Microsoft Teams user is linked to a Coralogix user, this field contains the Coralogix user ID.
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          x-coralogix-presence: true
+        displayName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Microsoft Teams display name
+          examples:
+          - John Doe
+        teamsUserId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Microsoft Teams user ID
+          examples:
+          - 29:1abc123def456
+        userEmail:
+          description: Email of the Microsoft Teams user
+          examples:
+          - john.doe@example.com
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Information about the Microsoft Teams user who initiated the action.
+    TitleChangedCaseEvent:
+      title: Title changed event
+      type: object
+      properties:
+        from:
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Previous case title. Leading and trailing whitespace is trimmed before the length limits are applied.
+        to:
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: New case title. Leading and trailing whitespace is trimmed before the length limits are applied.
+      description: Title changed case event.
+    CommentCaseEvent:
+      title: Comment event
+      type: object
+      oneOf:
+      - required:
+        - slack
+        type: object
+      - required:
+        - microsoftTeams
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - slack
+            type: object
+          - required:
+            - microsoftTeams
+            type: object
+      properties:
+        attachments:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentAttachment'
+          description: Attachments to the comment
+        microsoftTeams:
+          allOf:
+          - $ref: '#/components/schemas/MicrosoftTeamsCommentMetadata'
+          description: Microsoft Teams-specific comment metadata
+        slack:
+          allOf:
+          - $ref: '#/components/schemas/SlackCommentMetadata'
+          description: Slack-specific comment metadata
+        unsafeText:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Comment text. Leading and trailing whitespace is trimmed before the length limits are applied.
+          examples:
+          - Looking into DB timeouts
+      description: Event recorded when a user posts a comment on a case.
+    PagerDutyActor:
+      title: PagerDuty actor
+      type: object
+      properties:
+        coralogixUserId:
+          description: If the PagerDuty user is linked to a Coralogix user, this field contains the Coralogix user ID.
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          x-coralogix-presence: true
+        displayName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: PagerDuty display name
+          examples:
+          - John Doe
+        pagerDutyUserId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: PagerDuty user ID
+          examples:
+          - U012AB3CD
+        userEmail:
+          description: Email of the PagerDuty user
+          examples:
+          - john.doe@example.com
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Information about the PagerDuty user who initiated the action.
+    v1.ListEventsResponse:
+      title: List events response
+      required:
+      - events
+      type: object
+      properties:
+        events:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseEvent'
+          description: Events for the case
+      description: Response containing a list of case events.
+    UpdateCommentResponse:
+      title: Update comment event response
+      required:
+      - event
+      type: object
+      properties:
+        event:
+          allOf:
+          - $ref: '#/components/schemas/CaseEvent'
+          description: Updated comment event
+      description: Response returned after successfully updating a comment.
+    CreatedCaseEvent:
+      title: Created event
+      type: object
+      properties:
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Previous priority
+          examples:
+          - CASE_PRIORITY_P3
+      description: Created case event.
+    ResolutionReasonChangedCaseEvent:
+      title: Resolution reason changed event
+      type: object
+      properties:
+        from:
+          description: Previous resolution reason. Leading and trailing whitespace is trimmed before the length limits are applied.
+          maxLength: 500
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        to:
+          maxLength: 500
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: New resolution reason. Leading and trailing whitespace is trimmed before the length limits are applied.
+      description: Resolution reason changed case event.
+    ChangeAssigneeFailedEvent:
+      title: Change assignee failed event
+      type: object
+      properties:
+        unknownAssigneeError:
+          allOf:
+          - $ref: '#/components/schemas/UnknownAssigneeError'
+          description: Error for unknown assignee
+      description: Event recorded when an attempt to reassign a case fails.
+    ServiceNowActor:
+      title: Service Now actor
+      type: object
+      properties:
+        coralogixUserId:
+          description: If the Service Now user is linked to a Coralogix user, this field contains the Coralogix user ID.
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        id:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: User ID
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+        userEmail:
+          description: Mail of the user
+          examples:
+          - example@coralogix.com
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        username:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Username
+      description: Information about the user who initiated the action in Service Now platform
+    SlackCommentMetadata:
+      title: Slack comment metadata
+      type: object
+      properties:
+        channelId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Slack channel ID
+          examples:
+          - C012AB3CD
+        threadId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Slack thread ID
+          examples:
+          - '1234567890.123456'
+        userEmail:
+          description: Email of the Slack user
+          examples:
+          - john.doe@example.com
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        userId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Slack user ID
+          examples:
+          - U012AB3CD
+        workspaceId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Slack workspace ID
+          examples:
+          - T012AB3CD
+      description: Comment case event.
+    PrometheusAlertManagerActor:
+      title: Prometheus Alert Manager actor
+      type: object
+      properties:
+        receiverName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Prometheus Alert Manager receiver name
+          examples:
+          - alertmanager-main-0
+      description: Information about the Prometheus Alert Manager instance that initiated the action.
+    MicrosoftTeamsCommentMetadata:
+      title: Microsoft Teams comment metadata
+      type: object
+      properties:
+        channelId:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Microsoft Teams channel ID
+          examples:
+          - 19:0123456789abcdef0123456789abcdef@thread.tacv2
+        messageId:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Microsoft Teams message ID
+          examples:
+          - '1616990892312'
+        messageUrl:
+          description: Deep link URL to the Microsoft Teams message
+          examples:
+          - https://teams.microsoft.com/l/message/19:abcdef@thread.tacv2/1616990892312
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        teamId:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Microsoft Teams team ID
+          examples:
+          - 19:abcdef1234567890abcdef1234567890@thread.tacv2
+        tenantId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Microsoft Teams tenant ID
+          examples:
+          - 72f988bf-86f1-41af-91ab-2d7cd011db47
+        userEmail:
+          description: Email of the Microsoft Teams user
+          examples:
+          - john.doe@example.com
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        userId:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Microsoft Teams user ID
+          examples:
+          - 29:1IqRc0iDN0jXaDs0zc5j9dEcLpFXKh9sHg
+      description: Microsoft Teams source metadata attached to a comment that was synced from Microsoft Teams.
+    StatusChangedCaseEvent:
+      title: Status changed event
+      type: object
+      properties:
+        newStatus:
+          allOf:
+          - $ref: '#/components/schemas/CaseStatus'
+          description: New status
+          examples:
+          - CASE_STATUS_ACKNOWLEDGED
+        oldStatus:
+          allOf:
+          - $ref: '#/components/schemas/CaseStatus'
+          description: Previous status
+          examples:
+          - CASE_STATUS_ACTIVE
+      description: Status changed case event.
+    KPIBreachedCaseEvent:
+      title: KPI breached event
+      type: object
+      properties:
+        kpiType:
+          allOf:
+          - $ref: '#/components/schemas/KPIType'
+          description: Type of KPI that was breached
+          examples:
+          - KPI_TYPE_TIME_TO_ACKNOWLEDGE
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Case priority at the time of the breach
+          examples:
+          - CASE_PRIORITY_P2
+        threshold:
+          description: Duration after which the KPI threshold was set to breach
+          examples:
+          - 300s
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Kpi breached case event.
+    SyncExternalCaseEventsResponse:
+      title: Sync external Case events response
+      required:
+      - syncRegistered
+      type: object
+      properties:
+        syncRegistered:
+          type: boolean
+          description: Indicates whether the sync was successfully registered
+      description: Response returned after syncing external case events.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    NotificationFailedCaseEvent:
+      title: Notification failed event
+      type: object
+      properties:
+        error:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Error message for the failed notification
+          examples:
+          - 'Slack API: channel_not_found'
+      description: Notification failed case event.
+    DeleteCommentResponse:
+      title: Delete comment response
+      type: object
+      additionalProperties: false
+      description: Empty response; success indicated by HTTP status
+    CustomDashboardWidgetAttachment:
+      title: Custom dashboard widget attachment
+      required:
+      - customDashboardId
+      - widgetId
+      - widgetScreenshot
+      type: object
+      properties:
+        customDashboardId:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Unique identifier of the custom dashboard. Leading and trailing whitespace is trimmed before the length limits are applied.
+          examples:
+          - dashboard_3f166e9f-3c88-4af2-b52e-138f339dab3e
+        queryLinkSuffix:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL suffix for accessing the widget (not including the Coralogix domain part)
+          examples:
+          - /dashboards/custom/123/widgets/456?time=123456789
+        widgetId:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Unique identifier of the widget within the dashboard. Leading and trailing whitespace is trimmed before the length limits are applied.
+          examples:
+          - widget_a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        widgetScreenshot:
+          allOf:
+          - $ref: '#/components/schemas/FileAttachment'
+          description: Screenshot of the widget at the time of attachment
+      description: Attachment containing custom dashboard widget data and screenshot
+    PriorityDetailsChangedCaseEvent:
+      title: Priority details changed event
+      type: object
+      properties:
+        from:
+          allOf:
+          - $ref: '#/components/schemas/PriorityDetails'
+          description: Previous priority details
+        to:
+          allOf:
+          - $ref: '#/components/schemas/PriorityDetails'
+          description: New priority details
+      description: Priority details changed case event.
+    CaseEventData:
+      title: Case event data
+      type: object
+      oneOf:
+      - required:
+        - assigned
+        type: object
+      - required:
+        - unassigned
+        type: object
+      - required:
+        - comment
+        type: object
+      - required:
+        - statusChanged
+        type: object
+      - required:
+        - notificationSent
+        type: object
+      - required:
+        - notificationFailed
+        type: object
+      - required:
+        - created
+        type: object
+      - required:
+        - priorityDetailsChanged
+        type: object
+      - required:
+        - titleChangedEvent
+        type: object
+      - required:
+        - resolutionReasonChangedEvent
+        type: object
+      - required:
+        - changeAssigneeFailed
+        type: object
+      - required:
+        - kpiBreached
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - assigned
+            type: object
+          - required:
+            - unassigned
+            type: object
+          - required:
+            - comment
+            type: object
+          - required:
+            - statusChanged
+            type: object
+          - required:
+            - notificationSent
+            type: object
+          - required:
+            - notificationFailed
+            type: object
+          - required:
+            - created
+            type: object
+          - required:
+            - priorityDetailsChanged
+            type: object
+          - required:
+            - titleChangedEvent
+            type: object
+          - required:
+            - resolutionReasonChangedEvent
+            type: object
+          - required:
+            - changeAssigneeFailed
+            type: object
+          - required:
+            - kpiBreached
+            type: object
+      properties:
+        assigned:
+          allOf:
+          - $ref: '#/components/schemas/AssignedCaseEvent'
+          description: Case assigned to a user
+        changeAssigneeFailed:
+          allOf:
+          - $ref: '#/components/schemas/ChangeAssigneeFailedEvent'
+          description: Change assignee failed case event
+        comment:
+          allOf:
+          - $ref: '#/components/schemas/CommentCaseEvent'
+          description: User comment
+        created:
+          allOf:
+          - $ref: '#/components/schemas/CreatedCaseEvent'
+          description: Created case event
+        kpiBreached:
+          allOf:
+          - $ref: '#/components/schemas/KPIBreachedCaseEvent'
+          description: KPI breach detected for the case
+        notificationFailed:
+          allOf:
+          - $ref: '#/components/schemas/NotificationFailedCaseEvent'
+          description: Notification failure
+        notificationSent:
+          allOf:
+          - $ref: '#/components/schemas/NotificationSentCaseEvent'
+          description: Notification(s) sent
+        priorityDetailsChanged:
+          allOf:
+          - $ref: '#/components/schemas/PriorityDetailsChangedCaseEvent'
+          description: Priority details changed case event
+        resolutionReasonChangedEvent:
+          allOf:
+          - $ref: '#/components/schemas/ResolutionReasonChangedCaseEvent'
+          description: Resolution reason changed case event
+        statusChanged:
+          allOf:
+          - $ref: '#/components/schemas/StatusChangedCaseEvent'
+          description: Status changed
+        titleChangedEvent:
+          allOf:
+          - $ref: '#/components/schemas/TitleChangedCaseEvent'
+          description: Title changed case event
+        unassigned:
+          allOf:
+          - $ref: '#/components/schemas/UnassignedCaseEvent'
+          description: Case unassigned from a user
+      description: One-of wrapper for concrete case event types.
+    EventActor:
+      title: Event actor
+      type: object
+      oneOf:
+      - required:
+        - system
+        type: object
+      - required:
+        - user
+        type: object
+      - required:
+        - serviceNow
+        type: object
+      - required:
+        - apiKey
+        type: object
+      - required:
+        - slack
+        type: object
+      - required:
+        - prometheusAlertManager
+        type: object
+      - required:
+        - pagerDuty
+        type: object
+      - required:
+        - microsoftTeams
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - system
+            type: object
+          - required:
+            - user
+            type: object
+          - required:
+            - serviceNow
+            type: object
+          - required:
+            - apiKey
+            type: object
+          - required:
+            - slack
+            type: object
+          - required:
+            - prometheusAlertManager
+            type: object
+          - required:
+            - pagerDuty
+            type: object
+          - required:
+            - microsoftTeams
+            type: object
+      properties:
+        apiKey:
+          allOf:
+          - $ref: '#/components/schemas/ApiKeyActor'
+          description: API Key generated event
+        microsoftTeams:
+          allOf:
+          - $ref: '#/components/schemas/MicrosoftTeamsActor'
+          description: Microsoft Teams generated event
+        pagerDuty:
+          allOf:
+          - $ref: '#/components/schemas/PagerDutyActor'
+          description: PagerDuty generated event
+        prometheusAlertManager:
+          allOf:
+          - $ref: '#/components/schemas/PrometheusAlertManagerActor'
+          description: Prometheus Alert Manager generated event
+        serviceNow:
+          allOf:
+          - $ref: '#/components/schemas/ServiceNowActor'
+          description: Service Now generated event
+        slack:
+          allOf:
+          - $ref: '#/components/schemas/SlackActor'
+          description: Slack generated event
+        system:
+          allOf:
+          - $ref: '#/components/schemas/SystemActor'
+          description: System-generated event
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserActor'
+          description: User-generated event
+      description: Actor that initiated the event.
+    CasePriority:
+      enum:
+      - CASE_PRIORITY_UNSPECIFIED
+      - CASE_PRIORITY_P1
+      - CASE_PRIORITY_P2
+      - CASE_PRIORITY_P3
+      - CASE_PRIORITY_P4
+      - CASE_PRIORITY_P5
+      type: string
+      description: Case priority.
+    CaseEvent:
+      title: Case event
+      required:
+      - eventId
+      - eventData
+      - actor
+      - createTime
+      - eventTime
+      type: object
+      properties:
+        actor:
+          allOf:
+          - $ref: '#/components/schemas/EventActor'
+          description: Actor that produced the event (system or user)
+        createTime:
+          description: Server-side insertion time
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        eventData:
+          allOf:
+          - $ref: '#/components/schemas/CaseEventData'
+          description: Event payload (assignment, comment, status change, etc.)
+        eventId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the event
+          examples:
+          - ef51d3d9-a301-496b-aa7d-9a6e519ba0d5
+        eventTime:
+          description: Logical occurrence time of the event
+          examples:
+          - '2025-09-22T10:29:45.000Z'
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        updateTime:
+          description: If edited, last modification time of the event
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Represents an immutable entry in a case's event timeline.
+    PriorityDetails:
+      title: Priority details
+      type: object
+      properties:
+        override:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Optional override set by user
+          x-coralogix-presence: true
+        system:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: System computed priority
+      description: Priority details, including system computed and user override values.
+    CommentAttachment:
+      title: Comment attachment
+      type: object
+      oneOf:
+      - required:
+        - log
+        type: object
+      - required:
+        - customWidget
+        type: object
+      - required:
+        - file
+        type: object
+      properties:
+        customWidget:
+          allOf:
+          - $ref: '#/components/schemas/CustomDashboardWidgetAttachment'
+          description: Custom dashboard widget attachment with screenshot
+        file:
+          allOf:
+          - $ref: '#/components/schemas/FileAttachment'
+          description: Generic file attachment
+        log:
+          allOf:
+          - $ref: '#/components/schemas/LogAttachment'
+          description: Log entry attachment with content and metadata
+    KPIType:
+      enum:
+      - KPI_TYPE_UNSPECIFIED
+      - KPI_TYPE_TIME_TO_ACKNOWLEDGE
+      - KPI_TYPE_TIME_TO_RESOLVE
+      - KPI_TYPE_TIME_TO_UPDATE
+      type: string
+      description: Kpi type.
+    AssignedCaseEvent:
+      title: Assigned event
+      type: object
+      properties:
+        assigneeUserId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: New assignee user ID
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+        previousAssigneeUserId:
+          description: Previous assignee user ID (if any)
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: Assigned case event.
+    ApiKeyActor:
+      title: API key actor
+      type: object
+      properties:
+        id:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: API key ID
+          examples:
+          - 2b1c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e
+        name:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: API key name
+          examples:
+          - Incident Management Integration Key
+      description: Information about the API key that initiated the action.
+    SystemActor:
+      title: System actor
+      type: object
+      additionalProperties: false
+      description: Empty message indicating system-initiated action.
+    LogAttachment:
+      title: Log attachment
+      required:
+      - logId
+      - logTimestamp
+      - logContent
+      type: object
+      properties:
+        logContent:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Raw content of the log entry. Leading and trailing whitespace is trimmed before the length limits are applied.
+          examples:
+          - 'ERROR: Database connection timeout after 30 seconds'
+        logId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the log entry
+          examples:
+          - 9c858901-8a57-4791-81fe-4c455b099bc9
+        logTimestamp:
+          description: Timestamp when the log entry was created
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        queryLinkSuffix:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL suffix for querying related logs (not including the Coralogix domain part)
+          examples:
+          - /logs/query?time=123456789&query=error
+      description: Attachment containing log data and related information
+    SlackActor:
+      title: Slack actor
+      type: object
+      properties:
+        coralogixUserId:
+          description: If the Slack user is linked to a Coralogix user, this field contains the Coralogix user ID.
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        displayName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Slack display name
+          examples:
+          - John Doe
+        slackUserId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Slack user ID
+          examples:
+          - U012AB3CD
+        userEmail:
+          description: Email of the Slack user
+          examples:
+          - john.doe@example.com
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Information about the Slack user who initiated the action.
+  parameters:
+    case_id:
+      name: case_id
+      in: path
+      description: ID of the case. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+      required: true
+      schema:
+        maxLength: 64
+        minLength: 1
+        pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+        type: string
+        description: ID of the case. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        examples:
+        - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

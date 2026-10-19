@@ -1,0 +1,513 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Custom Enrichments Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Custom Enrichments Service
+  description: Manage your enrichments.
+paths:
+  /enrichment-rules/custom-enrichment-rules/v1:
+    get:
+      description: Returns all custom enrichment rules.
+      operationId: CustomEnrichmentService_GetCustomEnrichments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCustomEnrichmentsResponse'
+          description: ''
+      summary: Get Custom Enrichments
+      tags:
+      - Custom Enrichments Service
+    put:
+      description: Updates a custom enrichment rule.
+      operationId: CustomEnrichmentService_UpdateCustomEnrichment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This request data structure is used to update a custom enrichment
+              properties:
+                customEnrichmentId:
+                  description: The custom enrichment id.
+                  examples:
+                  - 1
+                  format: int64
+                  maximum: 2147483647
+                  minimum: 0
+                  type: integer
+                  x-coralogix-presence: true
+                description:
+                  description: New human-readable description of the custom enrichment.
+                  examples:
+                  - custom_enrichment_description
+                  maxLength: 255
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                file:
+                  $ref: '#/components/schemas/File'
+                name:
+                  description: New human-readable name for the custom enrichment. May contain only letters, digits, and underscores.
+                  examples:
+                  - custom_enrichment_name
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^\w+$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - customEnrichmentId
+              - name
+              - description
+              - file
+              title: Update Custom Enrichment Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCustomEnrichmentResponse'
+          description: ''
+      summary: Update Custom Enrichment
+      tags:
+      - Custom Enrichments Service
+    post:
+      description: Creates a new custom enrichment rule.
+      operationId: CustomEnrichmentService_CreateCustomEnrichment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This request data structure is used to create a custom enrichment
+              properties:
+                description:
+                  description: Human-readable description of the custom enrichment.
+                  examples:
+                  - custom_enrichment_description
+                  maxLength: 255
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                file:
+                  $ref: '#/components/schemas/File'
+                name:
+                  description: Human-readable name for the custom enrichment. May contain only letters, digits, and underscores.
+                  examples:
+                  - custom_enrichment_name
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^\w+$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - name
+              - description
+              - file
+              title: Create Custom Enrichment Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCustomEnrichmentResponse'
+          description: ''
+      summary: Create Custom Enrichments
+      tags:
+      - Custom Enrichments Service
+  /enrichment-rules/custom-enrichment-rules/v1/all/contents:
+    post:
+      description: Returns the contents of all custom enrichment data.
+      operationId: CustomEnrichmentService_SearchCustomEnrichmentData
+      parameters:
+      - description: Search clauses used to filter custom enrichment data.
+        in: query
+        name: search_clauses
+        required: false
+        schema:
+          description: Search clauses used to filter custom enrichment data.
+          items:
+            externalDocs:
+              description: Find out more about enrichments
+              url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+            oneOf:
+            - required:
+              - id
+              type: object
+            - required:
+              - name
+              type: object
+            - not:
+                anyOf:
+                - required:
+                  - id
+                  type: object
+                - required:
+                  - name
+                  type: object
+              type: object
+            properties:
+              id:
+                description: Search by the numeric ID of the custom enrichment.
+                examples:
+                - 1
+                format: int64
+                maximum: 2147483647
+                minimum: 0
+                type: integer
+                x-coralogix-presence: true
+              name:
+                description: Search by the name of the custom enrichment.
+                examples:
+                - custom_enrichment_name
+                maxLength: 255
+                minLength: 1
+                pattern: ^\w+$
+                type: string
+                x-coralogix-presence: true
+            title: Search Clause
+            type: object
+          maxItems: 1000
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchCustomEnrichmentDataResponse'
+          description: ''
+      summary: Search Custom Enrichment Data
+      tags:
+      - Custom Enrichments Service
+  /enrichment-rules/custom-enrichment-rules/v1/{id}:
+    get:
+      description: Returns the details of the specified custom enrichment rule.
+      operationId: CustomEnrichmentService_GetCustomEnrichment
+      parameters:
+      - description: The unique identifier of the custom enrichment rule.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the custom enrichment rule.
+          examples:
+          - 1
+          format: int64
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCustomEnrichmentResponse'
+          description: ''
+      summary: Get Custom Enrichment
+      tags:
+      - Custom Enrichments Service
+    delete:
+      description: Deletes the custom enrichment rule with the specified ID.
+      operationId: CustomEnrichmentService_DeleteCustomEnrichment
+      parameters:
+      - description: The unique identifier of the custom enrichment rule to delete.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the custom enrichment rule to delete.
+          examples:
+          - 1
+          format: int64
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCustomEnrichmentResponse'
+          description: ''
+      summary: Delete Custom Enrichments
+      tags:
+      - Custom Enrichments Service
+components:
+  schemas:
+    CustomEnrichmentData:
+      type: object
+      oneOf:
+      - required:
+        - textual
+        type: object
+      - required:
+        - binary
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - textual
+            type: object
+          - required:
+            - binary
+            type: object
+      properties:
+        binary:
+          description: Binary content of the enrichment data file encoded as base64. The account's enrichment file size limit applies to the decoded byte size (20971520 bytes / 20 MiB by default); maxLength bounds the base64-encoded string.
+          format: byte
+          maxLength: 27962028
+          minLength: 0
+          pattern: ^[A-Za-z0-9+/]*={0,2}$
+          type: string
+          x-coralogix-presence: true
+        definition:
+          allOf:
+          - $ref: '#/components/schemas/CustomEnrichment'
+          description: The enrichment definition.
+        textual:
+          description: Textual content of the enrichment data file as a UTF-8 string. The account's enrichment file size limit applies to the UTF-8 byte size of the content (20971520 bytes / 20 MiB by default); maxLength is an upper bound in characters.
+          maxLength: 20971520
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Custom enrichment data including definition and raw content.
+    GetCustomEnrichmentResponse:
+      title: Get Custom Enrichment Response
+      required:
+      - customEnrichment
+      type: object
+      properties:
+        customEnrichment:
+          $ref: '#/components/schemas/CustomEnrichment'
+      description: This response data structure is obtained when a custom enrichment is retrieved
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    File:
+      title: File
+      type: object
+      oneOf:
+      - required:
+        - textual
+        type: object
+      - required:
+        - binary
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - textual
+            type: object
+          - required:
+            - binary
+            type: object
+      properties:
+        binary:
+          description: Binary content of the file encoded as base64. The account's enrichment file size limit applies to the decoded byte size (20971520 bytes / 20 MiB by default); maxLength bounds the base64-encoded string.
+          examples:
+          - '0xFABB32'
+          format: byte
+          maxLength: 27962028
+          minLength: 0
+          pattern: ^[A-Za-z0-9+/]*={0,2}$
+          type: string
+          x-coralogix-presence: true
+        extension:
+          description: File extension indicating the file format. Only "csv" is currently supported.
+          examples:
+          - csv
+          maxLength: 3
+          minLength: 3
+          pattern: ^csv$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Name of the file.
+          examples:
+          - file_name
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        size:
+          description: Size of the file in bytes.
+          examples:
+          - 100
+          format: int64
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        textual:
+          description: Textual content of the file as a UTF-8 string. The account's enrichment file size limit applies to the UTF-8 byte size of the content (20971520 bytes / 20 MiB by default); maxLength is an upper bound in characters.
+          examples:
+          - row1,row2 value1,value2
+          maxLength: 20971520
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    CustomEnrichment:
+      type: object
+      properties:
+        description:
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description.
+        fileName:
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The file name.
+        fileSize:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: The file size.
+          format: int64
+        id:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Unique identifier.
+          format: int64
+        isQueryOnly:
+          type: boolean
+          description: The is query only.
+        name:
+          maxLength: 255
+          minLength: 1
+          pattern: ^\w+$
+          type: string
+          description: Display name. May contain only letters, digits, and underscores.
+        version:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Version number.
+          format: int64
+      description: Custom enrichment.
+    CreateCustomEnrichmentResponse:
+      title: Create Custom Enrichment Response
+      type: object
+      properties:
+        customEnrichment:
+          $ref: '#/components/schemas/CustomEnrichment'
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable message.
+          examples:
+          - Custom enrichment created successfully
+      description: This response data structure is obtained when a custom enrichment is created
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    GetCustomEnrichmentsResponse:
+      title: Get Custom Enrichments Response
+      type: object
+      properties:
+        customEnrichments:
+          maxItems: 30
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomEnrichment'
+          description: The custom enrichments.
+      description: This response data structure is obtained when all custom enrichments are retrieved
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    UpdateCustomEnrichmentResponse:
+      title: Update Custom Enrichment Response
+      type: object
+      properties:
+        customEnrichment:
+          $ref: '#/components/schemas/CustomEnrichment'
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable message.
+          examples:
+          - Custom enrichment updated successfully
+      description: This response data structure is obtained when a custom enrichment is updated
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    DeleteCustomEnrichmentResponse:
+      type: object
+      properties:
+        customEnrichmentId:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: The custom enrichment id.
+          format: int64
+          examples:
+          - 1
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable message.
+          examples:
+          - Custom enrichment deleted successfully
+      description: Response returned after successfully deleting a custom enrichment rule.
+    SearchCustomEnrichmentDataResponse:
+      type: object
+      properties:
+        customEnrichmentsData:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomEnrichmentData'
+          description: The custom enrichments data.
+      description: Response containing custom enrichment data search results.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

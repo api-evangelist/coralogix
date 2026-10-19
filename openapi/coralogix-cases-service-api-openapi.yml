@@ -1,0 +1,3724 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Cases service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Cases service
+  description: Manage cases throughout their lifecycle. Create, view, assign, acknowledge, unacknowledge, resolve, and close cases to streamline investigations and follow-ups.
+  externalDocs:
+    description: Learn more about Cases in our documentation
+    url: https://coralogix.com/docs/user-guides/cases/
+paths:
+  /cases/acknowledged/v1:
+    post:
+      description: 'Mark multiple cases as acknowledged in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Acknowledge`'
+      operationId: CasesService_BulkAcknowledge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to acknowledge multiple cases
+              properties:
+                actor:
+                  allOf:
+                  - $ref: '#/components/schemas/cases.v1.UserDetails'
+                  description: User performing the acknowledgment
+                ids:
+                  description: IDs of the cases to acknowledge. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                  examples:
+                  - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+                    - CASE-123
+                  items:
+                    description: IDs of the cases to acknowledge. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                    maxLength: 64
+                    minLength: 1
+                    pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+                    type: string
+                  maxItems: 1000
+                  minItems: 1
+                  type: array
+              required:
+              - ids
+              - actor
+              title: Bulk acknowledge request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkAcknowledgeResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Acknowledge multiple cases
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Acknowledge
+  /cases/acknowledged/v1/{id}:
+    put:
+      description: 'Mark the case as acknowledged by a user.
+
+
+        Requires the following permissions:
+
+        - `case:Acknowledge`'
+      operationId: CasesService_AcknowledgeCase
+      parameters:
+      - description: ID of the case to acknowledge. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to acknowledge. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcknowledgeCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Acknowledge a case
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Acknowledge
+    delete:
+      description: 'Remove the acknowledgment from a case.
+
+
+        Requires the following permissions:
+
+        - `case:Acknowledge`'
+      operationId: CasesService_UnacknowledgeCase
+      parameters:
+      - description: ID of the case to unacknowledge. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to unacknowledge. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnacknowledgeCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Unacknowledge a case
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Acknowledge
+  /cases/assigned/v1:
+    put:
+      description: 'Assign multiple cases to a specific user in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Assign`'
+      operationId: CasesService_BulkAssign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to assign multiple cases to a user
+              properties:
+                assignee:
+                  allOf:
+                  - $ref: '#/components/schemas/cases.v1.UserDetails'
+                  description: User to assign the cases to
+                ids:
+                  description: IDs of the cases to assign. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                  examples:
+                  - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+                    - CASE-123
+                  items:
+                    description: IDs of the cases to assign. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                    maxLength: 64
+                    minLength: 1
+                    pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+                    type: string
+                  maxItems: 1000
+                  minItems: 1
+                  type: array
+              required:
+              - ids
+              - assignee
+              title: Bulk assign request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkAssignResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Assign multiple cases to a user
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Assign
+    delete:
+      description: 'Remove the current assignee from multiple cases in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Assign`'
+      operationId: CasesService_BulkUnassign
+      parameters:
+      - description: IDs of the cases to unassign. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: query
+        name: ids
+        required: false
+        schema:
+          description: IDs of the cases to unassign. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+            - CASE-123
+          items:
+            description: IDs of the cases to unassign. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+            maxLength: 64
+            minLength: 1
+            pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+            type: string
+          maxItems: 1000
+          minItems: 1
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkUnassignResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Remove assignment from multiple cases
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Assign
+  /cases/assigned/v1/{id}:
+    post:
+      description: 'Assign a case to a specific user.
+
+
+        Requires the following permissions:
+
+        - `case:Assign`'
+      operationId: CasesService_AssignCase
+      parameters:
+      - description: ID of the case to assign. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to assign. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to assign a case to a specific user.
+              properties:
+                assignee:
+                  allOf:
+                  - $ref: '#/components/schemas/cases.v1.UserDetails'
+                  description: User to assign the case to
+              required:
+              - assignee
+              title: Assign case request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Assign a case to a user
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Assign
+    delete:
+      description: 'Remove the current assignee from a case.
+
+
+        Requires the following permissions:
+
+        - `case:Assign`'
+      operationId: CasesService_UnassignCase
+      parameters:
+      - description: ID of the case to unassign. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to unassign. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnassignCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Remove case assignment
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Assign
+  /cases/cases/v1:
+    post:
+      description: 'List cases using filters, pagination and custom ordering.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CasesService_ListCases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to list cases with filtering and pagination
+              properties:
+                filters:
+                  allOf:
+                  - $ref: '#/components/schemas/CaseFilters'
+                  description: Filters to apply when listing cases
+                orderBy:
+                  allOf:
+                  - $ref: '#/components/schemas/CaseOrderBy'
+                  description: 'Sorting parameters to control the order of returned cases. Supports single-field sorting only. Example: sort by priority in descending order to show highest priority cases first.'
+                pagination:
+                  allOf:
+                  - $ref: '#/components/schemas/cases.v1.PaginationRequest'
+                  description: Pagination parameters
+              title: List cases request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCasesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List cases with filters
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/cases/v1/{case_id}/deep-links:
+    get:
+      description: 'Retrieve deep-link URLs for a case.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CasesService_GetCaseDeepLinks
+      parameters:
+      - $ref: '#/components/parameters/case_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCaseDeepLinksResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get case deep links
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/cases/v1/{id}:
+    get:
+      description: 'Retrieve detailed information about a single case by its unique identifier.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CasesService_GetCase
+      parameters:
+      - $ref: '#/components/parameters/id_2'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get case by ID
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Read
+    put:
+      description: 'Apply a partial update (patch) to a case.
+
+
+        Requires the following permissions:
+
+        - `case:Update`'
+      operationId: CasesService_UpdateCase
+      parameters:
+      - description: ID of the case to update. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to update. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Partial set of fields to update on the case
+              properties:
+                resolutionReason:
+                  description: New case resolution reason. Leading and trailing whitespace is trimmed before the length limits are applied.
+                  examples:
+                  - False alarm
+                  maxLength: 500
+                  minLength: 1
+                  pattern: ^[\s\S]*\S[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                title:
+                  description: New case title. Leading and trailing whitespace is trimmed before the length limits are applied. A title longer than 512 characters is truncated to 512 characters, ending with "…".
+                  examples:
+                  - Database connection investigation
+                  maxLength: 512
+                  minLength: 1
+                  pattern: ^[\s\S]*\S[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Case patch
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update case fields
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Update
+  /cases/closed/v1:
+    post:
+      description: 'Close multiple cases in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Close`'
+      operationId: CasesService_BulkClose
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to close multiple cases
+              properties:
+                ids:
+                  description: IDs of the cases to close. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                  examples:
+                  - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+                    - CASE-123
+                  items:
+                    description: IDs of the cases to close. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                    maxLength: 64
+                    minLength: 1
+                    pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+                    type: string
+                  maxItems: 1000
+                  minItems: 1
+                  type: array
+              required:
+              - ids
+              title: Bulk close request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkCloseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Close multiple cases
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Close
+  /cases/closed/v1/{id}:
+    post:
+      description: 'Close a case that no longer requires action.
+
+
+        Requires the following permissions:
+
+        - `case:Close`'
+      operationId: CasesService_CloseCase
+      parameters:
+      - description: ID of the case to close. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to close. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Close a case
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Close
+  /cases/filter-values/v1:
+    post:
+      description: 'Retrieve available filter and aggregation values for cases.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CasesService_GetFilterValues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to retrieve available filter and aggregation values for cases.
+              properties:
+                filters:
+                  allOf:
+                  - $ref: '#/components/schemas/CaseFilters'
+                  description: Filters to apply when computing available values
+              title: Get case filter values request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cases.v1.GetFilterValuesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get available filter values
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/grouping-keys/v1:
+    get:
+      description: 'Retrieve all available grouping keys that can be used for organizing and filtering Cases.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CasesService_GetGroupingKeys
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetGroupingKeysResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get available grouping keys
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/indicators/v1/get:
+    post:
+      description: 'Retrieve a case by its source indicator. Currently supports Prometheus AlertManager alerts identified by fingerprint and start time.
+
+
+        Requires the following permissions:
+
+        - `case:Read`'
+      operationId: CasesService_GetCaseByIndicator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to retrieve a case associated with a given alert indicator.
+              properties:
+                prometheusAlert:
+                  $ref: '#/components/schemas/PrometheusAlertManagerIndicator'
+              title: Get case by indicator request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                case:
+                  category: CASE_CATEGORY_AVAILABILITY
+                  createTime: '2025-09-22T10:30:00.000Z'
+                  groupings: []
+                  id: 3f166e9f-3c88-4af2-b52e-138f339dab3e
+                  impactedEntities: []
+                  labels: []
+                  priority: CASE_PRIORITY_P2
+                  status: CASE_STATUS_ACKNOWLEDGED
+                  title: Database outage investigation
+              schema:
+                $ref: '#/components/schemas/GetCaseByIndicatorResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get case by indicator
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Read
+  /cases/priority-override/v1:
+    post:
+      description: 'Override the priority with for multiple cases in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Update`'
+      operationId: CasesService_BulkSetPriorityOverride
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to override priority for multiple cases
+              properties:
+                ids:
+                  description: IDs of the cases to override priority for. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                  examples:
+                  - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+                    - CASE-123
+                  items:
+                    description: IDs of the cases to override priority for. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                    maxLength: 64
+                    minLength: 1
+                    pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+                    type: string
+                  maxItems: 1000
+                  minItems: 1
+                  type: array
+                priority:
+                  allOf:
+                  - $ref: '#/components/schemas/CasePriority'
+                  description: Priority value to override with
+                  examples:
+                  - CASE_PRIORITY_P3
+              required:
+              - ids
+              - priority
+              title: Bulk override priority request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkSetPriorityOverrideResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Override priority for multiple cases
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Update
+    delete:
+      description: 'Remove previously set priority overrides from multiple cases in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Update`'
+      operationId: CasesService_BulkClearPriorityOverride
+      parameters:
+      - description: IDs of the cases to clear priority override for. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: query
+        name: ids
+        required: false
+        schema:
+          description: IDs of the cases to clear priority override for. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+            - CASE-123
+          items:
+            description: IDs of the cases to clear priority override for. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+            maxLength: 64
+            minLength: 1
+            pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+            type: string
+          maxItems: 1000
+          minItems: 1
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkClearPriorityOverrideResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Remove priority override from multiple cases
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Update
+  /cases/priority-override/v1/{id}:
+    parameters:
+    - $ref: '#/components/parameters/id_2'
+    put:
+      description: 'Override a case''s computed priority with a specific value.
+
+
+        Requires the following permissions:
+
+        - `case:Update`'
+      operationId: CasesService_SetPriorityOverride
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to override a case's computed priority with a specific value.
+              properties:
+                priority:
+                  allOf:
+                  - $ref: '#/components/schemas/CasePriority'
+                  description: Priority value to override with
+                  examples:
+                  - CASE_PRIORITY_P1
+              required:
+              - priority
+              title: Set priority override request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetPriorityOverrideResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Set priority override
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Update
+    delete:
+      description: 'Remove a previously set priority override for a case.
+
+
+        Requires the following permissions:
+
+        - `case:Update`'
+      operationId: CasesService_ClearPriorityOverride
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearPriorityOverrideResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Remove priority override
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Update
+  /cases/resolved/v1:
+    post:
+      description: 'Resolve multiple cases in a single operation.
+
+
+        Requires the following permissions:
+
+        - `case:Close`'
+      operationId: CasesService_BulkResolve
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to resolve multiple cases
+              properties:
+                ids:
+                  description: IDs of the cases to resolve. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                  examples:
+                  - - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+                    - CASE-123
+                  items:
+                    description: IDs of the cases to resolve. Each entry accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+                    maxLength: 64
+                    minLength: 1
+                    pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+                    type: string
+                  maxItems: 1000
+                  minItems: 1
+                  type: array
+                reason:
+                  description: Reason for resolution
+                  examples:
+                  - These cases are no longer active.
+                  maxLength: 4096
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - ids
+              title: Bulk resolve request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkResolveResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Resolve multiple cases
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Close
+  /cases/resolved/v1/{id}:
+    put:
+      description: 'Mark a case as resolved.
+
+
+        Requires the following permissions:
+
+        - `case:Close`'
+      operationId: CasesService_ResolveCase
+      parameters:
+      - description: ID of the case to resolve. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case to resolve. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+          maxLength: 64
+          minLength: 1
+          pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to mark a case as resolved.
+              properties:
+                reason:
+                  description: Reason to resolve
+                  examples:
+                  - This case is not applicable.
+                  maxLength: 500
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Resolve case request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResolveCaseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Resolve a case
+      tags:
+      - Cases service
+      x-coralogixPermissions:
+      - case:Close
+components:
+  schemas:
+    ApmServiceEntityFilter:
+      title: APM service entity filter
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the impacted APM service to filter on
+          examples:
+          - payments-api
+      description: Selects cases impacting the APM service with this name (matched case-insensitively).
+    CaseCategory:
+      title: Case category
+      enum:
+      - CASE_CATEGORY_UNSPECIFIED
+      - CASE_CATEGORY_SECURITY
+      - CASE_CATEGORY_AVAILABILITY
+      type: string
+      description: Broad category of the case (e.g., security, availability).
+    DateRangeMode:
+      title: Date range mode
+      enum:
+      - DATE_RANGE_MODE_UNSPECIFIED
+      - DATE_RANGE_MODE_ACTIVE_WINDOW
+      - DATE_RANGE_MODE_CREATED_AT
+      type: string
+      description: Determines how the date range is applied to cases (active window vs creation time).
+    CaseOrderBy:
+      title: Case ordering specification
+      type: object
+      properties:
+        direction:
+          allOf:
+          - $ref: '#/components/schemas/CaseOrderByDirection'
+          description: Order of sorting by field.
+          examples:
+          - CASE_ORDER_BY_DIRECTION_DESCENDING
+        field:
+          allOf:
+          - $ref: '#/components/schemas/CaseOrderByField'
+          description: Field by which primary sorting will be performed.
+          examples:
+          - CASE_ORDER_BY_FIELD_PRIORITY
+      description: Defines how cases should be sorted in the response. By default, cases are sorted by creation time and id in descending order. With this field, one can specify the primary sorting field and direction.
+    AlertIndicator:
+      title: Alert indicator
+      required:
+      - alertId
+      - latestAlertVersion
+      - priority
+      - groupingType
+      - state
+      - triggerTime
+      - alertVersions
+      - permutations
+      type: object
+      properties:
+        alertId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: The unique alert ID (stable across versions).
+          examples:
+          - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+        alertVersions:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 64
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Array of all alert version IDs for this indicator in the case. Includes the latest_alert_version.
+          description: Array of all alert version IDs for this indicator in the case. Includes the latest_alert_version.
+          examples:
+          - - 1eae3615-79e7-4b54-88e0-6a77def653bf
+            - 2fbf4726-8af8-5c65-99f1-7b88ef764c0g
+        customDataprimeQueries:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 65535
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Array of custom DataPrime queries configured on the alert definition.
+          description: Array of custom DataPrime queries configured on the alert definition.
+          examples:
+          - - source logs | filter $d.severity == 'ERROR'
+        groupingType:
+          allOf:
+          - $ref: '#/components/schemas/AlertGroupingType'
+          description: How this indicator relates to other alerts (composite/combination/none).
+          examples:
+          - GROUPING_TYPE_COMPOSITE_ALERT
+        latestAlertVersion:
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Last seen version ID of the triggered alert definition.
+          examples:
+          - 1eae3615-79e7-4b54-88e0-6a77def653bf
+        permutations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertIndicator.Permutation'
+          description: Array of the alert permutations.
+          examples:
+          - - permutation:
+                service: payments
+                cluster: prod
+            - permutation:
+                service: billing
+                cluster: prod
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/IndicatorPriority'
+          description: Priority of the alert at trigger time.
+          examples:
+          - ALERT_PRIORITY_P2
+        resolveTime:
+          description: When present, timestamp when the alert resolved.
+          examples:
+          - '2025-09-22T11:05:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        resolveWithSignal:
+          description: When true or omitted, indicates that Case will be resolved together with signal. Otherwise, Case will stay open and wait for manual resolution.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/IndicatorState'
+          description: Current lifecycle state of the indicator.
+          examples:
+          - ALERT_INDICATOR_STATE_TRIGGERED
+        suppression:
+          allOf:
+          - $ref: '#/components/schemas/AlertSuppression'
+          description: When present, details about the suppression status of the alert indicator.
+        triggerTime:
+          description: Timestamp when the alert triggered.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Data describing a triggered alert instance and its lifecycle relative to a case.
+    NoConnector:
+      type: object
+      additionalProperties: false
+      description: No connector.
+    OllyAnalysisRootCauseConfidence:
+      enum:
+      - OLLY_ANALYSIS_ROOT_CAUSE_CONFIDENCE_UNSPECIFIED
+      - OLLY_ANALYSIS_ROOT_CAUSE_CONFIDENCE_LOW
+      - OLLY_ANALYSIS_ROOT_CAUSE_CONFIDENCE_MEDIUM
+      - OLLY_ANALYSIS_ROOT_CAUSE_CONFIDENCE_HIGH
+      type: string
+      description: Confidence level Olly assigns to the root-cause hypothesis.
+    PrometheusAlertIndicator:
+      title: Prometheus alert indicator
+      required:
+      - alertGroupId
+      - status
+      - priority
+      - groupLabels
+      - receiver
+      - externalUrl
+      - receivedAt
+      - updatedAt
+      - alerts
+      type: object
+      properties:
+        alertGroupId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Identifier of the Prometheus alerts group.
+          examples:
+          - 5d41402abc4b2a76b9719d911017c592
+        alerts:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PrometheusAlert'
+          description: Individual alerts contained in this group.
+        externalUrl:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: External URL of the Alertmanager instance that emitted the group.
+          examples:
+          - https://alertmanager.example.com
+        groupLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Labels used to group the alerts.
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/IndicatorPriority'
+          description: Priority of the Prometheus alert group.
+          examples:
+          - INDICATOR_PRIORITY_P2
+        receivedAt:
+          description: Timestamp when the alert group was first received.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        receiver:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the Alertmanager receiver that handled the group.
+          examples:
+          - webhook-coralogix
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PrometheusAlertStatus'
+          description: Current status of the Prometheus alert group.
+        updatedAt:
+          description: Timestamp when the alert group was last updated.
+          examples:
+          - '2025-09-22T11:05:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Data describing a triggered Prometheus alert group and its constituent alerts.
+    CaseFilters:
+      title: Case filters
+      type: object
+      properties:
+        alertFilters:
+          allOf:
+          - $ref: '#/components/schemas/AlertFilters'
+          description: Alert-based filters applied to cases. When absent, alert ID aggregations are not computed.
+        assignees:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AssigneeOption'
+          description: List of case assignees to filter on
+          examples:
+          - - unassigned: {}
+        breached:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/KPIFilter'
+          description: KPI-based filters applied to cases. When absent, KPI filter is not applied at all.
+          examples:
+          - - KPI_FILTER_NOT_BREACHED
+        caseLabelsFilter:
+          allOf:
+          - $ref: '#/components/schemas/CaseLabelsFilter'
+          description: Filter based on entity labels associated with cases
+        categories:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseCategory'
+          description: List of case categories to filter on
+          examples:
+          - - CASE_CATEGORY_SECURITY
+            - CASE_CATEGORY_AVAILABILITY
+        connectorTypeFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectorTypeFilter'
+          description: Connector type filters applied to cases, including cases with no connector linked.
+          examples:
+          - - connector_type: CONNECTOR_TYPE_SLACK
+            - no_connector: {}
+        dateRange:
+          allOf:
+          - $ref: '#/components/schemas/DateRangeFilter'
+          description: Date range filter applied to case active time
+        groupings:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroup'
+          description: Grouping-based filters (e.g., service, subsystem)
+          examples:
+          - - key: service
+              values:
+              - payments
+              - auth
+        impactedEntities:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ImpactedEntityFilter'
+          description: Impacted APM entity filters. A case is returned if it impacts ANY of these entities (OR logic). An empty list applies no filtering.
+          examples:
+          - - apmService:
+                name: payments-api
+            - apmDatabase:
+                name: orders-db
+        indicatorTypes:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorType'
+          description: List of indicator types to filter on
+        labels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroup'
+          description: Label-based filters applied to cases
+          examples:
+          - - key: team
+              values:
+              - backend
+        priorities:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CasePriority'
+          description: List of case priorities to filter on
+          examples:
+          - - CASE_PRIORITY_P1
+            - CASE_PRIORITY_P2
+        statuses:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseStatus'
+          description: List of case statuses to filter on
+        textSearch:
+          description: Test search query applied to case titles
+          examples:
+          - Vulnerability
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Filters applied when querying cases, including statuses, priorities, categories, groupings, and labels.
+    KPIFilter:
+      enum:
+      - KPI_FILTER_UNSPECIFIED
+      - KPI_FILTER_TIME_TO_ACKNOWLEDGE_BREACHED
+      - KPI_FILTER_TIME_TO_RESOLVE_BREACHED
+      - KPI_FILTER_NOT_BREACHED
+      - KPI_FILTER_TIME_TO_UPDATE_BREACHED
+      type: string
+    AssignCaseResponse:
+      title: Assign case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after assigning a user to it.
+      description: Response containing the case after a user assignment.
+    BreachedKPI:
+      title: Breached KPI
+      required:
+      - id
+      - createdAt
+      - kpiType
+      - casePriority
+      - breachedAt
+      - breachStatus
+      type: object
+      properties:
+        breachStatus:
+          allOf:
+          - $ref: '#/components/schemas/BreachStatus'
+          description: Current status of the KPI breach
+          examples:
+          - BREACH_STATUS_BREACHED
+        breachedAt:
+          description: When the KPI breach occurred
+          examples:
+          - '2025-09-22T11:00:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        casePriority:
+          allOf:
+          - $ref: '#/components/schemas/KPIPriority'
+          description: KPI (Case) priority at the time of KPI breach
+          examples:
+          - KPI_PRIORITY_P1
+        createdAt:
+          description: When the breached KPI record was created
+          examples:
+          - '2025-09-22T11:00:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Unique identifier for the breached KPI
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+        kpiType:
+          allOf:
+          - $ref: '#/components/schemas/KPIType'
+          description: Type of the breached KPI
+          examples:
+          - KPI_TYPE_TIME_TO_ACKNOWLEDGE
+      description: Breached KPI details, including the type of KPI, the case priority at the time of breach, and when the breach occurred together with current status. This information helps understand which KPIs were not met for a case and when.
+    UnassignCaseResponse:
+      title: Unassign case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after removing its assignee.
+      description: Response containing the case after removing its assignee.
+    IndicatorState:
+      title: Indicator state
+      enum:
+      - INDICATOR_STATE_UNSPECIFIED
+      - INDICATOR_STATE_TRIGGERED
+      - INDICATOR_STATE_RESOLVED
+      - INDICATOR_STATE_NO_DATA
+      type: string
+      description: Current lifecycle state of an alert indicator.
+    CloseCaseResponse:
+      title: Close case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after closing it.
+      description: Response containing the case after it has been closed.
+    StatusAggregation:
+      title: Status aggregation
+      type: object
+      properties:
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases with this status
+          format: int64
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CaseStatus'
+          description: Case status
+      description: Count of cases grouped by case status.
+    ClearPriorityOverrideResponse:
+      title: Clear priority override response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after removing the priority override.
+      description: Response containing the case after clearing its priority override.
+    ApmServiceEntity:
+      title: APM service entity
+      type: object
+      properties:
+        language:
+          description: Programming language of the APM service
+          examples:
+          - go
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the impacted APM service
+          examples:
+          - payments-api
+      description: Application Performance Monitoring service identified as impacted by a case.
+    ValueCount:
+      title: Filter value count
+      type: object
+      properties:
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Count of cases for this value
+          format: int64
+          examples:
+          - 8
+        value:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Filter value
+          examples:
+          - service:payments
+      description: Number of cases that share a single filter group value.
+    AlertDefinitionMuted:
+      title: Alert definition is muted
+      type: object
+      additionalProperties: false
+      description: Object indicating the muted state of the alert definition for an alert indicator.
+    KPIType:
+      enum:
+      - KPI_TYPE_UNSPECIFIED
+      - KPI_TYPE_TIME_TO_ACKNOWLEDGE
+      - KPI_TYPE_TIME_TO_RESOLVE
+      - KPI_TYPE_TIME_TO_UPDATE
+      type: string
+      description: Kpi type.
+    Resolved:
+      title: Resolved Prometheus alert status
+      required:
+      - triggeredAt
+      - resolvedAt
+      type: object
+      properties:
+        resolvedAt:
+          description: Timestamp when the alert was resolved.
+          examples:
+          - '2025-09-22T11:05:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        triggeredAt:
+          description: Timestamp when the alert was originally triggered.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Status payload for a resolved Prometheus alert.
+    GetCaseResponse:
+      title: Get case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: The requested case
+      description: Response containing the requested case
+    LogsLink:
+      title: Logs link
+      type: object
+      properties:
+        logs:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Explore logs URL pre-filtered to the alert query and case time window.
+      description: Deep link to explore logs related to an alert indicator on a case.
+    FilterAggregation:
+      title: Filter aggregation
+      type: object
+      properties:
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases matching this filter
+          format: int64
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/v1.KeyValue'
+          description: Key/value filter that this count corresponds to
+      description: Count of cases matching a single key/value filter combination.
+    ApmDatabaseEntityFilter:
+      title: APM database entity filter
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the impacted database to filter on
+          examples:
+          - orders-db
+      description: Selects cases impacting the APM database with this name (matched case-insensitively).
+    DateRangeFilter:
+      title: Date Range Filter
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        from:
+          description: Timestamp marking the start of the date range
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/DateRangeMode'
+          description: Determines how the date range is applied. ACTIVE_WINDOW (default) returns cases active during the range. CREATED_AT returns cases created within the range.
+          examples:
+          - DATE_RANGE_MODE_ACTIVE_WINDOW
+        to:
+          description: Timestamp marking the end of the date range
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: A filter defining a date range with 'from' and 'to' timestamps.
+    PrometheusAlertQuery:
+      title: Prometheus alert query
+      required:
+      - promql
+      type: object
+      properties:
+        promql:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: PromQL expression that triggered the alert.
+          examples:
+          - histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+      description: Query backing a Prometheus alert.
+    ListCasesResponse:
+      title: List cases response
+      required:
+      - cases
+      - pagination
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Cases matching the provided filters.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/cases.v1.PaginationResponse'
+          description: Pagination cursor for retrieving the next page of cases.
+        pbacTruncated:
+          type: boolean
+          description: Indicates whether the list of cases was truncated due to PBAC (Policy-Based Access Control) restrictions. If true, the user may not have access to all cases that match the filters.
+      description: Response containing a list of cases and pagination information
+    cases.v1.GetFilterValuesResponse:
+      title: Get case filter values response
+      required:
+      - priorityAggregations
+      - categoryAggregations
+      - groupingAggregations
+      - labelAggregations
+      - statusAggregations
+      - flatLabelsAggregation
+      - alertIdAggregations
+      type: object
+      properties:
+        alertIdAggregations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertIdAggregation'
+          description: Aggregated case counts per alert definition ID. Only populated when alert_filters is provided in the request.
+        assigneeAggregations:
+          allOf:
+          - $ref: '#/components/schemas/AssigneeAggregation'
+          description: Aggregated case counts grouped by assignee.
+        categoryAggregations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAggregation'
+          description: Aggregated case counts grouped by category.
+        flatLabelsAggregation:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterAggregation'
+          description: Aggregated case counts grouped by individual flat label key/value pairs.
+        groupingAggregations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroupAggregation'
+          description: Aggregated case counts grouped by grouping key/value pairs.
+        labelAggregations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroupAggregation'
+          description: Aggregated case counts grouped by label key/value pairs.
+        priorityAggregations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PriorityAggregation'
+          description: Aggregated case counts grouped by priority.
+        statusAggregations:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusAggregation'
+          description: Aggregated case counts grouped by status.
+      description: Aggregated counts for building filters in the UI
+    FilterGroupAggregation:
+      title: Filter group aggregation
+      required:
+      - valueCounts
+      type: object
+      properties:
+        key:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Filter group key
+          examples:
+          - service
+        valueCounts:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueCount'
+          description: Aggregations per value
+      description: Aggregated case counts for a single filter group key, with one entry per observed value.
+    CaseIndicators:
+      title: Case indicators
+      required:
+      - alertIndicators
+      type: object
+      properties:
+        alertIndicators:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertIndicator'
+          description: List of alert indicators contributing to the case
+        genericIndicators:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/GenericIndicator'
+          description: List of generic indicators contributing to the case
+        prometheusAlertIndicators:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PrometheusAlertIndicator'
+          description: List of Prometheus alert indicators contributing to the case
+      description: Grouped indicators contributing to the case.
+    BulkResolveResponse:
+      title: Bulk resolve response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    OllyAnalysisStatus:
+      enum:
+      - STATUS_UNSPECIFIED
+      - STATUS_OK
+      - STATUS_CAPACITY_REACHED
+      - STATUS_FAILED
+      type: string
+      description: Olly analysis outcome status.
+    PriorityAggregation:
+      title: Priority aggregation
+      type: object
+      properties:
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases with this priority
+          format: int64
+          examples:
+          - 17
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Case priority
+      description: Count of cases grouped by case priority.
+    AlertIndicatorDeepLink:
+      title: Alert indicator deep link
+      type: object
+      oneOf:
+      - required:
+        - logs
+        type: object
+      - required:
+        - metric
+        type: object
+      - required:
+        - rum
+        type: object
+      - required:
+        - slo
+        type: object
+      - required:
+        - tracing
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - logs
+            type: object
+          - required:
+            - metric
+            type: object
+          - required:
+            - rum
+            type: object
+          - required:
+            - slo
+            type: object
+          - required:
+            - tracing
+            type: object
+      properties:
+        alertDef:
+          maxLength: 2048
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL to the alert definition that triggered the indicator. Empty when not available.
+        logs:
+          $ref: '#/components/schemas/LogsLink'
+        metric:
+          $ref: '#/components/schemas/MetricLink'
+        rum:
+          $ref: '#/components/schemas/RumLink'
+        slo:
+          $ref: '#/components/schemas/SloLink'
+        tracing:
+          $ref: '#/components/schemas/TracingLink'
+      description: Deep links derived from a single alert indicator on a case.
+    AssigneeAggregation:
+      title: Assignee aggregation
+      required:
+      - assignedCounts
+      type: object
+      properties:
+        assignedCounts:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AssigneeCount'
+          description: Counts of cases grouped by assignee
+        unassignedCount:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases without an assignee
+          format: int64
+      description: Case counts broken down by assignee plus the count of unassigned cases.
+    GetGroupingKeysResponse:
+      title: Get grouping keys response
+      required:
+      - groupingKeys
+      type: object
+      properties:
+        groupingKeys:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: List of available grouping keys for organizing and filtering cases
+          description: List of available grouping keys for organizing and filtering cases
+          examples:
+          - - service
+            - team
+            - environment
+            - severity
+            - source
+      description: Response containing available grouping keys
+    CaseOrderByDirection:
+      title: Case order direction
+      enum:
+      - CASE_ORDER_BY_DIRECTION_UNSPECIFIED
+      - CASE_ORDER_BY_DIRECTION_ASCENDING
+      - CASE_ORDER_BY_DIRECTION_DESCENDING
+      type: string
+      description: Direction in which cases are sorted (ascending or descending).
+    ServiceNow:
+      title: ServiceNow resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved through a ServiceNow integration.
+    SloLink:
+      title: SLO link
+      type: object
+      properties:
+        slo:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: SLO overview URL with the permutation preselected.
+      description: Deep link to the SLO overview for an alert indicator on a case.
+    AssigneeCount:
+      title: Assignee count
+      type: object
+      properties:
+        assignee:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Identifier of the assignee
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases assigned to this assignee
+          format: int64
+      description: Count of cases for a single assignee.
+    cases.v1.UserDetails:
+      title: User details
+      type: object
+      properties:
+        userId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Unique user identifier
+          examples:
+          - 3af152ee-9eaf-4803-87f1-23c5fb2fbaa0
+      description: Minimal user identity information used in case assignments.
+    OllyAnalysisPayload:
+      title: Olly analysis payload
+      type: object
+      properties:
+        generatedAt:
+          description: Timestamp when the analysis was generated.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        investigationSummary:
+          maxLength: 8192
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Natural-language summary of the Olly investigation.
+          examples:
+          - Latency spike on checkout-service correlates with a deploy of v1.42 and elevated DB pool saturation.
+        remediationRecommendations:
+          maxItems: 50
+          minItems: 0
+          type: array
+          items:
+            maxLength: 2048
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Ordered list of remediation steps, one recommendation per element.
+          description: Ordered list of remediation steps, one recommendation per element.
+          examples:
+          - - Roll back checkout-service to v1.41
+            - Increase orders Postgres pool size to 200
+        rootCause:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Olly's hypothesised root cause for the case.
+          examples:
+          - Connection-pool exhaustion on the orders Postgres instance.
+        rootCauseConfidence:
+          allOf:
+          - $ref: '#/components/schemas/OllyAnalysisRootCauseConfidence'
+          description: Confidence level Olly assigns to the root-cause hypothesis.
+          examples:
+          - OLLY_ANALYSIS_ROOT_CAUSE_CONFIDENCE_HIGH
+      description: Typed analysis payload returned by Olly. Present only when status = STATUS_OK.
+    GetCaseDeepLinksResponse:
+      title: Get case deep links response
+      required:
+      - deepLinks
+      type: object
+      properties:
+        deepLinks:
+          allOf:
+          - $ref: '#/components/schemas/CaseDeepLinks'
+          description: Deep links for the case.
+      description: Response containing the deep links for the requested case
+    CaseLabelsFilter:
+      title: Case Labels Filter
+      type: object
+      properties:
+        flatLabels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.KeyValue'
+          description: List of case key:value labels to filter on
+          examples:
+          - - key: region
+              value: us-west-1
+      description: Filters applied against Case's labels when queries/filters counted
+    ImpactedEntityFilter:
+      title: Impacted entity filter
+      type: object
+      oneOf:
+      - required:
+        - apmService
+        type: object
+      - required:
+        - apmDatabase
+        type: object
+      properties:
+        apmDatabase:
+          $ref: '#/components/schemas/ApmDatabaseEntityFilter'
+        apmService:
+          $ref: '#/components/schemas/ApmServiceEntityFilter'
+      description: Selects cases by an impacted APM entity (service or database).
+    KPIBreaches:
+      title: KPI breaches
+      required:
+      - breachedKpis
+      type: object
+      properties:
+        breachedKpis:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/BreachedKPI'
+          description: List of breached KPIs for the case
+          examples:
+          - - kpi_type: KPI_TYPE_TIME_TO_ACKNOWLEDGE
+              case_priority: CASE_PRIORITY_P1
+              resolution_breached_at: '2025-09-22T11:00:00.000Z'
+      description: Current or final KPI breach timestamps for the case. A value is present only when the KPI has been breached.
+    System:
+      title: System resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved automatically by the Cases system.
+    CaseResolver.ApiKey:
+      title: API key resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved using an API key.
+    IndicatorType:
+      enum:
+      - INDICATOR_TYPE_UNSPECIFIED
+      - INDICATOR_TYPE_ALERT
+      - INDICATOR_TYPE_PROMETHEUS_ALERTMANAGER
+      - INDICATOR_TYPE_ERROR_TRACKING
+      type: string
+    AlertIdAggregation:
+      title: Alert ID aggregation
+      type: object
+      properties:
+        alertId:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Alert definition ID
+          examples:
+          - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases associated with this alert ID
+          format: int64
+          examples:
+          - 5
+      description: Count of cases associated with a single alert definition ID.
+    BulkSetPriorityOverrideResponse:
+      title: Bulk override priority response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    BreachStatus:
+      title: Breach status
+      enum:
+      - BREACH_STATUS_UNSPECIFIED
+      - BREACH_STATUS_BREACHED
+      - BREACH_STATUS_MITIGATED
+      type: string
+      description: Status of a KPI breach (e.g., still breached or mitigated).
+    OllyAnalysis:
+      title: Olly analysis
+      type: object
+      properties:
+        completedAt:
+          description: When the analysis attempt completed.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        payload:
+          allOf:
+          - $ref: '#/components/schemas/OllyAnalysisPayload'
+          description: Typed analysis payload returned by Olly. Present only when status = STATUS_OK.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/OllyAnalysisStatus'
+          description: Outcome of the analysis attempt.
+          examples:
+          - STATUS_OK
+      description: Result of an automated Olly analysis attached to a case.
+    BulkAssignResponse:
+      title: Bulk assign response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    SetPriorityOverrideResponse:
+      title: Set priority override response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after applying the priority override.
+      description: Response containing the case with its updated priority override.
+    ConnectorTypeFilter:
+      title: Connector type filters
+      type: object
+      oneOf:
+      - required:
+        - connectorType
+        type: object
+      - required:
+        - noConnector
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - connectorType
+            type: object
+          - required:
+            - noConnector
+            type: object
+      properties:
+        connectorType:
+          $ref: '#/components/schemas/v1.ConnectorType'
+        noConnector:
+          $ref: '#/components/schemas/NoConnector'
+      description: Filters applied to cases based on connector types.
+    BulkUnassignResponse:
+      title: Bulk unassign response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    v1.KeyValue:
+      title: Key-value pair
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Key of the pair (e.g., label or grouping name)
+          examples:
+          - service
+        value:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Value associated with the key
+          examples:
+          - payments
+      description: Represents a simple key-value pair, often used for labels or groupings in cases.
+    BulkCloseResponse:
+      title: Bulk close response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    CaseResolver:
+      title: Case resolver
+      type: object
+      oneOf:
+      - required:
+        - system
+        type: object
+      - required:
+        - cxUser
+        type: object
+      - required:
+        - serviceNow
+        type: object
+      - required:
+        - apiKey
+        type: object
+      - required:
+        - slack
+        type: object
+      - required:
+        - prometheusAlertManager
+        type: object
+      - required:
+        - pagerDuty
+        type: object
+      - required:
+        - microsoftTeams
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - system
+            type: object
+          - required:
+            - cxUser
+            type: object
+          - required:
+            - serviceNow
+            type: object
+          - required:
+            - apiKey
+            type: object
+          - required:
+            - slack
+            type: object
+          - required:
+            - prometheusAlertManager
+            type: object
+          - required:
+            - pagerDuty
+            type: object
+          - required:
+            - microsoftTeams
+            type: object
+      properties:
+        apiKey:
+          allOf:
+          - $ref: '#/components/schemas/CaseResolver.ApiKey'
+          description: The api key.
+        cxUser:
+          $ref: '#/components/schemas/CoralogixUser'
+        microsoftTeams:
+          $ref: '#/components/schemas/MicrosoftTeams'
+        pagerDuty:
+          $ref: '#/components/schemas/PagerDuty'
+        prometheusAlertManager:
+          $ref: '#/components/schemas/PrometheusAlertManager'
+        serviceNow:
+          $ref: '#/components/schemas/ServiceNow'
+        slack:
+          $ref: '#/components/schemas/Slack'
+        system:
+          $ref: '#/components/schemas/System'
+      description: Entity responsible for resolving the case.
+    EntityLink:
+      title: Entity link
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL to the entity in the originating system.
+          examples:
+          - https://app.coralogix.com/error-tracking/issues/abc123
+      description: A URL reference to an entity in the originating system.
+    IndicatorPriority:
+      title: Indicator priority
+      enum:
+      - INDICATOR_PRIORITY_UNSPECIFIED
+      - INDICATOR_PRIORITY_P1
+      - INDICATOR_PRIORITY_P2
+      - INDICATOR_PRIORITY_P3
+      - INDICATOR_PRIORITY_P4
+      - INDICATOR_PRIORITY_P5
+      type: string
+      description: Priority of an alert indicator at trigger time.
+    TracingLink:
+      title: Tracing link
+      type: object
+      properties:
+        tracing:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Explore traces URL pre-filtered to the alert query and case time window.
+      description: Deep link to explore traces related to an alert indicator on a case.
+    CoralogixUser:
+      title: Coralogix user resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved by a Coralogix user.
+    PrometheusAlertStatus:
+      title: Prometheus alert status
+      type: object
+      oneOf:
+      - required:
+        - triggered
+        type: object
+      - required:
+        - resolved
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - triggered
+            type: object
+          - required:
+            - resolved
+            type: object
+      properties:
+        resolved:
+          $ref: '#/components/schemas/Resolved'
+        triggered:
+          $ref: '#/components/schemas/Triggered'
+      description: Lifecycle status of a Prometheus alert or alert group.
+    UpdateCaseResponse:
+      title: Update case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Updated case
+      description: Response containing the updated case
+    Case:
+      title: Case
+      required:
+      - id
+      - title
+      - status
+      - priority
+      - category
+      - createTime
+      - labels
+      - groupings
+      - impactedEntities
+      type: object
+      properties:
+        acknowledgeTime:
+          description: When the case was acknowledged
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        aiSummary:
+          description: AI summary of the case. Leading and trailing whitespace is trimmed before the length limits are applied.
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        assignee:
+          allOf:
+          - $ref: '#/components/schemas/cases.v1.UserDetails'
+          description: Assigned user details
+        caseIndicators:
+          allOf:
+          - $ref: '#/components/schemas/CaseIndicators'
+          description: Grouped case indicators
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CaseCategory'
+          description: Category of the case
+          examples:
+          - CASE_CATEGORY_AVAILABILITY
+        createTime:
+          description: When the case was created
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        duration:
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          description: Measures how long the Case is/was opened in milliseconds
+        groupings:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.KeyValue'
+          description: Grouping dimensions (e.g., service, subsystem)
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Unique identifier of the case
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+        impactedEntities:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ImpactedEntity'
+          description: Impacted entities (e.g., service, database)
+        kpiBreaches:
+          allOf:
+          - $ref: '#/components/schemas/KPIBreaches'
+          description: KPI breaches
+        labels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.KeyValue'
+          description: User-defined labels for the case
+          examples:
+          - - key: team
+              value: backend
+        ollyAnalysis:
+          allOf:
+          - $ref: '#/components/schemas/OllyAnalysis'
+          description: Automated Olly analysis attached to the case.
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Priority of the case
+          examples:
+          - CASE_PRIORITY_P2
+        priorityDetails:
+          allOf:
+          - $ref: '#/components/schemas/PriorityDetails'
+          description: System and override priority details
+        readableId:
+          description: Readable identifier of the case, available only for the cases that became Active. May be used interchangeably with `id` when calling Cases APIs that target a specific case.
+          examples:
+          - CASE-123
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Z]+-[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        resolutionDetails:
+          allOf:
+          - $ref: '#/components/schemas/ResolutionDetails'
+          description: Resolution metadata
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CaseStatus'
+          description: Current status of the case
+          examples:
+          - CASE_STATUS_ACKNOWLEDGED
+        title:
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*\S[\s\S]*$
+          type: string
+          description: Case title. Leading and trailing whitespace is trimmed before the length limits are applied.
+          examples:
+          - Database outage investigation
+        updateTime:
+          description: When the case was last updated
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Represents a case within the Cases service.
+    AssigneeOption:
+      title: Assignee option
+      type: object
+      oneOf:
+      - required:
+        - assignee
+        type: object
+      - required:
+        - unassigned
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - assignee
+            type: object
+          - required:
+            - unassigned
+            type: object
+      properties:
+        assignee:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: User identifier of the assignee to filter by
+          examples:
+          - e07db42e-eb1c-4c14-ab68-e4d245ae63a5
+        unassigned:
+          allOf:
+          - $ref: '#/components/schemas/Unassigned'
+          description: Selects cases that have no assignee
+      description: Assignee filter option representing either a specific assignee or unassigned cases.
+    AlertSuppression:
+      title: Alert suppression details
+      type: object
+      oneOf:
+      - required:
+        - activeSuppressionRules
+        type: object
+      - required:
+        - alertDefinitionMuted
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - activeSuppressionRules
+            type: object
+          - required:
+            - alertDefinitionMuted
+            type: object
+      properties:
+        activeSuppressionRules:
+          $ref: '#/components/schemas/ActiveSuppressionRules'
+        alertDefinitionMuted:
+          $ref: '#/components/schemas/AlertDefinitionMuted'
+        suppressedTime:
+          description: Timestamp when the alert got suppressed.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Data describing the suppression status of an alert indicator, including active suppression rules and muted state.
+    MetricLink:
+      title: Metric link
+      type: object
+      properties:
+        metrics:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Explore metrics URL pre-filtered to the alert query and case time window.
+      description: Deep link to explore metrics related to an alert indicator on a case.
+    CaseOrderByField:
+      title: Case order field
+      enum:
+      - CASE_ORDER_BY_FIELD_UNSPECIFIED
+      - CASE_ORDER_BY_FIELD_PRIORITY
+      - CASE_ORDER_BY_FIELD_STATUS
+      - CASE_ORDER_BY_FIELD_UPDATED_AT
+      - CASE_ORDER_BY_FIELD_CATEGORY
+      - CASE_ORDER_BY_FIELD_DURATION
+      - CASE_ORDER_BY_FIELD_CREATED_AT
+      type: string
+      description: Field used for ordering cases (e.g., priority, status, category).
+    PrometheusAlert:
+      title: Prometheus alert
+      required:
+      - alertGroupId
+      - alertName
+      - fingerprint
+      - priority
+      - labels
+      - annotations
+      - status
+      - generatorUrl
+      - createdAt
+      - updatedAt
+      type: object
+      properties:
+        alertGroupId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Identifier of the Prometheus alerts group this alert belongs to.
+          examples:
+          - 5d41402abc4b2a76b9719d911017c592
+        alertName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the alert (typically the `alertname` label).
+          examples:
+          - HighRequestLatency
+        annotations:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Annotations attached to the alert.
+        createdAt:
+          description: Timestamp when the alert was first observed.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        fingerprint:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Prometheus alert fingerprint (stable identifier for this alert instance).
+          examples:
+          - a1b2c3d4e5f6a7b8
+        generatorUrl:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL of the system that generated the alert.
+          examples:
+          - https://prometheus.example.com/graph?g0.expr=...
+        labels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Labels attached to the alert.
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/IndicatorPriority'
+          description: Priority of the alert.
+          examples:
+          - INDICATOR_PRIORITY_P2
+        query:
+          allOf:
+          - $ref: '#/components/schemas/PrometheusAlertQuery'
+          description: When present, the PromQL query backing the alert.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PrometheusAlertStatus'
+          description: Current status of the alert.
+        updatedAt:
+          description: Timestamp when the alert was last updated.
+          examples:
+          - '2025-09-22T11:05:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Data describing a single Prometheus alert within an alert group.
+    AcknowledgeCaseResponse:
+      title: Acknowledge case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after acknowledgment.
+      description: Response containing the case after it has been acknowledged.
+    PrometheusAlertManagerIndicator:
+      title: Prometheus AlertManager indicator
+      required:
+      - fingerprint
+      - startedAt
+      type: object
+      properties:
+        fingerprint:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Prometheus alert fingerprint — the stable, label-derived hash that identifies this alert across firings.
+          examples:
+          - a1b2c3d4e5f6a7b8
+        startedAt:
+          description: ISO-8601 timestamp of when the alert episode began (the `startsAt` field from Prometheus AlertManager).
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Lookup keys identifying a specific Prometheus AlertManager alert episode.
+    UnacknowledgeCaseResponse:
+      title: Unacknowledge case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after acknowledgment was removed.
+      description: Response containing the case after acknowledgment was removed.
+    KPIPriority:
+      title: KPI priority
+      enum:
+      - KPI_PRIORITY_UNSPECIFIED
+      - KPI_PRIORITY_P1
+      - KPI_PRIORITY_P2
+      - KPI_PRIORITY_P3
+      - KPI_PRIORITY_P4
+      - KPI_PRIORITY_P5
+      type: string
+      description: Case priority level used when evaluating KPIs.
+    BulkAcknowledgeResponse:
+      title: Bulk acknowledge response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    ImpactedEntity:
+      title: Impacted entity
+      type: object
+      oneOf:
+      - required:
+        - apmService
+        type: object
+      - required:
+        - apmDatabase
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - apmService
+            type: object
+          - required:
+            - apmDatabase
+            type: object
+      properties:
+        apmDatabase:
+          $ref: '#/components/schemas/ApmDatabaseEntity'
+        apmService:
+          $ref: '#/components/schemas/ApmServiceEntity'
+      description: Entity affected by a case (e.g., an APM service or database).
+    CaseStatus:
+      enum:
+      - CASE_STATUS_UNSPECIFIED
+      - CASE_STATUS_PENDING_ACTIVATION
+      - CASE_STATUS_ACTIVE
+      - CASE_STATUS_ACKNOWLEDGED
+      - CASE_STATUS_RESOLVED
+      - CASE_STATUS_CLOSED
+      type: string
+      description: Case status.
+    CategoryAggregation:
+      title: Category aggregation
+      type: object
+      properties:
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CaseCategory'
+          description: Case category
+        count:
+          maximum: 1000000000
+          minimum: 0
+          type: integer
+          description: Number of cases in this category
+          format: int64
+          examples:
+          - 13
+      description: Count of cases grouped by case category.
+    ResolutionDetails:
+      title: Resolution details
+      type: object
+      properties:
+        reason:
+          description: Resolution reason
+          examples:
+          - Case was not applicable.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        resolveTime:
+          description: Timestamp when the case was resolved
+          examples:
+          - '2025-09-22T11:15:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        resolvedBy:
+          allOf:
+          - $ref: '#/components/schemas/CaseResolver'
+          description: Entity that resolved the case
+      description: Information about how and when a case was resolved.
+    Slack:
+      title: Slack resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved through a Slack integration.
+    PagerDuty:
+      title: PagerDuty resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved through a PagerDuty integration.
+    AlertIndicator.Permutation:
+      title: Alert permutation
+      type: object
+      properties:
+        permutation:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: A single permutation represented as map<string, string>.
+      description: Single alert permutation captured as a map of label keys to label values.
+    MicrosoftTeams:
+      title: Microsoft Teams resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved through a Microsoft Teams integration.
+    GenericIndicatorStatus:
+      title: Generic indicator status
+      enum:
+      - GENERIC_INDICATOR_STATUS_UNSPECIFIED
+      - GENERIC_INDICATOR_STATUS_TRIGGERED
+      - GENERIC_INDICATOR_STATUS_RESOLVED
+      type: string
+      description: Lifecycle status of a generic indicator.
+    PrometheusAlertManager:
+      title: Prometheus AlertManager resolver
+      type: object
+      additionalProperties: false
+      description: Marker indicating that the case was resolved through a Prometheus AlertManager integration.
+    GenericIndicator:
+      title: Generic indicator
+      required:
+      - id
+      - externalId
+      - indicatorType
+      - status
+      - priority
+      - lastTriggeredAt
+      type: object
+      properties:
+        entityLinks:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityLink'
+          description: URLs to the originating entities in the external system.
+        externalId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Opaque reference to the originating entity in the external system.
+          examples:
+          - et-issue-8827
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Unique identifier of this generic indicator.
+          examples:
+          - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+        indicatorType:
+          allOf:
+          - $ref: '#/components/schemas/GenericIndicatorType'
+          description: Sub-type identifying the originating system.
+          examples:
+          - GENERIC_INDICATOR_TYPE_ERROR_TRACKING
+        labels:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.KeyValue'
+          description: Arbitrary key-value metadata from the originating system.
+          examples:
+          - - key: service
+              value: auth
+        lastResolvedAt:
+          description: When present, timestamp when the indicator last resolved.
+          examples:
+          - '2025-09-22T11:05:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        lastTriggeredAt:
+          description: Timestamp when the indicator last triggered.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/IndicatorPriority'
+          description: Priority of the indicator at trigger time.
+          examples:
+          - INDICATOR_PRIORITY_P2
+        status:
+          allOf:
+          - $ref: '#/components/schemas/GenericIndicatorStatus'
+          description: Current lifecycle status of the indicator.
+          examples:
+          - GENERIC_INDICATOR_STATUS_TRIGGERED
+      description: An indicator sourced from a generic external system (e.g. Error Tracking).
+    ApmDatabaseEntity:
+      title: APM database entity
+      type: object
+      properties:
+        name:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the impacted database
+          examples:
+          - orders-db
+        system:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Database system (e.g., postgresql, mysql)
+          examples:
+          - postgresql
+      description: Application Performance Monitoring database identified as impacted by a case.
+    ImpactedEntityLink:
+      title: Impacted entity link
+      type: object
+      properties:
+        entity:
+          allOf:
+          - $ref: '#/components/schemas/ImpactedEntity'
+          description: The impacted entity.
+        url:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Absolute URL to the entity drilldown view.
+      description: An impacted entity decorated with a deep link into the relevant product view.
+    AlertFilters:
+      title: Alert filters
+      type: object
+      properties:
+        alertIds:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 36
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+            type: string
+            description: List of alert IDs to filter on. Cases containing any of these alert IDs will be returned (OR logic).
+          description: List of alert IDs to filter on. Cases containing any of these alert IDs will be returned (OR logic).
+          examples:
+          - - f56645c5-9cd4-4b9f-961f-4f852d8835a0
+            - a0a08c31-0ae4-4600-928e-cb6b7da50a99
+        alertVersions:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 64
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: List of alert version IDs to filter on. Cases containing indicators with any of these alert version IDs will be returned (OR logic).
+          description: List of alert version IDs to filter on. Cases containing indicators with any of these alert version IDs will be returned (OR logic).
+          examples:
+          - - 550e8400-e29b-41d4-a716-446655440000
+            - 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+      description: Filters applied to cases based on alert properties.
+    CaseDeepLinks:
+      title: Case deep links
+      type: object
+      properties:
+        alertIndicators:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AlertIndicatorDeepLink'
+          description: Per-alert-indicator deep links, keyed by alert_indicator_id.
+        detail:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Absolute URL to the case detail page.
+        impactedEntities:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ImpactedEntityLink'
+          description: Per-impacted-entity drilldown links.
+      description: Pre-built URLs that navigate from a case to the relevant views.
+    RumLink:
+      title: RUM link
+      type: object
+      properties:
+        rum:
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: RUM errors URL pre-filtered to the alert applications and case time window.
+      description: Deep link to the RUM errors view scoped to an alert indicator on a case.
+    ActiveSuppressionRules:
+      title: Active suppression rules
+      required:
+      - suppressionRuleIds
+      type: object
+      properties:
+        suppressionRuleIds:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 36
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+            type: string
+            description: Array of active suppression rule IDs for the given alert definition.
+          description: Array of active suppression rule IDs for the given alert definition.
+          examples:
+          - - 1eae3615-79e7-4b54-88e0-6a77def653bf
+            - 2fbf4726-8af8-5c65-99f1-7b88ef764c0e
+      description: Data describing the active suppression rules for an alert indicator.
+    cases.v1.PaginationRequest:
+      title: Pagination request
+      type: object
+      properties:
+        pageSize:
+          description: Number of items to return per page
+          examples:
+          - 10
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        pageToken:
+          description: Token for the next page of results
+          examples:
+          - MjAyNS0wOS0yM1QxMjoxMTo0MC43ODcwODVaLDY5YmIxYmFiLWE1NzAtNGU5Ny04MzE2LWFkYzQxYjk2Y2QyNA==
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        skip:
+          description: Number of items to skip before starting to collect results
+          examples:
+          - 20
+          format: int64
+          maximum: 1000000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Pagination parameters for list requests.
+    GenericIndicatorType:
+      title: Generic indicator type
+      enum:
+      - GENERIC_INDICATOR_TYPE_UNSPECIFIED
+      - GENERIC_INDICATOR_TYPE_ERROR_TRACKING
+      type: string
+      description: Sub-type of a generic indicator.
+    Unassigned:
+      title: Unassigned
+      type: object
+      additionalProperties: false
+      description: Marker selecting cases that have no assignee.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    cases.v1.PaginationResponse:
+      title: Pagination response
+      type: object
+      properties:
+        nextPageToken:
+          description: Token for the next page of results
+          examples:
+          - MjAyNS0wOS0yM1QxMjoxMTo0MC43ODcwODVaLDY5YmIxYmFiLWE1NzAtNGU5Ny04MzE2LWFkYzQxYjk2Y2QyNA==
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Pagination information for list responses.
+    CasePriority:
+      enum:
+      - CASE_PRIORITY_UNSPECIFIED
+      - CASE_PRIORITY_P1
+      - CASE_PRIORITY_P2
+      - CASE_PRIORITY_P3
+      - CASE_PRIORITY_P4
+      - CASE_PRIORITY_P5
+      type: string
+      description: Case priority.
+    FilterGroup:
+      title: Filter group
+      required:
+      - key
+      - values
+      type: object
+      properties:
+        key:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Key of the filter group (e.g., service, environment)
+          examples:
+          - service
+        values:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Values associated with the filter group key
+          description: Values associated with the filter group key
+          examples:
+          - - payments
+      description: A filter group containing a key and its possible values.
+    PriorityDetails:
+      title: Priority details
+      type: object
+      properties:
+        override:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Optional override set by user
+          x-coralogix-presence: true
+        system:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: System computed priority
+      description: Priority details, including system computed and user override values.
+    v1.ConnectorType:
+      enum:
+      - CONNECTOR_TYPE_UNSPECIFIED
+      - CONNECTOR_TYPE_SLACK
+      - CONNECTOR_TYPE_SERVICE_NOW
+      - CONNECTOR_TYPE_PAGER_DUTY
+      - CONNECTOR_TYPE_EMAIL
+      - CONNECTOR_TYPE_GENERIC_HTTPS
+      - CONNECTOR_TYPE_MICROSOFT_TEAMS
+      type: string
+      description: Connector type.
+    GetCaseByIndicatorResponse:
+      title: Get case by indicator response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: The case associated with the indicator.
+      description: Response containing the case associated with the given indicator.
+    ResolveCaseResponse:
+      title: Resolve case response
+      required:
+      - case
+      type: object
+      properties:
+        case:
+          allOf:
+          - $ref: '#/components/schemas/Case'
+          description: Case after resolution.
+      description: Response containing the case after it has been resolved.
+    BulkClearPriorityOverrideResponse:
+      title: Bulk clear priority override response
+      required:
+      - cases
+      type: object
+      properties:
+        cases:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+          description: Updated cases
+      description: Response containing the updated cases
+    Triggered:
+      title: Triggered Prometheus alert status
+      required:
+      - triggeredAt
+      type: object
+      properties:
+        triggeredAt:
+          description: Timestamp when the alert was triggered.
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Status payload for an active Prometheus alert.
+    AlertGroupingType:
+      title: Alert grouping type
+      enum:
+      - GROUPING_TYPE_UNSPECIFIED
+      - GROUPING_TYPE_COMPOSITE_ALERT
+      - GROUPING_TYPE_COMBINATION_ALERT
+      - GROUPING_TYPE_NONE
+      type: string
+      description: Indicates how this indicator relates to other alerts (composite, combination, or none).
+  parameters:
+    id_2:
+      name: id
+      in: path
+      description: ID of the case. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+      required: true
+      schema:
+        maxLength: 64
+        minLength: 1
+        pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+        type: string
+        description: ID of the case. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        examples:
+        - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+    case_id:
+      name: case_id
+      in: path
+      description: ID of the case. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+      required: true
+      schema:
+        maxLength: 64
+        minLength: 1
+        pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z]+-[0-9]+)$
+        type: string
+        description: ID of the case. Accepts either the case UUID (the `id` field on a case) or the readable identifier (the `readable_id` field, e.g. `CASE-123`).
+        examples:
+        - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

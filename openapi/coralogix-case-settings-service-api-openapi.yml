@@ -1,0 +1,810 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Case Settings service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Case Settings service
+  description: Manage case settings team configurations.
+paths:
+  /cases/cases/case-settings/v1/configs:
+    post:
+      description: 'Create a new case settings team configuration with an optional display name and settings.
+
+
+        Requires the following permissions:
+
+        - `case-config:Update`'
+      operationId: CaseSettingsService_CreateCaseSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to create a new case settings team configuration.
+              properties:
+                caseLifecycle:
+                  allOf:
+                  - $ref: '#/components/schemas/CaseLifecycle'
+                  description: Case lifecycle settings for the team
+                globalIndicatorSettings:
+                  allOf:
+                  - $ref: '#/components/schemas/GlobalIndicatorSettings'
+                  description: Configuration settings
+                name:
+                  description: Optional display name for the case settings team configuration
+                  examples:
+                  - Primary Case Settings
+                  maxLength: 4096
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - globalIndicatorSettings
+              title: Create case settings request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCaseSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create a case settings team configuration
+      tags:
+      - Case Settings service
+      x-coralogixPermissions:
+      - case-config:Update
+  /cases/cases/case-settings/v1/configs/{id}:
+    get:
+      description: 'Retrieve a single case settings team configuration by its identifier.
+
+
+        Requires the following permissions:
+
+        - `case-config:Read`'
+      operationId: CaseSettingsService_GetCaseSettings
+      parameters:
+      - description: ID of the case settings team configuration
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case settings team configuration
+          examples:
+          - 8c0c02a3-3c1c-4d56-9a2d-9f6ab6a4b321
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCaseSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Case settings not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get a case settings team configuration
+      tags:
+      - Case Settings service
+      x-coralogixPermissions:
+      - case-config:Read
+    delete:
+      description: 'Delete a case settings team configuration by its identifier.
+
+
+        Requires the following permissions:
+
+        - `case-config:Update`'
+      operationId: CaseSettingsService_DeleteCaseSettings
+      parameters:
+      - description: ID of the case settings team configuration to delete
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case settings team configuration to delete
+          examples:
+          - 8c0c02a3-3c1c-4d56-9a2d-9f6ab6a4b321
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCaseSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Case settings not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete a case settings team configuration
+      tags:
+      - Case Settings service
+      x-coralogixPermissions:
+      - case-config:Update
+    patch:
+      description: 'Update the display name and/or settings of an existing case settings team configuration.
+
+
+        Requires the following permissions:
+
+        - `case-config:Update`'
+      operationId: CaseSettingsService_UpdateCaseSettings
+      parameters:
+      - description: ID of the case settings team configuration to update
+        in: path
+        name: id
+        required: true
+        schema:
+          description: ID of the case settings team configuration to update
+          examples:
+          - 8c0c02a3-3c1c-4d56-9a2d-9f6ab6a4b321
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to update an existing case settings team configuration.
+              properties:
+                caseLifecycle:
+                  allOf:
+                  - $ref: '#/components/schemas/CaseLifecycle'
+                  description: Case lifecycle settings to apply
+                globalIndicatorSettings:
+                  allOf:
+                  - $ref: '#/components/schemas/GlobalIndicatorSettings'
+                  description: New configuration settings to apply
+                name:
+                  description: New display name for the case settings team configuration
+                  examples:
+                  - SRE Case Settings
+                  maxLength: 4096
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Update case settings request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCaseSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Case settings not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update a case settings team configuration
+      tags:
+      - Case Settings service
+      x-coralogixPermissions:
+      - case-config:Update
+  /cases/cases/case-settings/v1/configs:getActive:
+    get:
+      description: 'Retrieve the currently active case settings team configuration (after any org- or user-level precedence resolution).
+
+
+        Requires the following permissions:
+
+        - `case-config:Read`'
+      operationId: CaseSettingsService_GetActiveCaseSettings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetActiveCaseSettingsResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Active team config not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get the active case settings team configuration
+      tags:
+      - Case Settings service
+      x-coralogixPermissions:
+      - case-config:Read
+  /cases/cases/case-settings/v1/configs:getSystemDefaults:
+    get:
+      description: 'Retrieve the platform-wide default settings for case settings team configurations.
+
+
+        Requires the following permissions:
+
+        - `case-config:Read`'
+      operationId: CaseSettingsService_GetSystemDefaultCaseSettings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSystemDefaultCaseSettingsResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Forbidden
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get system default case settings team configuration settings
+      tags:
+      - Case Settings service
+      x-coralogixPermissions:
+      - case-config:Read
+components:
+  schemas:
+    GetCaseSettingsResponse:
+      title: Get case settings response
+      required:
+      - caseSettings
+      type: object
+      properties:
+        caseSettings:
+          allOf:
+          - $ref: '#/components/schemas/CaseSettings'
+          description: The requested case settings team configuration
+      description: Response containing the requested case settings team configuration.
+    GlobalIndicatorSettings:
+      title: Global indicator settings
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Enable/disable this setting. When this is disabled, no alerts will be processed for cases.
+        filteringConditions:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorFilter'
+          description: Whitelist conditions for the alerts to be processed. Empty list means all alerts are processed. Filtering_condition evaluations will be OR'ed together
+      description: Team-level indicator configuration options for case management, including case lifecycle and event filtering conditions.
+    EntityLabelFilter.Values:
+      type: object
+      properties:
+        items:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.KeyValue'
+          description: List of EntityLabels (Key/Value) to filter to. Passing empty list here means no alerts will be processed.
+      description: An explicit list of entity label key-value pairs to include in the filter.
+    IndicatorFilter:
+      title: Indicator filter
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Enable/disable this filter
+        entityLabels:
+          allOf:
+          - $ref: '#/components/schemas/EntityLabelFilter'
+          description: Selected entity labels for filtering
+        priorities:
+          allOf:
+          - $ref: '#/components/schemas/IndicatorPriorityFilter'
+          description: Selected priorities for filtering
+      description: Object for filtering signals to be processed by the cases pipeline. The filters will be AND'ed together.
+    v1.KeyValue:
+      title: Key-value pair
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Key of the pair (e.g., label or grouping name)
+          examples:
+          - service
+        value:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Value associated with the key
+          examples:
+          - payments
+      description: Represents a simple key-value pair, often used for labels or groupings in cases.
+    IndicatorPriorityFilter.Values:
+      type: object
+      properties:
+        items:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorPriority'
+          description: List of IndicatorPriorities to filter to. Passing empty list here means no alerts will be processed.
+      description: Entity label filter.values.
+    AlertSuppressionStrategy:
+      enum:
+      - ALERT_SUPPRESSION_STRATEGY_UNSPECIFIED
+      - ALERT_SUPPRESSION_STRATEGY_IGNORE
+      - ALERT_SUPPRESSION_STRATEGY_CREATE_CASE
+      type: string
+      description: Alert suppression strategy.
+    EntityLabelFilter:
+      title: All or EntityLabel list
+      type: object
+      oneOf:
+      - required:
+        - all
+        type: object
+      - required:
+        - values
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - all
+            type: object
+          - required:
+            - values
+            type: object
+      properties:
+        all:
+          $ref: '#/components/schemas/All'
+        values:
+          $ref: '#/components/schemas/EntityLabelFilter.Values'
+      description: Select all items from a specific list of EntityLabels (Key/Values).
+    GetSystemDefaultCaseSettingsResponse:
+      title: Get default case settings response
+      required:
+      - globalIndicatorSettings
+      type: object
+      properties:
+        caseLifecycle:
+          allOf:
+          - $ref: '#/components/schemas/CaseLifecycle'
+          description: System-wide default Case lifecycle settings for case settings team configurations
+        globalIndicatorSettings:
+          allOf:
+          - $ref: '#/components/schemas/GlobalIndicatorSettings'
+          description: System-wide default settings for case settings team configurations
+      description: Response containing platform-wide default case settings team configuration values.
+    CaseSettings:
+      title: Case settings team configuration
+      type: object
+      properties:
+        caseLifecycle:
+          allOf:
+          - $ref: '#/components/schemas/CaseLifecycle'
+          description: Case lifecycle settings for the team
+        createTime:
+          description: Timestamp when the team configuration was created
+          examples:
+          - '2025-09-22T10:30:00.000Z'
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        globalIndicatorSettings:
+          allOf:
+          - $ref: '#/components/schemas/GlobalIndicatorSettings'
+          description: Settings for the team
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          description: Unique identifier for the team configuration
+          examples:
+          - 3f166e9f-3c88-4af2-b52e-138f339dab3e
+        name:
+          description: Human-readable name for the team configuration
+          examples:
+          - Default Team Config
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        updateTime:
+          description: Timestamp when the team configuration was last updated
+          format: date-time
+          maxLength: 30
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: Team-level configuration entity for case management.
+    IndicatorPriority:
+      title: Indicator priority
+      enum:
+      - INDICATOR_PRIORITY_UNSPECIFIED
+      - INDICATOR_PRIORITY_P1
+      - INDICATOR_PRIORITY_P2
+      - INDICATOR_PRIORITY_P3
+      - INDICATOR_PRIORITY_P4
+      - INDICATOR_PRIORITY_P5
+      type: string
+      description: Priority of an alert indicator at trigger time.
+    DeleteCaseSettingsResponse:
+      title: Delete case settings response
+      type: object
+      additionalProperties: false
+      description: Empty response; success indicated by HTTP status
+    IndicatorPriorityFilter:
+      title: All or IndicatorPriority list
+      type: object
+      oneOf:
+      - required:
+        - all
+        type: object
+      - required:
+        - values
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - all
+            type: object
+          - required:
+            - values
+            type: object
+      properties:
+        all:
+          $ref: '#/components/schemas/All'
+        values:
+          $ref: '#/components/schemas/IndicatorPriorityFilter.Values'
+      description: Select all priorities or a specific list of IndicatorPriority values.
+    AutoResolveConfig:
+      title: Auto resolve config
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Enable/disable automatic resolution
+        inactivePeriod:
+          description: Period of inactivity after which cases are automatically resolved.
+          examples:
+          - 3600s
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Configuration for automatically resolving cases after a certain period of inactivity.
+    All:
+      title: All filter values selected
+      type: object
+      additionalProperties: false
+      description: Represents selection of all items in the filter
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    CasePriority:
+      enum:
+      - CASE_PRIORITY_UNSPECIFIED
+      - CASE_PRIORITY_P1
+      - CASE_PRIORITY_P2
+      - CASE_PRIORITY_P3
+      - CASE_PRIORITY_P4
+      - CASE_PRIORITY_P5
+      type: string
+      description: Case priority.
+    GetActiveCaseSettingsResponse:
+      title: Get active case settings response
+      required:
+      - caseSettings
+      type: object
+      properties:
+        caseSettings:
+          allOf:
+          - $ref: '#/components/schemas/CaseSettings'
+          description: The active case settings
+      description: Response containing the case settings team configuration currently active for the caller.
+    KPISettings:
+      title: KPI threshold entry
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Enable or disable this threshold entry.
+          examples:
+          - true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/CasePriority'
+          description: Case priority level for which this threshold applies.
+          examples:
+          - P1
+        threshold:
+          description: Elapsed time after which the KPI is considered breached.
+          examples:
+          - 300s
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/KPIType'
+          description: Type of KPI this threshold applies to (acknowledgement or resolution).
+          examples:
+          - KPI_TYPE_ACKNOWLEDGEMENT
+      description: Single KPI breach threshold for a specific case priority.
+    CreateCaseSettingsResponse:
+      title: Create case settings response
+      required:
+      - caseSettings
+      type: object
+      properties:
+        caseSettings:
+          allOf:
+          - $ref: '#/components/schemas/CaseSettings'
+          description: The created case settings team configuration
+      description: Response containing the newly created case settings team configuration.
+    KPIType:
+      enum:
+      - KPI_TYPE_UNSPECIFIED
+      - KPI_TYPE_TIME_TO_ACKNOWLEDGE
+      - KPI_TYPE_TIME_TO_RESOLVE
+      - KPI_TYPE_TIME_TO_UPDATE
+      type: string
+      description: Kpi type.
+    CaseKPIs:
+      title: KPI settings
+      type: object
+      properties:
+        thresholds:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/KPISettings'
+          description: List of KPI thresholds for different case priorities.
+      description: Case lifecycle KPI thresholds grouped first by KPI type and then by case priority.
+    UpdateCaseSettingsResponse:
+      title: Update case settings response
+      required:
+      - caseSettings
+      type: object
+      properties:
+        caseSettings:
+          allOf:
+          - $ref: '#/components/schemas/CaseSettings'
+          description: The updated case settings team configuration
+      description: Response containing the updated case settings team configuration.
+    AutoCloseConfig:
+      title: Auto Close config
+      required:
+      - postResolutionPeriod
+      type: object
+      properties:
+        postResolutionPeriod:
+          description: Period after which resolved cases are automatically closed.
+          examples:
+          - 3600s
+          maxLength: 30
+          minLength: 2
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Configuration for automatically closing cases after a certain period past resolution.
+    CaseLifecycle:
+      title: Case lifecycle settings
+      type: object
+      properties:
+        alertSuppressionStrategy:
+          allOf:
+          - $ref: '#/components/schemas/AlertSuppressionStrategy'
+          description: Configuration for how cases process suppressed alerts.
+          examples:
+          - ALERT_SUPPRESSION_STRATEGY_IGNORE
+        autoClose:
+          allOf:
+          - $ref: '#/components/schemas/AutoCloseConfig'
+          description: Configuration for automatically closing resolved cases after a certain period. If not defined, it will fallback to auto closure after 1 week.
+        autoResolve:
+          allOf:
+          - $ref: '#/components/schemas/AutoResolveConfig'
+          description: Configuration for inactive cases resolution.
+        kpi:
+          allOf:
+          - $ref: '#/components/schemas/CaseKPIs'
+          description: KPI thresholds for acknowledgement and resolution, grouped by case priority.
+        resolutionSnoozePeriod:
+          description: Period after resolution during which new cases are snoozed.
+          examples:
+          - 600s
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        suppressionPeriod:
+          description: Default period during which duplicate or related cases are suppressed.
+          examples:
+          - 3600s
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Team-level configuration options for the lifecycle of case, such as suppression and snooze periods.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

@@ -1,0 +1,126 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Identity Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Identity Service
+  description: Resolve the team and user behind the presented credentials.
+paths:
+  /aaa/identity/v1/whoami:
+    get:
+      description: 'Returns the team, and where available the user, that the presented credentials authenticate as. Takes no parameters: the identity is derived entirely from the `Authorization` header. Authenticating with an API key resolves a team but no user, so `username` is absent in that case.'
+      operationId: IdentityService_WhoAmI
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                teamId: 1234567
+                teamName: my-team
+                teamUrl: https://my-team.app.coralogix.com
+              schema:
+                $ref: '#/components/schemas/WhoAmIResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Missing or invalid credentials
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The authenticated team no longer exists
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Who am I
+      tags:
+      - Identity Service
+components:
+  schemas:
+    WhoAmIResponse:
+      title: WhoAmIResponse
+      required:
+      - teamId
+      - teamName
+      type: object
+      properties:
+        teamId:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          description: Identifier of the team the credentials belong to.
+          format: int64
+          examples:
+          - 1234567
+        teamName:
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name of the team.
+          examples:
+          - my-team
+        teamUrl:
+          description: Full web-app URL of the team. Absent when the team has no URL slug configured.
+          examples:
+          - https://my-team.app.coralogix.com
+          maxLength: 2048
+          minLength: 1
+          pattern: ^https://[^\s/?#]+[^\s]*$
+          type: string
+          x-coralogix-presence: true
+        username:
+          description: Username of the authenticated user. Absent when authenticating with an API key, which carries no user identity.
+          examples:
+          - jane.doe@example.com
+          maxLength: 320
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: The team, and where available the user, that the presented credentials authenticate as.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

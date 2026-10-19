@@ -1,0 +1,861 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Alert Scheduler Rule service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Alert Scheduler Rule service
+  description: Manage your alert scheduler rules.
+paths:
+  /alerts/suppression-rules/v1:
+    get:
+      description: Returns alert suppression rules with optional pagination.
+      operationId: AlertSchedulerRuleService_GetBulkAlertSchedulerRule
+      parameters:
+      - description: Active timeframe filter to limit results to rules active in the given window.
+        in: query
+        name: active_timeframe
+        required: false
+        schema:
+          properties:
+            endTime:
+              description: End time.
+              minLength: 0
+              type: string
+            startTime:
+              description: Start time.
+              minLength: 0
+              type: string
+            timezone:
+              description: Timezone.
+              minLength: 0
+              type: string
+          type: object
+      - description: Whether this resource is enabled.
+        in: query
+        name: enabled
+        required: false
+        schema:
+          description: Whether this resource is enabled.
+          type: boolean
+          x-coralogix-presence: true
+      - description: Filter results to the specified alert scheduler rule or rule version IDs.
+        in: query
+        name: alert_scheduler_rules_ids
+        required: false
+        schema:
+          oneOf:
+          - required:
+            - alertSchedulerIds
+            type: object
+          - required:
+            - alertSchedulerVersionIds
+            type: object
+          - not:
+              anyOf:
+              - required:
+                - alertSchedulerIds
+                type: object
+              - required:
+                - alertSchedulerVersionIds
+                type: object
+            type: object
+          properties:
+            alertSchedulerIds:
+              description: Alert scheduler rule ids.
+              properties:
+                alertSchedulerRuleIds:
+                  description: List of alert scheduler rule IDs.
+                  items:
+                    description: List of alert scheduler rule IDs.
+                    minLength: 0
+                    type: string
+                  minItems: 0
+                  type: array
+              type: object
+            alertSchedulerVersionIds:
+              description: Alert scheduler rule version ids.
+              properties:
+                alertSchedulerRuleVersionIds:
+                  description: The alert scheduler rule version ids.
+                  items:
+                    description: The alert scheduler rule version ids.
+                    minLength: 0
+                    type: string
+                  minItems: 0
+                  type: array
+              type: object
+          type: object
+      - description: Token for fetching the next page of results.
+        in: query
+        name: next_page_token
+        required: false
+        schema:
+          description: Token for fetching the next page of results.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBulkAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get multiple alert scheduler rules
+      tags:
+      - Alert Scheduler Rule service
+    put:
+      description: Updates an existing alert suppression rule.
+      operationId: AlertSchedulerRuleService_UpdateAlertSchedulerRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This is a request sent to update an alert scheduler rule
+              properties:
+                alertSchedulerRule:
+                  $ref: '#/components/schemas/AlertSchedulerRule'
+              required:
+              - alertSchedulerRule
+              title: Update alert scheduler rule request data structure
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update an alert scheduler rule
+      tags:
+      - Alert Scheduler Rule service
+    post:
+      description: Creates a new alert suppression rule.
+      operationId: AlertSchedulerRuleService_CreateAlertSchedulerRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This is a request sent to create an alert scheduler rule
+              properties:
+                alertSchedulerRule:
+                  $ref: '#/components/schemas/AlertSchedulerRule'
+              required:
+              - alertSchedulerRule
+              title: Create alert scheduler rule request data structure
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create an alert scheduler rule
+      tags:
+      - Alert Scheduler Rule service
+  /alerts/suppression-rules/v1/all/rules:
+    put:
+      description: Replaces all alert suppression rules with the provided set.
+      operationId: AlertSchedulerRuleService_UpdateBulkAlertSchedulerRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This is a request sent to update multiple alert scheduler rules
+              properties:
+                updateAlertSchedulerRuleRequests:
+                  description: The update alert scheduler rule requests.
+                  items:
+                    $ref: '#/components/schemas/UpdateAlertSchedulerRuleRequest'
+                  minItems: 0
+                  type: array
+              required:
+              - updateAlertSchedulerRuleRequests
+              title: Update bulk alert scheduler rule request data structure
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBulkAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update multiple alert scheduler rules
+      tags:
+      - Alert Scheduler Rule service
+    post:
+      description: Returns all alert suppression rules matching the given criteria.
+      operationId: AlertSchedulerRuleService_CreateBulkAlertSchedulerRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This is a request sent to create multiple alert scheduler rules
+              properties:
+                createAlertSchedulerRuleRequests:
+                  description: The create alert scheduler rule requests.
+                  items:
+                    $ref: '#/components/schemas/CreateAlertSchedulerRuleRequest'
+                  minItems: 0
+                  type: array
+              required:
+              - createAlertSchedulerRuleRequests
+              title: Create bulk alert scheduler rule request data structure
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBulkAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create multiple alert scheduler rules
+      tags:
+      - Alert Scheduler Rule service
+  /alerts/suppression-rules/v1/{alert_scheduler_rule_id}:
+    get:
+      description: Returns the details of the specified alert suppression rule.
+      operationId: AlertSchedulerRuleService_GetAlertSchedulerRule
+      parameters:
+      - description: The unique identifier of the alert scheduler (suppression) rule.
+        in: path
+        name: alert_scheduler_rule_id
+        required: true
+        schema:
+          description: The unique identifier of the alert scheduler (suppression) rule.
+          minLength: 0
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get an alert scheduler rule
+      tags:
+      - Alert Scheduler Rule service
+    delete:
+      description: Deletes the alert suppression rule with the specified ID.
+      operationId: AlertSchedulerRuleService_DeleteAlertSchedulerRule
+      parameters:
+      - description: The unique identifier of the alert scheduler (suppression) rule to delete.
+        in: path
+        name: alert_scheduler_rule_id
+        required: true
+        schema:
+          description: The unique identifier of the alert scheduler (suppression) rule to delete.
+          minLength: 0
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAlertSchedulerRuleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete an alert scheduler rule
+      tags:
+      - Alert Scheduler Rule service
+components:
+  schemas:
+    Monthly:
+      required:
+      - daysOfMonth
+      type: object
+      properties:
+        daysOfMonth:
+          description: The days of month.
+          items:
+            type: integer
+            description: The days of month.
+            format: int32
+          minItems: 1
+          type: array
+          x-coralogix-collection: set
+      description: Monthly.
+    MetaLabels:
+      type: object
+      properties:
+        value:
+          description: The value.
+          items:
+            $ref: '#/components/schemas/meta_labels_protobuf.v1.MetaLabel'
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Meta labels.
+    Always:
+      type: object
+      additionalProperties: false
+      description: Always.
+    DeleteAlertSchedulerRuleResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting an alert suppression rule.
+    Timeframe:
+      required:
+      - timezone
+      type: object
+      oneOf:
+      - required:
+        - endTime
+        type: object
+      - required:
+        - duration
+        type: object
+      properties:
+        duration:
+          $ref: '#/components/schemas/v1.Duration'
+        endTime:
+          minLength: 0
+          type: string
+          description: End time.
+        startTime:
+          minLength: 0
+          type: string
+          description: Start time.
+        submittedStartTime:
+          description: The start time as submitted in the request, before the service normalized it to the next valid occurrence. Populated only in create and update responses; ignored in requests and omitted from read responses.
+          maxLength: 64
+          minLength: 0
+          pattern: ^[\s\S]*$
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        timezone:
+          minLength: 1
+          type: string
+          description: Timezone.
+      description: Timeframe.
+    CreateAlertSchedulerRuleResponse:
+      title: Create alert scheduler rule response data structure
+      required:
+      - alertSchedulerRule
+      type: object
+      properties:
+        alertSchedulerRule:
+          $ref: '#/components/schemas/AlertSchedulerRule'
+      description: This is a response sent after creating an alert scheduler rule
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    Schedule:
+      required:
+      - scheduleOperation
+      type: object
+      oneOf:
+      - required:
+        - oneTime
+        type: object
+      - required:
+        - recurring
+        type: object
+      properties:
+        oneTime:
+          $ref: '#/components/schemas/OneTime'
+        recurring:
+          $ref: '#/components/schemas/Recurring'
+        scheduleOperation:
+          $ref: '#/components/schemas/ScheduleOperation'
+      description: Schedule.
+    AlertSchedulerRuleWithActiveTimeframe:
+      type: object
+      properties:
+        alertSchedulerRule:
+          $ref: '#/components/schemas/AlertSchedulerRule'
+        nextActiveTimeframes:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ActiveTimeframe'
+          description: The next active timeframes.
+    DurationFrequency:
+      enum:
+      - DURATION_FREQUENCY_UNSPECIFIED
+      - DURATION_FREQUENCY_MINUTE
+      - DURATION_FREQUENCY_HOUR
+      - DURATION_FREQUENCY_DAY
+      type: string
+      description: Duration frequency.
+    GetAlertSchedulerRuleResponse:
+      title: Get alert scheduler rule response data structure
+      required:
+      - alertSchedulerRule
+      type: object
+      properties:
+        alertSchedulerRule:
+          $ref: '#/components/schemas/AlertSchedulerRule'
+      description: This is a response sent to get an alert scheduler rule
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    ActiveTimeframe:
+      type: object
+      properties:
+        endTime:
+          minLength: 0
+          type: string
+          description: End time.
+        startTime:
+          minLength: 0
+          type: string
+          description: Start time.
+        timezone:
+          minLength: 0
+          type: string
+          description: Timezone.
+    Weekly:
+      required:
+      - daysOfWeek
+      type: object
+      properties:
+        daysOfWeek:
+          description: The days of week.
+          items:
+            type: integer
+            description: The days of week.
+            format: int32
+          minItems: 1
+          type: array
+          x-coralogix-collection: set
+      description: Weekly.
+    Recurring:
+      type: object
+      oneOf:
+      - required:
+        - alwaysActive
+        type: object
+      - required:
+        - schedule
+        type: object
+      properties:
+        alwaysActive:
+          $ref: '#/components/schemas/Always'
+        schedule:
+          $ref: '#/components/schemas/Recurring.Dynamic'
+      description: Recurring schedule that activates the alert scheduler rule on a repeating cadence.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    CreateBulkAlertSchedulerRuleResponse:
+      title: Create bulk alert scheduler rule response data structure
+      required:
+      - createSuppressionResponses
+      type: object
+      properties:
+        createSuppressionResponses:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAlertSchedulerRuleResponse'
+          description: The create suppression responses.
+      description: This is a response sent after creating multiple alert scheduler rules
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    Daily:
+      type: object
+      additionalProperties: false
+      description: Daily.
+    Recurring.Dynamic:
+      required:
+      - timeframe
+      type: object
+      oneOf:
+      - required:
+        - daily
+        type: object
+      - required:
+        - weekly
+        type: object
+      - required:
+        - monthly
+        type: object
+      properties:
+        daily:
+          $ref: '#/components/schemas/Daily'
+        monthly:
+          $ref: '#/components/schemas/Monthly'
+        repeatEvery:
+          type: integer
+          description: Interval multiplier controlling how often the rule recurs (e.g., every N days, weeks, or months).
+          format: int32
+        terminationDate:
+          description: ISO 8601 date after which the recurring rule stops being applied.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        timeframe:
+          $ref: '#/components/schemas/Timeframe'
+        weekly:
+          $ref: '#/components/schemas/Weekly'
+      description: Dynamic.
+    OneTime:
+      required:
+      - timeframe
+      type: object
+      properties:
+        timeframe:
+          $ref: '#/components/schemas/Timeframe'
+      description: One time.
+    meta_labels_protobuf.v1.MetaLabel:
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        key:
+          minLength: 0
+          type: string
+          description: The key.
+        value:
+          description: The value.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Meta label.
+    alert_scheduler_rule_protobuf.v1.Filter:
+      required:
+      - whatExpression
+      type: object
+      oneOf:
+      - required:
+        - alertMetaLabels
+        type: object
+      - required:
+        - alertUniqueIds
+        type: object
+      properties:
+        alertMetaLabels:
+          $ref: '#/components/schemas/MetaLabels'
+        alertUniqueIds:
+          $ref: '#/components/schemas/AlertUniqueIds'
+        whatExpression:
+          minLength: 1
+          type: string
+          description: Dataprime expression that filters the alerts by group-by values.
+      description: Alert scheduler rule protobuf.v1.filter.
+    UpdateAlertSchedulerRuleResponse:
+      title: Create alert scheduler rule response data structure
+      required:
+      - alertSchedulerRule
+      type: object
+      properties:
+        alertSchedulerRule:
+          $ref: '#/components/schemas/AlertSchedulerRule'
+      description: This is a response sent after creating an alert scheduler rule
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    AlertUniqueIds:
+      type: object
+      properties:
+        value:
+          description: The value.
+          items:
+            minLength: 0
+            type: string
+            description: The value.
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Alert unique ids.
+    UpdateAlertSchedulerRuleRequest:
+      title: Update alert scheduler rule request data structure
+      required:
+      - alertSchedulerRule
+      type: object
+      properties:
+        alertSchedulerRule:
+          $ref: '#/components/schemas/AlertSchedulerRule'
+      description: This is a request sent to update an alert scheduler rule
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    ScheduleOperation:
+      enum:
+      - SCHEDULE_OPERATION_UNSPECIFIED
+      - SCHEDULE_OPERATION_MUTE
+      - SCHEDULE_OPERATION_ACTIVATE
+      type: string
+      description: Schedule operation.
+    AlertSchedulerRule:
+      required:
+      - name
+      - filter
+      - schedule
+      type: object
+      properties:
+        createdAt:
+          description: Creation timestamp.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        enabled:
+          type: boolean
+          description: Whether this resource is enabled.
+        filter:
+          $ref: '#/components/schemas/alert_scheduler_rule_protobuf.v1.Filter'
+        id:
+          description: Unique identifier.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        metaLabels:
+          description: Metadata labels.
+          items:
+            $ref: '#/components/schemas/meta_labels_protobuf.v1.MetaLabel'
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+        name:
+          minLength: 1
+          type: string
+          description: Display name.
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        uniqueIdentifier:
+          description: Unique identifier.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        updatedAt:
+          description: Last-updated timestamp.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Alert scheduler rule.
+    CreateAlertSchedulerRuleRequest:
+      title: Create alert scheduler rule request data structure
+      required:
+      - alertSchedulerRule
+      type: object
+      properties:
+        alertSchedulerRule:
+          $ref: '#/components/schemas/AlertSchedulerRule'
+      description: This is a request sent to create an alert scheduler rule
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    v1.Duration:
+      required:
+      - frequency
+      type: object
+      properties:
+        forOver:
+          type: integer
+          description: The for over.
+          format: int32
+        frequency:
+          $ref: '#/components/schemas/DurationFrequency'
+      description: Duration.
+    UpdateBulkAlertSchedulerRuleResponse:
+      title: Update bulk alert scheduler rule response data structure
+      required:
+      - updateSuppressionResponses
+      type: object
+      properties:
+        updateSuppressionResponses:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/UpdateAlertSchedulerRuleResponse'
+          description: The update suppression responses.
+      description: This is a response sent after updating multiple alert scheduler rules
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+    GetBulkAlertSchedulerRuleResponse:
+      title: Get bulk alert scheduler rule response data structure
+      required:
+      - alertSchedulerRules
+      type: object
+      properties:
+        alertSchedulerRules:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertSchedulerRuleWithActiveTimeframe'
+          description: The alert scheduler rules.
+        nextPageToken:
+          minLength: 0
+          type: string
+          description: Token for fetching the next page of results.
+      description: This is a response sent after getting multiple alert scheduler rules
+      externalDocs:
+        description: Find out more about alert scheduler rules in our documentation.
+        url: https://coralogix.com/docs/developer-portal/apis/data-management/alert-suppression-rules-api/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

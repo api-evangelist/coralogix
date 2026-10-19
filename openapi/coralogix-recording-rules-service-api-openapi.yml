@@ -1,0 +1,520 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Recording Rules Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Recording Rules Service
+  description: A service to manage recording rules.
+paths:
+  /recording-rules/recording-rules/v1:
+    get:
+      description: Returns all recording rule groups for the team.
+      operationId: RuleGroupSets_List
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleGroupSetListing'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Recording Rules
+      tags:
+      - Recording Rules Service
+    post:
+      description: Creates a new recording rule group.
+      operationId: RuleGroupSets_Create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A set of rule groups to create.
+              properties:
+                groups:
+                  description: List of groups.
+                  items:
+                    $ref: '#/components/schemas/InRuleGroup'
+                  maxItems: 1000
+                  minItems: 0
+                  type: array
+                name:
+                  description: Display name.
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Create Rule Group Set
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateRuleGroupSetResult'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create Recording Rules
+      tags:
+      - Recording Rules Service
+  /recording-rules/recording-rules/v1/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: Unique identifier.
+      required: true
+      schema:
+        maxLength: 128
+        minLength: 1
+        pattern: ^[\s\S]*$
+        type: string
+        description: Unique identifier.
+    get:
+      description: Returns the details of the specified recording rule group.
+      operationId: RuleGroupSets_Fetch
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutRuleGroupSet'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Recording Rules
+      tags:
+      - Recording Rules Service
+    put:
+      description: Updates the specified recording rule group.
+      operationId: RuleGroupSets_Update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A set of rule groups to update.
+              properties:
+                groups:
+                  description: List of groups.
+                  items:
+                    $ref: '#/components/schemas/InRuleGroup'
+                  maxItems: 1000
+                  minItems: 0
+                  type: array
+                name:
+                  description: Display name.
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Update Rule Group Set
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update Recording Rules
+      tags:
+      - Recording Rules Service
+    delete:
+      description: Deletes the recording rule group with the specified ID.
+      operationId: RuleGroupSets_Delete
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete Recording Rules
+      tags:
+      - Recording Rules Service
+components:
+  schemas:
+    OutRuleGroupSet:
+      title: Out Rule Group Set
+      required:
+      - id
+      - groups
+      - name
+      type: object
+      properties:
+        groups:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/OutRuleGroup'
+          description: List of groups.
+        id:
+          maxLength: 128
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Unique identifier.
+        name:
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name.
+      description: An output set of rule groups.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+    InRuleGroup:
+      title: In Rule Group
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        interval:
+          description: Interval.
+          format: int64
+          maximum: 4294967295
+          minimum: 60
+          type: integer
+          x-coralogix-presence: true
+        limit:
+          description: Limit.
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        name:
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name.
+        rules:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/InRule'
+          description: List of rules.
+        version:
+          description: Version number.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: A group of recording rules.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    OutRuleGroup:
+      title: Out Rule Group
+      required:
+      - name
+      - rules
+      - version
+      - id
+      type: object
+      properties:
+        id:
+          maxLength: 128
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Unique identifier.
+        interval:
+          description: Interval.
+          format: int64
+          maximum: 4294967295
+          minimum: 60
+          type: integer
+          x-coralogix-presence: true
+        lastEvalAt:
+          description: The last eval at.
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        limit:
+          description: Limit.
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        name:
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name.
+        rules:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/OutRule'
+          description: List of rules.
+        version:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          description: Version number.
+          format: int64
+      description: A group of recording rules as returned by the API.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+    CreateRuleGroupSetResult:
+      title: Create Rule Group Set Result
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          maxLength: 128
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Unique identifier.
+      description: Result of creating a rule group set.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+    OutRule:
+      title: Out Rule
+      required:
+      - record
+      - expr
+      - labels
+      type: object
+      properties:
+        evaluationDelayMs:
+          description: The evaluation delay ms.
+          format: int64
+          maximum: 1800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        expr:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The expr.
+        labels:
+          type: object
+          additionalProperties:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+          description: List of labels.
+        lastEvalDurationMs:
+          description: The last eval duration ms.
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        record:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Record.
+      description: A recording rule as returned by the API.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+    InRule:
+      title: In Rule
+      required:
+      - record
+      - expr
+      type: object
+      properties:
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the recording rule expression. Allows late-arriving data to be ingested before evaluation.
+          examples:
+          - 60000
+          format: int64
+          maximum: 1800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        expr:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The expr.
+        labels:
+          type: object
+          additionalProperties:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+          description: List of labels.
+        record:
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Record.
+      description: A rule within a group that defines a recording rule expression.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+    RuleGroupSetListing:
+      title: Rule Group Set Listing
+      required:
+      - sets
+      type: object
+      properties:
+        sets:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/OutRuleGroupSet'
+          description: The sets.
+      description: A listing of rule group sets.
+      externalDocs:
+        description: Find out more about recording rules
+        url: https://coralogix.com/docs/user-guides/data-transformation/metric-rules/recording-rules/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

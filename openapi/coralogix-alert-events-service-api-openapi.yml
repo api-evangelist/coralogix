@@ -1,0 +1,469 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Alert events service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Alert events service
+  description: Get information regarding your alert events - instances of alerts being triggered.
+  externalDocs:
+    description: Learn more about alert events and incidents in our documentation.
+    url: https://coralogix.com/docs/user-guides/alerting/incidents/
+paths:
+  /v3/alert-event-stats:
+    get:
+      description: 'Returns statistical data for alert events.
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertEventService_GetAlertEventsStats
+      parameters:
+      - description: The ids.
+        in: query
+        name: ids
+        required: false
+        schema:
+          description: The ids.
+          items:
+            description: The ids.
+            maxLength: 36
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+          maxItems: 1000
+          minItems: 0
+          type: array
+      - description: The order bys.
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: The order bys.
+          items:
+            properties:
+              direction:
+                $ref: '#/components/schemas/OrderByAlertEventDirection'
+              fieldName:
+                $ref: '#/components/schemas/OrderByAlertEventFields'
+            type: object
+          maxItems: 20
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlertEventStatsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get alert events statistics
+      tags:
+      - Alert events service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+  /v3/alert-event/{id}:
+    get:
+      description: 'Returns the alert event with the specified ID.
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertEventService_GetAlertEvent
+      parameters:
+      - description: Unique identifier.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier.
+          maxLength: 36
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: Ordering applied to the alert event occurrences in the response.
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: Ordering applied to the alert event occurrences in the response.
+          items:
+            properties:
+              direction:
+                $ref: '#/components/schemas/OrderByAlertEventDirection'
+              fieldName:
+                $ref: '#/components/schemas/OrderByAlertEventFields'
+            type: object
+          maxItems: 20
+          minItems: 0
+          type: array
+      - description: Pagination parameters (page size and page token) for the returned occurrences.
+        in: query
+        name: pagination
+        required: false
+        schema:
+          properties:
+            pageSize:
+              description: Page size.
+              format: int64
+              maximum: 1000
+              minimum: 0
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: The page token.
+              maxLength: 4096
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlertEventResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get alert event by ID
+      tags:
+      - Alert events service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    ActivityAnalysis:
+      title: Activity analysis data structure
+      type: object
+      properties:
+        rules:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of rules.
+          description: List of rules.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ActivityAnalysisStatus'
+          description: Status.
+      description: Configuration for alert activity analysis, containing rules and status.
+    alerts.v3.PaginationResponse:
+      type: object
+      properties:
+        nextPageToken:
+          description: Token for fetching the next page of results.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        totalSize:
+          description: Total number of results.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Pagination response.
+    GetAlertEventResponse:
+      title: Get alert event response
+      type: object
+      oneOf:
+      - required:
+        - singlePermutation
+        type: object
+      - required:
+        - multiplePermutation
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - singlePermutation
+            type: object
+          - required:
+            - multiplePermutation
+            type: object
+      properties:
+        id:
+          description: Unique identifier of the alert event.
+          maxLength: 36
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        multiplePermutation:
+          $ref: '#/components/schemas/AlertEventMultiplePermutation'
+        pagination:
+          $ref: '#/components/schemas/alerts.v3.PaginationResponse'
+        singlePermutation:
+          $ref: '#/components/schemas/AlertEvent'
+      description: Response containing the details of an alert event.
+    AlertEventMultiplePermutation:
+      type: object
+      properties:
+        alertEventMultiplePermutation:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertEvent'
+          description: List of alert events for multiple permutations.
+      description: Alert event multiple permutation.
+    AlertEvent:
+      title: Alert event
+      type: object
+      properties:
+        activityAnalysis:
+          $ref: '#/components/schemas/ActivityAnalysis'
+        alertId:
+          description: Unique identifier of the alert.
+          maxLength: 36
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        groupLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Labels for the group.
+        incidentCorrelationKey:
+          description: Key used to correlate incidents.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        payload:
+          type: object
+          description: Raw payload data.
+        payloadType:
+          description: Type of the payload.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permutationId:
+          description: Unique identifier of the permutation.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permutationLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Labels for the permutation.
+        preGroupingEventId:
+          description: Identifier of the event before grouping.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AlertStatus'
+          description: Status.
+        timestamp:
+          description: Timestamp of the event.
+          format: date-time
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Alert event.
+    AlertStatus:
+      enum:
+      - ALERT_STATUS_RESOLVED_OR_UNSPECIFIED
+      - ALERT_STATUS_TRIGGERED
+      - ALERT_STATUS_NO_DATA
+      type: string
+      description: Alert status.
+    ActivityAnalysisStatus:
+      enum:
+      - ACTIVITY_ANALYSIS_STATUS_ACTIVATE_OR_UNSPECIFIED
+      - ACTIVITY_ANALYSIS_STATUS_MUTE
+      type: string
+      description: Activity analysis status.
+    OrderByAlertEventFields:
+      enum:
+      - ORDER_BY_ALERT_EVENT_FIELDS_UNSPECIFIED
+      - ORDER_BY_ALERT_EVENT_FIELDS_TIMESTAMP
+      type: string
+      description: Order by alert event fields.
+    ActivityAnalysisStats:
+      title: Event activity analysis statistics
+      type: object
+      properties:
+        isMutedCount:
+          description: Number of muted items.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        rules:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: List of rules.
+          description: List of rules.
+      description: Activity analysis stats.
+    OrderByAlertEventDirection:
+      enum:
+      - ORDER_BY_ALERT_EVENT_DIRECTION_UNSPECIFIED
+      - ORDER_BY_ALERT_EVENT_DIRECTION_ASC
+      - ORDER_BY_ALERT_EVENT_DIRECTION_DESC
+      type: string
+      description: Order by alert event direction.
+    GetAlertEventStatsResponse:
+      title: Get alert event statistics response
+      type: object
+      properties:
+        eventsStats:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EventStats'
+          description: The events stats.
+      description: Response containing statistical data for alert events.
+    v3.Permutation:
+      title: Permutation data structure
+      type: object
+      properties:
+        permutationLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Labels for the permutation.
+    EventStats:
+      title: Alert event statistics data structure
+      type: object
+      properties:
+        activityAnalysisStats:
+          $ref: '#/components/schemas/ActivityAnalysisStats'
+        count:
+          description: Number of items.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        resolvedCount:
+          description: The resolved count.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        resolvedPermutationsSamples:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v3.Permutation'
+          description: The resolved permutations samples.
+        triggeredCount:
+          description: The triggered count.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        triggeredPermutationsSamples:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v3.Permutation'
+          description: The triggered permutations samples.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

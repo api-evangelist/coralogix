@@ -1,0 +1,399 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Dashboard folders service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Dashboard folders service
+  description: Manage your dashboard folders.
+paths:
+  /dashboards/folders/v1:
+    get:
+      description: 'List all dashboard folders accessible.
+
+
+        Requires the following permissions:
+
+        - `team-dashboards:Read`'
+      operationId: DashboardFoldersService_ListDashboardFolders
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDashboardFoldersResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List dashboard folders
+      tags:
+      - Dashboard folders service
+      x-coralogixPermissions:
+      - team-dashboards:Read
+    put:
+      description: 'Replaces an existing dashboard folder.
+
+
+        Requires the following permissions:
+
+        - `team-dashboards:Update`'
+      operationId: DashboardFoldersService_ReplaceDashboardFolder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to replace an existing dashboard folder.
+              properties:
+                folder:
+                  allOf:
+                  - $ref: '#/components/schemas/DashboardFolder'
+                  description: The folder.
+                requestId:
+                  description: Idempotency key for the replace folder request, used to prevent duplicate updates.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Replace dashboard folder request data structure
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceDashboardFolderResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace a dashboard folder
+      tags:
+      - Dashboard folders service
+      x-coralogixPermissions:
+      - team-dashboards:Update
+    post:
+      description: 'Creates a new dashboard folder.
+
+
+        Requires the following permissions:
+
+        - `team-dashboards:Update`'
+      operationId: DashboardFoldersService_CreateDashboardFolder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to create a new dashboard folder.
+              properties:
+                folder:
+                  allOf:
+                  - $ref: '#/components/schemas/DashboardFolder'
+                  description: The folder.
+                requestId:
+                  description: The request id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              title: Create dashboard folder request data structure
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDashboardFolderResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create a dashboard folder
+      tags:
+      - Dashboard folders service
+      x-coralogixPermissions:
+      - team-dashboards:Update
+  /dashboards/folders/v1/{folder_id}:
+    parameters:
+    - name: folder_id
+      in: path
+      description: The folder id.
+      required: true
+      schema:
+        description: The folder id.
+        maxLength: 36
+        minLength: 36
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        type: string
+        x-coralogix-presence: true
+    get:
+      description: 'Returns a dashboard folder data.
+
+
+        Requires the following permissions:
+
+        - `team-dashboards:Read`'
+      operationId: DashboardFoldersService_GetDashboardFolder
+      parameters:
+      - description: Optional client-supplied request identifier used to correlate the get folder request.
+        in: query
+        name: request_id
+        required: false
+        schema:
+          description: Optional client-supplied request identifier used to correlate the get folder request.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDashboardFolderResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get a dashboard folder
+      tags:
+      - Dashboard folders service
+      x-coralogixPermissions:
+      - team-dashboards:Read
+    delete:
+      description: 'Deletes the dashboard folder with the specified ID.
+
+
+        Requires the following permissions:
+
+        - `team-dashboards:Update`'
+      operationId: DashboardFoldersService_DeleteDashboardFolder
+      parameters:
+      - description: Idempotency key for the delete folder request, used to prevent duplicate operations.
+        in: query
+        name: request_id
+        required: false
+        schema:
+          description: Idempotency key for the delete folder request, used to prevent duplicate operations.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDashboardFolderResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete a dashboard folder
+      tags:
+      - Dashboard folders service
+      x-coralogixPermissions:
+      - team-dashboards:Update
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    CreateDashboardFolderResponse:
+      title: Create dashboard folder response data structure
+      type: object
+      properties:
+        folderId:
+          description: The folder id.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: Response returned after successfully creating a dashboard folder.
+      externalDocs:
+        description: Find out more Dashboards in our documentation.
+        url: https://coralogix.com/docs/user-guides/custom-dashboards/getting-started/
+    ReplaceDashboardFolderResponse:
+      title: Replace dashboard folder response data structure
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully replacing a dashboard folder.
+      externalDocs:
+        description: Find out more Dashboards in our documentation.
+        url: https://coralogix.com/docs/user-guides/custom-dashboards/getting-started/
+    DashboardFolder:
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          description: Unique identifier. A UUID.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name. The service rejects a folder without a name, with an empty name, or with a name longer than 100 characters. Folder names are unique in the company.
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        parentId:
+          description: The parent id. A UUID that must differ from this folder's own id.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: Dashboard folder.
+    DeleteDashboardFolderResponse:
+      title: Delete dashboard folder response data structure
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a dashboard folder.
+      externalDocs:
+        description: Find out more Dashboards in our documentation.
+        url: https://coralogix.com/docs/user-guides/custom-dashboards/getting-started/
+    GetDashboardFolderResponse:
+      title: Get dashboard folder response data structure
+      type: object
+      properties:
+        folder:
+          allOf:
+          - $ref: '#/components/schemas/DashboardFolder'
+          description: The folder.
+      description: Response containing the details of a dashboard folder.
+      externalDocs:
+        description: Find out more Dashboards in our documentation.
+        url: https://coralogix.com/docs/user-guides/custom-dashboards/getting-started/
+    ListDashboardFoldersResponse:
+      title: List dashboard folders response data structure
+      type: object
+      properties:
+        folder:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardFolder'
+          description: The folder.
+      description: Response containing a list of dashboard folders.
+      externalDocs:
+        description: Find out more Dashboards in our documentation.
+        url: https://coralogix.com/docs/user-guides/custom-dashboards/getting-started/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

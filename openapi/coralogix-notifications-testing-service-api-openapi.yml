@@ -1,0 +1,708 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Notifications testing service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Notifications testing service
+  description: Test your notification center configurations including connectors, presets, and templates
+  externalDocs:
+    description: Lean more about the notification center in our documentation
+    url: https://coralogix.com/docs/user-guides/notification-center/introduction/
+paths:
+  /notifications/notification-center/v1/connectors:test:
+    post:
+      description: Sends a test notification.
+      operationId: TestingService_TestExistingConnector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for sending a test notification.
+              properties:
+                connectorId:
+                  description: The connector id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+                payloadType:
+                  description: Payload type to use when testing the connector.
+                  examples:
+                  - default
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestExistingConnectorResponse'
+          description: ''
+      summary: Test Existing Connector
+      tags:
+      - Notifications testing service
+  /notifications/notification-center/v1/connectors:testConfig:
+    post:
+      description: Tests a notification connector configuration.
+      operationId: TestingService_TestConnectorConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to test a connector configuration
+              properties:
+                entityType:
+                  allOf:
+                  - $ref: '#/components/schemas/notification_center.EntityType'
+                  examples:
+                  - ALERTS
+                  x-coralogix-presence: true
+                fields:
+                  description: Fields.
+                  items:
+                    $ref: '#/components/schemas/notification_center.ConnectorConfigField'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                payloadType:
+                  description: Payload type to use when testing the connector.
+                  examples:
+                  - default
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                type:
+                  $ref: '#/components/schemas/notification_center.ConnectorType'
+              title: Test Connector Config Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestConnectorConfigResponse'
+          description: ''
+      summary: Test Connector Config
+      tags:
+      - Notifications testing service
+  /notifications/notification-center/v1/destinations:test:
+    post:
+      description: Tests a notification destination.
+      operationId: TestingService_TestDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for testing a notification destination.
+              properties:
+                connectorConfigFields:
+                  description: The connector config fields.
+                  items:
+                    $ref: '#/components/schemas/TemplatedConnectorConfigField'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                connectorId:
+                  description: The connector id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+                entitySubType:
+                  description: Entity sub-type to use when testing the destination.
+                  examples:
+                  - logsImmediateResolved
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                entityType:
+                  allOf:
+                  - $ref: '#/components/schemas/notification_center.EntityType'
+                  examples:
+                  - ALERTS
+                messageConfigFields:
+                  description: The message config fields.
+                  items:
+                    $ref: '#/components/schemas/notification_center.MessageConfigField'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                payloadType:
+                  description: Payload type to use when testing the destination.
+                  examples:
+                  - default
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                presetId:
+                  description: The preset id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestDestinationResponse'
+          description: ''
+      summary: Test Destination
+      tags:
+      - Notifications testing service
+  /notifications/notification-center/v1/presets:test:
+    post:
+      description: Tests an existing notification preset.
+      operationId: TestingService_TestExistingPreset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for testing an existing notification preset.
+              properties:
+                connectorId:
+                  description: The connector id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+                entitySubType:
+                  description: Entity sub-type to use when testing the preset.
+                  examples:
+                  - logsImmediateResolved
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                entityType:
+                  allOf:
+                  - $ref: '#/components/schemas/notification_center.EntityType'
+                  examples:
+                  - ALERTS
+                presetId:
+                  description: The preset id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestExistingPresetResponse'
+          description: ''
+      summary: Test Existing Preset
+      tags:
+      - Notifications testing service
+  /notifications/notification-center/v1/presets:testConfig:
+    post:
+      description: Tests a notification preset configuration.
+      operationId: TestingService_TestPresetConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for testing a notification preset configuration.
+              properties:
+                configOverrides:
+                  description: The config overrides.
+                  items:
+                    $ref: '#/components/schemas/ConfigOverrides'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                connectorId:
+                  description: The connector id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+                entitySubType:
+                  description: Entity sub-type to use when testing the preset configuration.
+                  examples:
+                  - metric
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                entityType:
+                  allOf:
+                  - $ref: '#/components/schemas/notification_center.EntityType'
+                  examples:
+                  - ALERTS
+                parentPresetId:
+                  description: The parent preset id.
+                  maxLength: 128
+                  minLength: 1
+                  pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestPresetConfigResponse'
+          description: ''
+      summary: Test Preset Config
+      tags:
+      - Notifications testing service
+  /notifications/notification-center/v1/routers:testCondition:
+    post:
+      description: Tests notification routing conditions.
+      operationId: TestingService_TestRoutingConditionValid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to check that provided routing condition is valid
+              properties:
+                entityType:
+                  allOf:
+                  - $ref: '#/components/schemas/notification_center.EntityType'
+                  examples:
+                  - ALERTS
+                template:
+                  description: Routing condition expression to validate.
+                  examples:
+                  - alertDef.priority == 'P1'
+                  maxLength: 20000
+                  minLength: 1
+                  pattern: ^[\s\S]+$
+                  type: string
+              title: Test Routing Condition Valid Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestRoutingConditionValidResponse'
+          description: ''
+      summary: Test Routing Condition Valid
+      tags:
+      - Notifications testing service
+  /notifications/notification-center/v1/templates:test:
+    post:
+      description: Tests the rendering of a notification template.
+      operationId: TestingService_TestTemplateRender
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for testing notification template rendering.
+              properties:
+                entitySubType:
+                  description: Entity sub-type to use when testing template rendering.
+                  examples:
+                  - logsImmediateResolved
+                  maxLength: 100
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                entityType:
+                  allOf:
+                  - $ref: '#/components/schemas/notification_center.EntityType'
+                  examples:
+                  - ALERTS
+                template:
+                  description: Template string to test rendering for.
+                  examples:
+                  - '{{ alertDef.name }}'
+                  maxLength: 20000
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestTemplateRenderResponse'
+          description: ''
+      summary: Test Template Render
+      tags:
+      - Notifications testing service
+components:
+  schemas:
+    TestRoutingConditionValidResponse.Failure:
+      type: object
+      properties:
+        message:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable message.
+          examples:
+          - 'Invalid condition: condition should be rendered to a boolean value (true or false)'
+      description: Indicates the routing condition is invalid, with a human-readable error message.
+    MatchEntityTypeCondition:
+      type: object
+      additionalProperties: false
+      description: Match entity type condition.
+    FailureReason:
+      enum:
+      - FAILURE_REASON_UNSPECIFIED
+      - INVALID_TEMPLATE
+      - FIELD_NOT_FOUND
+      - TEMPLATE_EXCEEDS_MAX_LENGTH
+      - RENDERED_VALUE_EXCEEDS_MAX_LENGTH
+      type: string
+      description: Failure reason.
+    notification_center.MessageConfigField:
+      title: Message Config Field
+      type: object
+      properties:
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+          examples:
+          - title
+        template:
+          maxLength: 20000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The template.
+          examples:
+          - '{{alert.status}} {{alertDef.priority}} - {{alertDef.name}}'
+      description: Message config field provides a way to define a template that can be used to render the notification content
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    TestTemplateRenderResult.Failure:
+      type: object
+      properties:
+        message:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable message.
+          examples:
+          - Template rendering failed
+        reason:
+          $ref: '#/components/schemas/FailureReason'
+      description: Indicates the template render test failed, with a message and failure reason.
+    TestConnectorConfigResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestResult'
+      description: Response containing the results of a connector configuration test.
+    TestPresetConfigResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestResult'
+      description: Response containing the results of a notification preset configuration test.
+    TestRoutingConditionValidResponse.Success:
+      type: object
+      properties:
+        result:
+          type: boolean
+          description: Result.
+          examples:
+          - true
+      description: Indicates the routing condition is valid, with the evaluated result.
+    TestExistingPresetResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestResult'
+      description: Response containing the results of testing an existing preset.
+    notification_center.ConditionType:
+      type: object
+      oneOf:
+      - required:
+        - matchEntityType
+        type: object
+      - required:
+        - matchEntityTypeAndSubType
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - matchEntityType
+            type: object
+          - required:
+            - matchEntityTypeAndSubType
+            type: object
+      properties:
+        matchEntityType:
+          $ref: '#/components/schemas/MatchEntityTypeCondition'
+        matchEntityTypeAndSubType:
+          $ref: '#/components/schemas/MatchEntityTypeAndSubTypeCondition'
+      description: Field condition.condition type.
+    MessageConfig:
+      type: object
+      properties:
+        fields:
+          description: List of fields. The server does not keep the order of the fields, and a repeated field name keeps one entry.
+          items:
+            $ref: '#/components/schemas/notification_center.MessageConfigField'
+          maxItems: 100
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Message config.
+    TestResult.Success:
+      type: object
+      properties:
+        metadata:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Metadata.
+      description: Indicates the notification test succeeded.
+    TestRoutingConditionValidResponse:
+      title: Test Routing Condition Valid Response
+      type: object
+      oneOf:
+      - required:
+        - success
+        type: object
+      - required:
+        - failure
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - success
+            type: object
+          - required:
+            - failure
+            type: object
+      properties:
+        failure:
+          $ref: '#/components/schemas/TestRoutingConditionValidResponse.Failure'
+        success:
+          $ref: '#/components/schemas/TestRoutingConditionValidResponse.Success'
+      description: Response which specifies condition evaluation result or error
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    notification_center.ConnectorType:
+      enum:
+      - CONNECTOR_TYPE_UNSPECIFIED
+      - SLACK
+      - GENERIC_HTTPS
+      - PAGERDUTY
+      - IBM_EVENT_NOTIFICATIONS
+      - SERVICE_NOW
+      - EMAIL
+      - PAGERDUTY_INCIDENTS
+      - MICROSOFT_TEAMS
+      - EVENTBRIDGE
+      - INCIDENT_IO
+      type: string
+      description: Connector type.
+    ConfigOverrides:
+      type: object
+      properties:
+        conditionType:
+          $ref: '#/components/schemas/notification_center.ConditionType'
+        messageConfig:
+          $ref: '#/components/schemas/MessageConfig'
+        payloadType:
+          description: Connector payload schema type.
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    TemplatedConnectorConfigField:
+      title: Templated Connector Config Field
+      required:
+      - fieldName
+      type: object
+      properties:
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        template:
+          maxLength: 20000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Template.
+      description: A templated connector configuration field
+    MatchEntityTypeAndSubTypeCondition:
+      type: object
+      properties:
+        entitySubType:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The entity sub type.
+      description: Match entity type and sub type condition.
+    notification_center.EntityType:
+      enum:
+      - ENTITY_TYPE_UNSPECIFIED
+      - ALERTS
+      - TEST_NOTIFICATIONS
+      - CASES
+      - OLLY_SCHEDULED_TASKS
+      type: string
+      description: Entity type.
+    TestExistingConnectorResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestResult'
+      description: Response containing the results of testing an existing connector.
+    notification_center.ConnectorConfigField:
+      title: Connector Config Field
+      required:
+      - fieldName
+      type: object
+      properties:
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        value:
+          maxLength: 20000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The value.
+      description: A connector configuration field
+    TestTemplateRenderResult.Success:
+      type: object
+      properties:
+        renderedValue:
+          maxLength: 50000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The rendered value.
+          examples:
+          - Rendered template result
+      description: Success.
+    TestResult.Failure:
+      type: object
+      properties:
+        message:
+          maxLength: 10000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable message.
+        statusCode:
+          description: The status code.
+          format: int64
+          maximum: 599
+          minimum: 100
+          type: integer
+          x-coralogix-presence: true
+      description: Failure.
+    TestTemplateRenderResult:
+      type: object
+      oneOf:
+      - required:
+        - success
+        type: object
+      - required:
+        - failure
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - success
+            type: object
+          - required:
+            - failure
+            type: object
+      properties:
+        failure:
+          $ref: '#/components/schemas/TestTemplateRenderResult.Failure'
+        success:
+          $ref: '#/components/schemas/TestTemplateRenderResult.Success'
+      description: Result of a template render test, either a success with rendered output or a failure with reason.
+    TestTemplateRenderResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestTemplateRenderResult'
+      description: Response containing the results of a notification template render test.
+    TestResult:
+      type: object
+      oneOf:
+      - required:
+        - success
+        type: object
+      - required:
+        - failure
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - success
+            type: object
+          - required:
+            - failure
+            type: object
+      properties:
+        failure:
+          $ref: '#/components/schemas/TestResult.Failure'
+        success:
+          $ref: '#/components/schemas/TestResult.Success'
+      description: Result of a notification test, either a success or failure.
+    TestDestinationResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestResult'
+      description: Response containing the results of a notification destination test.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

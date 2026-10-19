@@ -1,0 +1,703 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Connectors service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Connectors service
+  description: View and manage your connectors - integration instances for notification destinations
+  externalDocs:
+    description: Lean more about connectors in our documentation
+    url: https://coralogix.com/docs/user-guides/notification-center/connectors/introduction/
+paths:
+  /notifications/notification-center/v1/connectors:
+    get:
+      description: Returns notification connectors with optional pagination.
+      operationId: ConnectorsService_ListConnectors
+      parameters:
+      - description: Filter connectors by their type.
+        in: query
+        name: connector_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.ConnectorType'
+          description: Filter connectors by their type.
+          x-coralogix-presence: true
+      - description: Filter connectors by the entity type they support.
+        in: query
+        name: supported_by_entity_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: Filter connectors by the entity type they support.
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectorsResponse'
+          description: ''
+      summary: List Connectors
+      tags:
+      - Connectors service
+    put:
+      description: Updates an existing notification connector.
+      operationId: ConnectorsService_ReplaceConnector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to replace an existing connector
+              properties:
+                connector:
+                  $ref: '#/components/schemas/Connector'
+              required:
+              - connector
+              title: Replace Connector Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceConnectorResponse'
+          description: ''
+      summary: Replace a Connector
+      tags:
+      - Connectors service
+    post:
+      description: Creates a new notification connector.
+      operationId: ConnectorsService_CreateConnector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to create a new connector
+              properties:
+                connector:
+                  $ref: '#/components/schemas/Connector'
+              required:
+              - connector
+              title: Create Connector Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateConnectorResponse'
+          description: ''
+      summary: Create a Connector
+      tags:
+      - Connectors service
+  /notifications/notification-center/v1/connectors/all/list:
+    get:
+      description: Returns all notification connectors for the team.
+      operationId: ConnectorsService_BatchGetConnectors
+      parameters:
+      - description: The unique identifiers of the connectors to retrieve.
+        in: query
+        name: connector_ids
+        required: false
+        schema:
+          description: The unique identifiers of the connectors to retrieve.
+          examples:
+          - - connector-id-1
+            - connector-id-2
+          items:
+            description: The unique identifiers of the connectors to retrieve.
+            minLength: 0
+            type: string
+          maxItems: 800
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetConnectorsResponse'
+          description: ''
+      summary: Batch Get Connectors
+      tags:
+      - Connectors service
+  /notifications/notification-center/v1/connectors/all/summaries:
+    get:
+      description: Returns summary information for all notification connectors.
+      operationId: ConnectorsService_BatchGetConnectorSummaries
+      parameters:
+      - description: The unique identifiers of the connectors whose summaries to retrieve.
+        in: query
+        name: connector_ids
+        required: false
+        schema:
+          description: The unique identifiers of the connectors whose summaries to retrieve.
+          items:
+            description: The unique identifiers of the connectors whose summaries to retrieve.
+            minLength: 0
+            type: string
+          maxItems: 800
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetConnectorSummariesResponse'
+          description: ''
+      summary: Batch Get Connectors Summaries
+      tags:
+      - Connectors service
+  /notifications/notification-center/v1/connectors/list/summaries:
+    get:
+      description: Returns a paginated list of notification connector summaries.
+      operationId: ConnectorsService_ListConnectorSummaries
+      parameters:
+      - description: Filter connector summaries by their type.
+        in: query
+        name: connector_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.ConnectorType'
+          description: Filter connector summaries by their type.
+          x-coralogix-presence: true
+      - description: Filter connector summaries by the entity type they support.
+        in: query
+        name: supported_by_entity_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: Filter connector summaries by the entity type they support.
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectorSummariesResponse'
+          description: ''
+      summary: List Connector Summaries
+      tags:
+      - Connectors service
+  /notifications/notification-center/v1/connectors/types/summaries:
+    get:
+      description: Returns summary information for all available connector types.
+      operationId: ConnectorsService_GetConnectorTypeSummaries
+      parameters:
+      - description: Filter connector types by the entity type they support.
+        in: query
+        name: supported_by_entity_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: Filter connector types by the entity type they support.
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConnectorTypeSummariesResponse'
+          description: ''
+      summary: Get Connector Type Summaries
+      tags:
+      - Connectors service
+  /notifications/notification-center/v1/connectors/{id}:
+    get:
+      description: Returns the details of the specified notification connector.
+      operationId: ConnectorsService_GetConnector
+      parameters:
+      - description: The unique identifier of the connector.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the connector.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConnectorResponse'
+          description: ''
+      summary: Get a Connector
+      tags:
+      - Connectors service
+    delete:
+      description: Deletes the notification connector with the specified ID.
+      operationId: ConnectorsService_DeleteConnector
+      parameters:
+      - $ref: '#/components/parameters/id_4'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteConnectorResponse'
+          description: ''
+      summary: Delete a Connector
+      tags:
+      - Connectors service
+components:
+  schemas:
+    Diagnostics:
+      title: Connector Diagnostics
+      type: object
+      properties:
+        delivery:
+          allOf:
+          - $ref: '#/components/schemas/Delivery'
+          description: Allows to configure what notification data should be written into a dataset.
+      description: Allows to configure rules for data written into 'notification.deliveries' dataset
+      externalDocs:
+        description: Find out more about datasets
+        url: https://coralogix.com/docs/user-guides/data-layer/datasets/
+    CreateConnectorResponse:
+      title: Create Connector Response
+      type: object
+      properties:
+        connector:
+          $ref: '#/components/schemas/Connector'
+      description: Response containing the created connector
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    Delivery:
+      enum:
+      - DELIVERY_UNSPECIFIED
+      - DISABLED
+      - ERRORS_ONLY
+      type: string
+      description: Delivery.
+    GetConnectorResponse:
+      title: Get Connector Response
+      type: object
+      properties:
+        connector:
+          $ref: '#/components/schemas/Connector'
+      description: Response containing the requested connector
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    EntityTypeConfigOverrides:
+      title: Entity Type Config Overrides
+      required:
+      - entityType
+      type: object
+      properties:
+        entityType:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          examples:
+          - ALERTS
+        fields:
+          description: List of fields. The server does not keep the order of the fields.
+          items:
+            $ref: '#/components/schemas/TemplatedConnectorConfigField'
+          maxItems: 100
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Configuration field overrides for a specific entity type
+    GetConnectorTypeSummariesResponse:
+      title: Get Connector Type Summaries Response
+      type: object
+      properties:
+        connectorTypeSummaries:
+          maxItems: 800
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectorTypeSummary'
+          description: The connector type summaries.
+      description: Response containing summaries of connector types
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    ListConnectorsResponse:
+      title: List Connectors Response
+      type: object
+      properties:
+        connectors:
+          maxItems: 800
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Connector'
+          description: The connectors.
+      description: Response containing a list of connectors
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    notification_center.ConnectorType:
+      enum:
+      - CONNECTOR_TYPE_UNSPECIFIED
+      - SLACK
+      - GENERIC_HTTPS
+      - PAGERDUTY
+      - IBM_EVENT_NOTIFICATIONS
+      - SERVICE_NOW
+      - EMAIL
+      - PAGERDUTY_INCIDENTS
+      - MICROSOFT_TEAMS
+      - EVENTBRIDGE
+      - INCIDENT_IO
+      type: string
+      description: Connector type.
+    TemplatedConnectorConfigField:
+      title: Templated Connector Config Field
+      required:
+      - fieldName
+      type: object
+      properties:
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        template:
+          maxLength: 20000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Template.
+      description: A templated connector configuration field
+    notification_center.EntityType:
+      enum:
+      - ENTITY_TYPE_UNSPECIFIED
+      - ALERTS
+      - TEST_NOTIFICATIONS
+      - CASES
+      - OLLY_SCHEDULED_TASKS
+      type: string
+      description: Entity type.
+    BatchGetConnectorSummariesResponse:
+      title: Batch Get Connector Summaries Response
+      type: object
+      properties:
+        connectorSummaries:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ConnectorSummary'
+          description: The connector summaries.
+        notFoundIds:
+          maxItems: 800
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The not found ids.
+          description: The not found ids.
+          examples:
+          - - connector-id-3
+      description: Response containing the requested connector summaries and any IDs not found
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    ReplaceConnectorResponse:
+      title: Replace Connector Response
+      type: object
+      properties:
+        connector:
+          $ref: '#/components/schemas/Connector'
+      description: Response containing the updated connector
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    ConnectorTypeSummary:
+      title: Connector Type Summary
+      type: object
+      properties:
+        count:
+          maximum: 800
+          minimum: 0
+          type: integer
+          description: Number of items.
+          format: int64
+          examples:
+          - 5
+        type:
+          $ref: '#/components/schemas/notification_center.ConnectorType'
+      description: Summary information about a connector type
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    Connector:
+      title: Connector
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        configOverrides:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityTypeConfigOverrides'
+          description: The config overrides.
+        connectorConfig:
+          $ref: '#/components/schemas/ConnectorConfig'
+        createTime:
+          description: The create time. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        description:
+          maxLength: 5000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description.
+          examples:
+          - Connector for team notifications
+        diagnostics:
+          allOf:
+          - $ref: '#/components/schemas/Diagnostics'
+          deprecated: true
+        id:
+          description: Unique identifier.
+          examples:
+          - a16e24c8-4db2-4abf-ba3c-c9e1fc35a3b9
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          maxLength: 200
+          minLength: 1
+          pattern: ^[\s\S]+$
+          type: string
+          description: Display name.
+          examples:
+          - My Slack Connector
+        resolvedConnectorConfig:
+          allOf:
+          - $ref: '#/components/schemas/ConnectorConfig'
+          description: Read-only full effective config, including backend auto-resolved fields. Set by the server; a value sent by the client is ignored.
+          readOnly: true
+        teamId:
+          description: Team identifier. Set by the server; a value sent by the client is ignored.
+          examples:
+          - 12345
+          format: int64
+          maximum: 4294967295
+          minimum: 1
+          readOnly: true
+          type: integer
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/notification_center.ConnectorType'
+        updateTime:
+          description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+      description: A connector configuration for sending notifications
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    notification_center.ConnectorConfigField:
+      title: Connector Config Field
+      required:
+      - fieldName
+      type: object
+      properties:
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        value:
+          maxLength: 20000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The value.
+      description: A connector configuration field
+    BatchGetConnectorsResponse:
+      title: Batch Get Connectors Response
+      type: object
+      properties:
+        connectors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Connector'
+          description: The connectors.
+        notFoundIds:
+          maxItems: 800
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The not found ids.
+          description: The not found ids.
+          examples:
+          - - connector-id-3
+      description: Response containing the requested connectors and any IDs not found
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    ConnectorConfig:
+      title: Connector Config
+      type: object
+      properties:
+        fields:
+          description: List of fields. The server does not keep the order of the fields.
+          items:
+            $ref: '#/components/schemas/notification_center.ConnectorConfigField'
+          maxItems: 100
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Configuration for a specific output schema of a connector
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    DeleteConnectorResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a notification connector.
+    ConnectorSummary:
+      title: Connector Summary
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        configOverrides:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityTypeConfigOverrides'
+          description: The config overrides.
+        connectorConfig:
+          $ref: '#/components/schemas/ConnectorConfig'
+        createTime:
+          description: The create time. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        description:
+          maxLength: 5000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description.
+          examples:
+          - Connector for team notifications
+        id:
+          description: Unique identifier.
+          examples:
+          - a16e24c8-4db2-4abf-ba3c-c9e1fc35a3b9
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          maxLength: 200
+          minLength: 1
+          pattern: ^[\s\S]+$
+          type: string
+          description: Display name.
+          examples:
+          - My Slack Connector
+        resolvedConnectorConfig:
+          allOf:
+          - $ref: '#/components/schemas/ConnectorConfig'
+          description: Read-only full effective config, including backend auto-resolved fields. Set by the server; a value sent by the client is ignored.
+          readOnly: true
+        teamId:
+          description: The team id. Set by the server; a value sent by the client is ignored.
+          examples:
+          - 12345
+          format: int64
+          maximum: 4294967295
+          minimum: 1
+          readOnly: true
+          type: integer
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/notification_center.ConnectorType'
+        updateTime:
+          description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+      description: A summary of a connector, excluding sensitive configuration values.
+    ListConnectorSummariesResponse:
+      title: List Connector Summaries Response
+      type: object
+      properties:
+        connectors:
+          maxItems: 800
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectorSummary'
+          description: The connectors.
+      description: Response containing summaries of connectors
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+  parameters:
+    id_4:
+      name: id
+      in: path
+      description: Unique identifier.
+      required: true
+      schema:
+        maxLength: 128
+        minLength: 1
+        pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+        type: string
+        description: Unique identifier.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

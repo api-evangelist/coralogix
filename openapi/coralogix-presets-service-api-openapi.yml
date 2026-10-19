@@ -1,0 +1,680 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Presets service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Presets service
+  description: View and manage your presets - pre-configured templates for notification content rendering
+  externalDocs:
+    description: Lean more about presets in our documentation
+    url: https://coralogix.com/docs/user-guides/notification-center/presets/introduction/
+paths:
+  /notifications/notification-center/v1/presets:
+    get:
+      description: Returns all notification presets.
+      operationId: PresetsService_BatchGetPresets
+      parameters:
+      - description: The unique identifiers of the presets to retrieve.
+        in: query
+        name: preset_ids
+        required: false
+        schema:
+          description: The unique identifiers of the presets to retrieve.
+          items:
+            description: The unique identifiers of the presets to retrieve.
+            minLength: 0
+            type: string
+          maxItems: 600
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetPresetsResponse'
+          description: ''
+      summary: Batch Get Presets
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets/custom/{id}:
+    delete:
+      description: Deletes the custom notification preset with the specified ID.
+      operationId: PresetsService_DeleteCustomPreset
+      parameters:
+      - $ref: '#/components/parameters/id_4'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCustomPresetResponse'
+          description: ''
+      summary: Delete Custom Preset
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets/custom/{id}/default:
+    post:
+      description: Sets a custom preset as the default.
+      operationId: PresetsService_SetCustomPresetAsDefault
+      parameters:
+      - description: The unique identifier of the custom preset to set as default.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the custom preset to set as default.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetCustomPresetAsDefaultResponse'
+          description: ''
+      summary: Set Custom Preset As Default
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets/summaries/system:
+    get:
+      description: Returns summaries for all system-defined notification presets.
+      operationId: PresetsService_GetSystemDefaultPresetSummary
+      parameters:
+      - description: The connector type whose system default preset summary is requested.
+        in: query
+        name: connector_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.ConnectorType'
+          description: The connector type whose system default preset summary is requested.
+      - description: The entity type whose system default preset summary is requested.
+        in: query
+        name: entity_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: The entity type whose system default preset summary is requested.
+          examples:
+          - ALERTS
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSystemDefaultPresetSummaryResponse'
+          description: ''
+      summary: Get System Default Preset Summary
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets/{id}:
+    get:
+      description: Returns the details of the specified notification preset.
+      operationId: PresetsService_GetPreset
+      parameters:
+      - description: The unique identifier of the preset to retrieve.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the preset to retrieve.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPresetResponse'
+          description: ''
+      summary: Get Preset
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets/{id}/default/apply:
+    post:
+      description: Sets the specified preset as the default for an entity.
+      operationId: PresetsService_SetPresetAsDefault
+      parameters:
+      - description: The unique identifier of the preset to set as default.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the preset to set as default.
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetPresetAsDefaultResponse'
+          description: ''
+      summary: Set Preset As Default
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets:createCustom:
+    post:
+      description: Creates a new custom notification preset.
+      operationId: PresetsService_CreateCustomPreset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to create a new custom preset
+              properties:
+                preset:
+                  $ref: '#/components/schemas/Preset'
+              title: Create Custom Preset Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCustomPresetResponse'
+          description: ''
+      summary: Create Custom Preset
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets:getDefaultSummary:
+    get:
+      description: Returns a summary of the default notification preset.
+      operationId: PresetsService_GetDefaultPresetSummary
+      parameters:
+      - description: The connector type whose default preset summary is requested.
+        in: query
+        name: connector_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.ConnectorType'
+          description: The connector type whose default preset summary is requested.
+      - description: The entity type whose default preset summary is requested.
+        in: query
+        name: entity_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: The entity type whose default preset summary is requested.
+          examples:
+          - ALERTS
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDefaultPresetSummaryResponse'
+          description: ''
+      summary: Get Default Preset Summary
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets:replaceCustom:
+    put:
+      description: Replaces an existing custom notification preset.
+      operationId: PresetsService_ReplaceCustomPreset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to replace an existing custom preset
+              properties:
+                preset:
+                  $ref: '#/components/schemas/Preset'
+              title: Replace Custom Preset Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceCustomPresetResponse'
+          description: ''
+      summary: Replace Custom Preset
+      tags:
+      - Presets service
+  /notifications/notification-center/v1/presets:summariesList:
+    get:
+      description: Returns a list of notification preset summaries.
+      operationId: PresetsService_ListPresetSummaries
+      parameters:
+      - description: Filter preset summaries by their connector type.
+        in: query
+        name: connector_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.ConnectorType'
+          description: Filter preset summaries by their connector type.
+          x-coralogix-presence: true
+      - description: Filter preset summaries by their entity type.
+        in: query
+        name: entity_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: Filter preset summaries by their entity type.
+          examples:
+          - ALERTS
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPresetSummariesResponse'
+          description: ''
+      summary: List Preset Summaries
+      tags:
+      - Presets service
+components:
+  schemas:
+    PresetType:
+      enum:
+      - PRESET_TYPE_UNSPECIFIED
+      - SYSTEM
+      - CUSTOM
+      type: string
+      description: Preset type.
+    Preset:
+      title: Preset
+      required:
+      - name
+      - connectorType
+      - entityType
+      type: object
+      properties:
+        attachmentConfig:
+          $ref: '#/components/schemas/AttachmentConfig'
+        configOverrides:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigOverrides'
+          description: The config overrides.
+        connectorType:
+          $ref: '#/components/schemas/notification_center.ConnectorType'
+        createTime:
+          description: The create time. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        description:
+          maxLength: 5000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description.
+          examples:
+          - Custom preset for alerts
+        entityType:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          examples:
+          - ALERTS
+        id:
+          description: Unique identifier.
+          examples:
+          - a16e24c8-4db2-4abf-ba3c-c9e1fc35a3b9
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          maxLength: 200
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name.
+          examples:
+          - My Preset
+        parentId:
+          description: The parent id.
+          examples:
+          - preset_system_slack_alerts_basic
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          x-coralogix-presence: true
+        presetType:
+          allOf:
+          - $ref: '#/components/schemas/PresetType'
+          description: Whether the preset is system-provided or custom. Set by the server; a value sent by the client is ignored. Custom presets are stored as CUSTOM.
+          readOnly: true
+          x-coralogix-presence: true
+        updateTime:
+          description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+      description: Set of preconfigured templates for notification content rendering
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    MatchEntityTypeCondition:
+      type: object
+      additionalProperties: false
+      description: Match entity type condition.
+    notification_center.MessageConfigField:
+      title: Message Config Field
+      type: object
+      properties:
+        fieldName:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+          examples:
+          - title
+        template:
+          maxLength: 20000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The template.
+          examples:
+          - '{{alert.status}} {{alertDef.priority}} - {{alertDef.name}}'
+      description: Message config field provides a way to define a template that can be used to render the notification content
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    ListPresetSummariesResponse:
+      type: object
+      properties:
+        presetSummaries:
+          maxItems: 600
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PresetSummary'
+          description: The preset summaries.
+      description: Response containing a list of notification preset summaries.
+    ReplaceCustomPresetResponse:
+      title: Replace Custom Preset Response
+      type: object
+      properties:
+        preset:
+          $ref: '#/components/schemas/Preset'
+      description: Response containing the updated custom preset
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    SetCustomPresetAsDefaultResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after setting a custom preset as the default.
+    GetSystemDefaultPresetSummaryResponse:
+      type: object
+      properties:
+        presetSummary:
+          $ref: '#/components/schemas/PresetSummary'
+      description: Response containing a summary of the system default notification preset.
+    PresetSummary:
+      title: Preset Summary
+      type: object
+      properties:
+        attachmentConfig:
+          $ref: '#/components/schemas/AttachmentConfig'
+        connectorType:
+          $ref: '#/components/schemas/notification_center.ConnectorType'
+        createTime:
+          description: The create time.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        description:
+          maxLength: 5000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description.
+          examples:
+          - Custom preset for alerts
+        entityType:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          examples:
+          - ALERTS
+        id:
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          description: Unique identifier.
+          examples:
+          - a16e24c8-4db2-4abf-ba3c-c9e1fc35a3b9
+        name:
+          maxLength: 200
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name.
+          examples:
+          - My Preset
+        parentId:
+          description: The parent id.
+          examples:
+          - c246e826-10c2-405e-8d3f-afcc24ad4d15
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          x-coralogix-presence: true
+        presetType:
+          $ref: '#/components/schemas/PresetType'
+        updateTime:
+          description: Timestamp of the last update.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Provides a concise overview of a preset
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    notification_center.ConditionType:
+      type: object
+      oneOf:
+      - required:
+        - matchEntityType
+        type: object
+      - required:
+        - matchEntityTypeAndSubType
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - matchEntityType
+            type: object
+          - required:
+            - matchEntityTypeAndSubType
+            type: object
+      properties:
+        matchEntityType:
+          $ref: '#/components/schemas/MatchEntityTypeCondition'
+        matchEntityTypeAndSubType:
+          $ref: '#/components/schemas/MatchEntityTypeAndSubTypeCondition'
+      description: Field condition.condition type.
+    SetPresetAsDefaultResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after setting a preset as the default.
+    GetPresetResponse:
+      type: object
+      properties:
+        preset:
+          $ref: '#/components/schemas/Preset'
+      description: Response containing the details of a notification preset.
+    MessageConfig:
+      type: object
+      properties:
+        fields:
+          description: List of fields. The server does not keep the order of the fields, and a repeated field name keeps one entry.
+          items:
+            $ref: '#/components/schemas/notification_center.MessageConfigField'
+          maxItems: 100
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Message config.
+    AttachmentConfig:
+      type: object
+      properties:
+        policy:
+          allOf:
+          - $ref: '#/components/schemas/AttachmentConfigPolicy'
+          description: Default policy applied to all attachment types.
+          examples:
+          - AUTO
+      description: Attachment config.
+    notification_center.ConnectorType:
+      enum:
+      - CONNECTOR_TYPE_UNSPECIFIED
+      - SLACK
+      - GENERIC_HTTPS
+      - PAGERDUTY
+      - IBM_EVENT_NOTIFICATIONS
+      - SERVICE_NOW
+      - EMAIL
+      - PAGERDUTY_INCIDENTS
+      - MICROSOFT_TEAMS
+      - EVENTBRIDGE
+      - INCIDENT_IO
+      type: string
+      description: Connector type.
+    ConfigOverrides:
+      type: object
+      properties:
+        conditionType:
+          $ref: '#/components/schemas/notification_center.ConditionType'
+        messageConfig:
+          $ref: '#/components/schemas/MessageConfig'
+        payloadType:
+          description: Connector payload schema type.
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    MatchEntityTypeAndSubTypeCondition:
+      type: object
+      properties:
+        entitySubType:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The entity sub type.
+      description: Match entity type and sub type condition.
+    notification_center.EntityType:
+      enum:
+      - ENTITY_TYPE_UNSPECIFIED
+      - ALERTS
+      - TEST_NOTIFICATIONS
+      - CASES
+      - OLLY_SCHEDULED_TASKS
+      type: string
+      description: Entity type.
+    GetDefaultPresetSummaryResponse:
+      type: object
+      properties:
+        presetSummary:
+          $ref: '#/components/schemas/PresetSummary'
+      description: Response containing a summary of the default notification preset.
+    BatchGetPresetsResponse:
+      title: Batch Get Presets Response
+      type: object
+      properties:
+        notFoundIds:
+          maxItems: 600
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The not found ids.
+          description: The not found ids.
+        presets:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Preset'
+          description: List of permission presets.
+      description: Response containing the requested presets and any IDs not found
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    AttachmentConfigPolicy:
+      enum:
+      - AUTO
+      - ENABLED
+      - DISABLED
+      type: string
+      description: Attachment config policy.
+    CreateCustomPresetResponse:
+      title: Create Custom Preset Response
+      type: object
+      properties:
+        preset:
+          $ref: '#/components/schemas/Preset'
+      description: Response containing the created custom preset
+      externalDocs:
+        description: Find out more about notification center
+        url: https://coralogix.com/docs/user-guides/notification-center/introduction/welcome/
+    DeleteCustomPresetResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a custom notification preset.
+  parameters:
+    id_4:
+      name: id
+      in: path
+      description: Unique identifier.
+      required: true
+      schema:
+        maxLength: 128
+        minLength: 1
+        pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+        type: string
+        description: Unique identifier.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

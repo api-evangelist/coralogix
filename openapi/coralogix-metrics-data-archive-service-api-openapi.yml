@@ -1,0 +1,512 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Metrics Data Archive Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Metrics Data Archive Service
+  description: View and manage your storage targets for metrics.
+  externalDocs:
+    description: Find out more about archives
+    url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+paths:
+  /metrics/data-setup/v1:
+    get:
+      description: Returns the current metrics storage configuration.
+      operationId: MetricsConfiguratorPublicService_GetTenantConfig
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTenantConfigResponseV2'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Metrics Storage Configuration
+      tags:
+      - Metrics Data Archive Service
+    put:
+      description: Updates the metrics storage configuration.
+      operationId: MetricsConfiguratorPublicService_Update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - required:
+                - ibm
+                type: object
+              - required:
+                - s3
+                type: object
+              - required:
+                - gcs
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - ibm
+                    type: object
+                  - required:
+                    - s3
+                    type: object
+                  - required:
+                    - gcs
+                    type: object
+                type: object
+              properties:
+                gcs:
+                  allOf:
+                  - $ref: '#/components/schemas/GcsConfig'
+                  description: Google Cloud Storage configuration.
+                ibm:
+                  allOf:
+                  - $ref: '#/components/schemas/IbmConfigV2'
+                  description: IBM Cloud Object Storage configuration.
+                retentionDays:
+                  description: Archive retention period in days.
+                  format: int64
+                  minimum: 0
+                  type: integer
+                  x-coralogix-presence: true
+                s3:
+                  allOf:
+                  - $ref: '#/components/schemas/S3Config'
+                  description: AWS S3 storage configuration.
+              title: Update Tenant Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update Metrics Storage Configuration
+      tags:
+      - Metrics Data Archive Service
+    post:
+      description: Creates the metrics storage configuration.
+      operationId: MetricsConfiguratorPublicService_ConfigureTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - required:
+                - ibm
+                type: object
+              - required:
+                - s3
+                type: object
+              - required:
+                - gcs
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - ibm
+                    type: object
+                  - required:
+                    - s3
+                    type: object
+                  - required:
+                    - gcs
+                    type: object
+                type: object
+              properties:
+                gcs:
+                  allOf:
+                  - $ref: '#/components/schemas/GcsConfig'
+                  description: Google Cloud Storage configuration.
+                ibm:
+                  allOf:
+                  - $ref: '#/components/schemas/IbmConfigV2'
+                  description: IBM Cloud Object Storage configuration.
+                retentionPolicy:
+                  $ref: '#/components/schemas/RetentionPolicyRequest'
+                s3:
+                  allOf:
+                  - $ref: '#/components/schemas/S3Config'
+                  description: AWS S3 storage configuration.
+              title: Configure Tenant Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Configure Tenant
+      tags:
+      - Metrics Data Archive Service
+  /metrics/data-setup/v1/disable:
+    post:
+      description: Disables the metrics storage configuration.
+      operationId: MetricsConfiguratorPublicService_DisableArchive
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Disable Metrics Archive
+      tags:
+      - Metrics Data Archive Service
+  /metrics/data-setup/v1/enable:
+    post:
+      description: Enables the metrics storage configuration.
+      operationId: MetricsConfiguratorPublicService_EnableArchive
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Enable Metrics Archive
+      tags:
+      - Metrics Data Archive Service
+  /metrics/data-setup/v1/validate:
+    post:
+      description: Validates the provided metrics storage configuration.
+      operationId: MetricsConfiguratorPublicService_ValidateBucket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - required:
+                - ibm
+                type: object
+              - required:
+                - s3
+                type: object
+              - required:
+                - gcs
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - ibm
+                    type: object
+                  - required:
+                    - s3
+                    type: object
+                  - required:
+                    - gcs
+                    type: object
+                type: object
+              properties:
+                gcs:
+                  allOf:
+                  - $ref: '#/components/schemas/GcsConfig'
+                  description: Google Cloud Storage configuration.
+                ibm:
+                  allOf:
+                  - $ref: '#/components/schemas/IbmConfigV2'
+                  description: IBM Cloud Object Storage configuration.
+                s3:
+                  allOf:
+                  - $ref: '#/components/schemas/S3Config'
+                  description: AWS S3 storage configuration.
+              title: Bucket Validation Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Validate Metrics Storage Bucket
+      tags:
+      - Metrics Data Archive Service
+components:
+  schemas:
+    TenantConfigV2:
+      type: object
+      oneOf:
+      - required:
+        - ibm
+        type: object
+      - required:
+        - s3
+        type: object
+      - required:
+        - gcs
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - ibm
+            type: object
+          - required:
+            - s3
+            type: object
+          - required:
+            - gcs
+            type: object
+      properties:
+        disabled:
+          type: boolean
+          description: Whether metrics archiving is disabled for this tenant.
+        gcs:
+          allOf:
+          - $ref: '#/components/schemas/GcsConfig'
+          description: Google Cloud Storage configuration.
+        ibm:
+          allOf:
+          - $ref: '#/components/schemas/IbmConfigV2'
+          description: IBM Cloud Object Storage configuration.
+        prefix:
+          minLength: 0
+          type: string
+          description: Storage path prefix applied to all archived objects.
+        retentionPolicy:
+          $ref: '#/components/schemas/RetentionPolicyRequest'
+        s3:
+          allOf:
+          - $ref: '#/components/schemas/S3Config'
+          description: AWS S3 storage configuration.
+        tenantId:
+          minimum: 0
+          type: integer
+          description: Tenant identifier.
+          format: int64
+      description: Tenant config v2.
+    S3Config:
+      title: S3 Configuration
+      type: object
+      properties:
+        bucket:
+          minLength: 0
+          type: string
+          description: Bucket name.
+        region:
+          minLength: 0
+          type: string
+          description: Region.
+      externalDocs:
+        description: Find out more about metrics cost optimization
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/metrics-optimization/
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    RetentionPolicyRequest:
+      title: Retenion Policy Request
+      type: object
+      properties:
+        fiveMinutesResolution:
+          minimum: 0
+          type: integer
+          description: The five minutes resolution.
+          format: int64
+          examples:
+          - 2
+        oneHourResolution:
+          minimum: 0
+          type: integer
+          description: The one hour resolution.
+          format: int64
+          examples:
+          - 3
+        rawResolution:
+          minimum: 0
+          type: integer
+          description: The raw resolution.
+          format: int64
+          examples:
+          - 1
+      externalDocs:
+        description: Find out more about metrics cost optimization
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/metrics-optimization/
+    IbmConfigV2:
+      title: IBM Bucket Configuration
+      type: object
+      properties:
+        crn:
+          minLength: 0
+          type: string
+          description: The crn.
+          examples:
+          - 'crn:v1:bluemix:public:cloud-object-storage:global:a/1234567890abcdef1234567890abcdef:12345678-1234-1234-1234-1234567890ab::'
+        endpoint:
+          minLength: 0
+          type: string
+          description: Endpoint.
+          examples:
+          - s3.us-south.cloud-object-storage.appdomain.cloud
+        serviceCrn:
+          minLength: 0
+          type: string
+          description: The service crn.
+          examples:
+          - 'crn:v1:bluemix:public:cloud-object-storage:global:a/1234567890abcdef1234567890abcdef:12345678-1234-1234-1234-1234567890ab::'
+      externalDocs:
+        description: Find out more about metrics cost optimization
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/metrics-optimization/
+    GcsConfig:
+      title: GCS Configuration
+      type: object
+      properties:
+        bucket:
+          minLength: 0
+          type: string
+          description: Bucket name.
+      externalDocs:
+        description: Find out more about metrics cost optimization
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/metrics-optimization/
+    GetTenantConfigResponseV2:
+      type: object
+      properties:
+        tenantConfig:
+          $ref: '#/components/schemas/TenantConfigV2'
+      description: Response containing the current metrics tenant configuration.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

@@ -1,0 +1,4179 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Alert definitions service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Alert definitions service
+  description: View and manage your alerts using alert definitions - data structures that contain the configuration required to create an alert.
+  externalDocs:
+    description: Learn more about alerts in our documentation
+    url: https://coralogix.com/docs/user-guides/alerting/introduction-to-alerts/
+paths:
+  /alerts/alerts/v3:
+    get:
+      description: 'Returns all alert definitions for the team.
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertDefsService_ListAlertDefs
+      parameters:
+      - description: Filter to apply to the list of alert definitions
+        in: query
+        name: query_filter
+        required: false
+        schema:
+          description: Filter configuration for alert defs
+          properties:
+            enabledFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefEnabledFilter'
+              description: Filter by AlertDef enabled status
+            entityLabelsFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefEntityLabelsFilter'
+              description: Filter by AlertDef entity labels
+            idFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefIdFilter'
+              description: Filter by alert definition IDs to include or exclude
+            lastTriggeredTimeRangeFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefLastTriggeredTimeFilter'
+              description: Filters all alerts that were triggered at the given time range
+            modifiedTimeRangeFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefModifiedTimeFilter'
+              description: Filters all alerts that were modified at the given time range
+            nameFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefNameFilter'
+              description: Filter by name
+            priorityFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefPriorityFilter'
+              description: Filter by AlertDef priority
+            statusFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefStatusFilter'
+              description: Filter by alert definition status
+            typeFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefTypeFilter'
+              description: Filter by AlertDef type
+            typeSpecificFilter:
+              allOf:
+              - $ref: '#/components/schemas/AlertDefTypeSpecificFilter'
+              description: Filter by fields specific to alert type definitions
+          title: AlertDef query filter
+          type: object
+      - description: Pagination settings for the list of alert definitions
+        in: query
+        name: pagination
+        required: false
+        schema:
+          properties:
+            pageSize:
+              description: Page size.
+              format: int64
+              maximum: 1000
+              minimum: 0
+              type: integer
+              x-coralogix-presence: true
+            pageToken:
+              description: The page token.
+              maxLength: 4096
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+          type: object
+      - description: Ordering settings for the list of alert definitions
+        in: query
+        name: order_bys
+        required: false
+        schema:
+          description: List of fields to order alert definitions by
+          properties:
+            orderBys:
+              description: Order by fields for alert definitions
+              items:
+                description: A data structure that specifies the field and direction for ordering alert definitions
+                properties:
+                  direction:
+                    allOf:
+                    - $ref: '#/components/schemas/AlertDefOrderByDirection'
+                    description: Direction for ordering
+                    examples:
+                    - ALERT_DEF_ORDER_BY_DIRECTION_DESC
+                  fieldName:
+                    allOf:
+                    - $ref: '#/components/schemas/AlertDefOrderByFields'
+                    description: Field name to order by
+                    examples:
+                    - ALERT_DEF_ORDER_BY_FIELDS_UPDATED_TIME
+                title: Alert definition order by
+                type: object
+              maxItems: 20
+              minItems: 1
+              type: array
+          title: Alert definition order by list
+          type: object
+      - description: When true, populate the response's per-alert access map with the caller's access decision and each alert's raw access policy. Defaults to false.
+        in: query
+        name: include_access_permissions
+        required: false
+        schema:
+          description: When true, populate the response's per-alert access map with the caller's access decision and each alert's raw access policy. Defaults to false.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAlertDefsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get a list of all accessible alert definitions
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+    put:
+      description: 'Updates an existing alert definition.
+
+
+        Requires the following permissions:
+
+        - `alerts:UpdateConfig`'
+      operationId: AlertDefsService_ReplaceAlertDef
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A request to replace an existing alert definition
+              properties:
+                accessPolicy:
+                  allOf:
+                  - $ref: '#/components/schemas/AccessPolicyAction'
+                  description: 'Change to the alert''s access policy: upsert a raw policy, or delete (remove) the existing one. Optional; if omitted, the existing policy is left unchanged. Changing the access policy requires the alerts:UpdateAccessPolicy permission.'
+                alertDefProperties:
+                  allOf:
+                  - $ref: '#/components/schemas/AlertDefProperties'
+                  description: The properties of the alert definition
+                id:
+                  description: Alert definition ID
+                  examples:
+                  - 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 36
+                  minLength: 0
+                  pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                  type: string
+                  x-coralogix-presence: true
+              title: Replace alert definition request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceAlertDefResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace an alert definition
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:UpdateConfig
+    post:
+      description: 'Creates a new alert definition.
+
+
+        Requires the following permissions:
+
+        - `alerts:UpdateConfig`'
+      operationId: AlertDefsService_CreateAlertDef
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A request to create a new alert definition
+              properties:
+                accessPolicy:
+                  description: The access policy for the alert as a raw JSON string. Optional; requires the alerts:UpdateAccessPolicy permission to set. If omitted, the alert is created without an access policy.
+                  maxLength: 65536
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                alertDefProperties:
+                  allOf:
+                  - $ref: '#/components/schemas/AlertDefProperties'
+                  description: The properties of the alert definition
+              title: Create alert definition request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlertDefResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create an alert
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:UpdateConfig
+  /alerts/alerts/v3/all/counts:
+    get:
+      description: 'Returns counts for different filter options based on the provided filters
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertDefsService_FilterOptionCounts
+      parameters:
+      - description: The filter to apply when counting options
+        in: query
+        name: query_filter
+        required: false
+        schema:
+          description: Filter configuration for counting filter options
+          properties:
+            enabledFilter:
+              allOf:
+              - $ref: '#/components/schemas/FilterOptionCountsEnabledFilter'
+              description: Filter by alert definition enabled status
+            entityLabelsFilter:
+              allOf:
+              - $ref: '#/components/schemas/FilterOptionCountsEntityLabelsFilter'
+              description: Filter by alert definition entity labels
+            nameFilter:
+              allOf:
+              - $ref: '#/components/schemas/FilterOptionCountsNameFilter'
+              description: Filter by alert definition names
+            priorityFilter:
+              allOf:
+              - $ref: '#/components/schemas/FilterOptionCountsPriorityFilter'
+              description: Filter by alert definition priorities
+            statusFilter:
+              allOf:
+              - $ref: '#/components/schemas/FilterOptionCountsStatusFilter'
+              description: Filter by alert definition status
+            typeFilter:
+              allOf:
+              - $ref: '#/components/schemas/FilterOptionCountsTypeFilter'
+              description: Filter by alert definition types
+          title: Filter option counts filter
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterOptionCountsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get counts for filter options
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+  /alerts/alerts/v3/all/create:
+    post:
+      description: 'Creates multiple alert definitions in a single request. The operation is best-effort - definitions that fail to be created are reported in the response and do not prevent creation of the others. Limited to 100 alert definitions per request.
+
+
+        Requires the following permissions:
+
+        - `alerts:UpdateConfig`'
+      operationId: AlertDefsService_BulkCreateAlertDefs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A request to create multiple alert definitions
+              properties:
+                alertDefsToCreate:
+                  description: List of alert definitions to create. Limited to 100 alert definitions per request.
+                  items:
+                    $ref: '#/components/schemas/AlertDefToCreate'
+                  maxItems: 100
+                  minItems: 1
+                  type: array
+              required:
+              - alertDefsToCreate
+              title: Bulk create alert definitions request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                alertDefs:
+                - alertDefProperties:
+                    description: Fires when the error rate exceeds the threshold.
+                    enabled: true
+                    name: High error rate
+                    priority: ALERT_DEF_PRIORITY_P2
+                    type: ALERT_DEF_TYPE_LOGS_THRESHOLD
+                  alertVersionId: 223e4567-e89b-12d3-a456-426614174000
+                  createdTime: '2026-07-01T08:30:00.000Z'
+                  id: 123e4567-e89b-12d3-a456-426614174000
+                  updatedTime: '2026-07-01T08:30:00.000Z'
+                failedToCreateAlertDefs:
+                - index: 1
+                  reason: Alert definition name must not be empty.
+              schema:
+                $ref: '#/components/schemas/BulkCreateAlertDefsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Bulk create alert definitions
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:UpdateConfig
+  /alerts/alerts/v3/all/delete:
+    post:
+      description: 'Delete multiple alert definitions by their IDs. The operation is atomic - either all alerts are deleted or none are. Limited to 100 alert definitions per request.
+
+
+        Requires the following permissions:
+
+        - `alerts:UpdateConfig`'
+      operationId: AlertDefsService_BulkDeleteAlertDefs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A request to delete multiple alert defintions by their IDs
+              properties:
+                ids:
+                  description: List of alert definition IDs to delete.
+                  examples:
+                  - - 123e4567-e89b-12d3-a456-426614174000
+                  items:
+                    description: List of alert definition IDs to delete.
+                    maxLength: 36
+                    minLength: 1
+                    pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                    type: string
+                  maxItems: 100
+                  minItems: 1
+                  type: array
+              title: Bulk delete alert definitions request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkDeleteAlertDefsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Bulk delete alert definitions
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:UpdateConfig
+  /alerts/alerts/v3/all/download:
+    get:
+      description: 'Download alert definitions in base64-encoded byte format. When ids are provided, only those alert definitions are downloaded; otherwise all accessible alert definitions are downloaded.
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertDefsService_DownloadAlerts
+      parameters:
+      - description: Optional list of alert definition IDs to download. When empty, all accessible alert definitions are downloaded. IDs that are not found or not accessible are omitted from the download and reported in the response notFoundIds (no error is returned for them).
+        in: query
+        name: ids
+        required: false
+        schema:
+          description: Optional list of alert definition IDs to download. When empty, all accessible alert definitions are downloaded. IDs that are not found or not accessible are omitted from the download and reported in the response notFoundIds (no error is returned for them).
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+          items:
+            description: Optional list of alert definition IDs to download. When empty, all accessible alert definitions are downloaded. IDs that are not found or not accessible are omitted from the download and reported in the response notFoundIds (no error is returned for them).
+            maxLength: 36
+            minLength: 0
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+          maxItems: 1000
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadAlertsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Download alerts
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+  /alerts/alerts/v3/all/replace:
+    put:
+      description: 'Replaces multiple alert definitions in a single request. Each entry updates the existing alert definition with the matching ID; alert definitions not referenced in the request are left unchanged. The operation is best-effort - entries that fail are reported in the response and do not prevent other entries from being applied. Limited to 100 alert definitions per request.
+
+
+        Requires the following permissions:
+
+        - `alerts:UpdateConfig`'
+      operationId: AlertDefsService_BulkReplaceAlertDefs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A request to bulk replace multiple alert definitions
+              properties:
+                alertDefsToReplace:
+                  description: List of alert definitions to replace. Limited to 100 alert definitions per request.
+                  items:
+                    $ref: '#/components/schemas/AlertDefToReplace'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+              title: Bulk replace alert definitions request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkReplaceAlertDefsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Bulk replace alert definitions
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:UpdateConfig
+  /alerts/alerts/v3/version-ids/{alert_version_id}:
+    get:
+      description: 'Returns the alert definition with the specified version ID.
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertDefsService_GetAlertDefByVersionId
+      parameters:
+      - description: Alert version ID
+        in: path
+        name: alert_version_id
+        required: true
+        schema:
+          description: Alert version ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: When true, populate the response's access field with the caller's access decision and the alert's raw access policy. Defaults to false.
+        in: query
+        name: include_access_permissions
+        required: false
+        schema:
+          description: When true, populate the response's access field with the caller's access decision and the alert's raw access policy. Defaults to false.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlertDefByVersionIdResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get alert definition by alert version ID
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+  /alerts/alerts/v3/{id}:
+    get:
+      description: 'Returns the details of the specified alert definition.
+
+
+        Requires the following permissions:
+
+        - `alerts:ReadConfig`'
+      operationId: AlertDefsService_GetAlertDef
+      parameters:
+      - description: Alert definition ID
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Alert definition ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 0
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      - description: When true, populate the response's access field with the caller's access decision and the alert's raw access policy. Defaults to false.
+        in: query
+        name: include_access_permissions
+        required: false
+        schema:
+          description: When true, populate the response's access field with the caller's access decision and the alert's raw access policy. Defaults to false.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlertDefResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get alert definition by ID
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:ReadConfig
+    delete:
+      description: 'Deletes the alert definition with the specified ID.
+
+
+        Requires the following permissions:
+
+        - `alerts:UpdateConfig`'
+      operationId: AlertDefsService_DeleteAlertDef
+      parameters:
+      - description: The unique identifier of the alert definition to delete.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the alert definition to delete.
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 0
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAlertDefResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: DeleteAlertDef
+      tags:
+      - Alert definitions service
+      x-coralogixPermissions:
+      - alerts:UpdateConfig
+components:
+  schemas:
+    FilterOptionCountsPriorityFilter:
+      title: Filter option counts priority filter
+      type: object
+      properties:
+        priority:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefPriority'
+          description: The alert priorities to include in the count
+          examples:
+          - - ALERT_DEF_PRIORITY_P1
+            - ALERT_DEF_PRIORITY_P2
+            - ALERT_DEF_PRIORITY_P3
+      description: Filter by alert definition priorities
+    EntityLabelCount:
+      title: Entity label count
+      type: object
+      properties:
+        count:
+          description: The count for this entity label value
+          examples:
+          - 28
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        labelKey:
+          description: The entity label key
+          examples:
+          - environment
+          maxLength: 1024
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        labelValue:
+          description: The entity label value
+          examples:
+          - production
+          maxLength: 1024
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Count for a specific entity label value
+    AlertDefType:
+      enum:
+      - ALERT_DEF_TYPE_LOGS_IMMEDIATE_OR_UNSPECIFIED
+      - ALERT_DEF_TYPE_LOGS_THRESHOLD
+      - ALERT_DEF_TYPE_LOGS_ANOMALY
+      - ALERT_DEF_TYPE_LOGS_RATIO_THRESHOLD
+      - ALERT_DEF_TYPE_LOGS_NEW_VALUE
+      - ALERT_DEF_TYPE_LOGS_UNIQUE_COUNT
+      - ALERT_DEF_TYPE_LOGS_TIME_RELATIVE_THRESHOLD
+      - ALERT_DEF_TYPE_METRIC_THRESHOLD
+      - ALERT_DEF_TYPE_METRIC_ANOMALY
+      - ALERT_DEF_TYPE_TRACING_IMMEDIATE
+      - ALERT_DEF_TYPE_TRACING_THRESHOLD
+      - ALERT_DEF_TYPE_FLOW
+      - ALERT_DEF_TYPE_SLO_THRESHOLD
+      - ALERT_DEF_TYPE_ANALYTICS_IMMEDIATE
+      - ALERT_DEF_TYPE_ANALYTICS_THRESHOLD
+      type: string
+      description: 'Alert def type.
+
+        - ALERT_DEF_TYPE_ANALYTICS_IMMEDIATE: preview
+
+        - ALERT_DEF_TYPE_ANALYTICS_THRESHOLD: preview'
+    MetricAnomalyType:
+      title: Metric-based anomaly alert type
+      type: object
+      properties:
+        anomalyAlertSettings:
+          allOf:
+          - $ref: '#/components/schemas/AnomalyAlertSettings'
+          description: Configuration for anomaly alert settings.
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 60000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        metricFilter:
+          allOf:
+          - $ref: '#/components/schemas/MetricFilter'
+          description: The filter to match metric entries for the alert.
+        rules:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricAnomalyRule'
+          description: The rules for the metric anomaly alert.
+      description: Configuration for alerts triggered by anomalous metric patterns
+      externalDocs:
+        description: Learn more about metric-based anomaly alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/metrics/anomaly-detection-alerts/
+    LogSeverity:
+      enum:
+      - LOG_SEVERITY_VERBOSE_UNSPECIFIED
+      - LOG_SEVERITY_DEBUG
+      - LOG_SEVERITY_INFO
+      - LOG_SEVERITY_WARNING
+      - LOG_SEVERITY_ERROR
+      - LOG_SEVERITY_CRITICAL
+      type: string
+    LogsTimeRelativeComparedTo:
+      enum:
+      - LOGS_TIME_RELATIVE_COMPARED_TO_PREVIOUS_HOUR_OR_UNSPECIFIED
+      - LOGS_TIME_RELATIVE_COMPARED_TO_SAME_HOUR_YESTERDAY
+      - LOGS_TIME_RELATIVE_COMPARED_TO_SAME_HOUR_LAST_WEEK
+      - LOGS_TIME_RELATIVE_COMPARED_TO_YESTERDAY
+      - LOGS_TIME_RELATIVE_COMPARED_TO_SAME_DAY_LAST_WEEK
+      - LOGS_TIME_RELATIVE_COMPARED_TO_SAME_DAY_LAST_MONTH
+      type: string
+      description: Logs time relative compared to.
+    LogsUniqueValueTimeWindowValue:
+      enum:
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_MINUTE_1_OR_UNSPECIFIED
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_MINUTES_5
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_MINUTES_10
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_MINUTES_15
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_MINUTES_20
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_MINUTES_30
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_1
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_2
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_4
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_6
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_12
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_24
+      - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_36
+      type: string
+      description: Logs unique value time window value.
+    FilterOptionCountsStatusFilter:
+      title: Filter option counts status filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS)
+          examples:
+          - FILTER_MATCHER_EQUALS
+        status:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefStatus'
+          description: The alert statuses to include in the count
+          examples:
+          - - ALERT_DEF_STATUS_ALERTING
+            - ALERT_DEF_STATUS_OK
+            - ALERT_DEF_STATUS_NO_DATA
+      description: Filter by alert definition status for counting options
+    NotificationDestination:
+      title: Notification destination configuration
+      type: object
+      properties:
+        connectorId:
+          minLength: 0
+          type: string
+          description: The connector ID used to send notifications
+          examples:
+          - connector_id_example
+        notifyOn:
+          allOf:
+          - $ref: '#/components/schemas/NotifyOn'
+          description: The condition under which the notification should be sent
+          examples:
+          - NOTIFY_ON_TRIGGERED_AND_RESOLVED
+        presetId:
+          description: Optional preset ID for the notification destination
+          examples:
+          - preset_id_example
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        resolvedRouteOverrides:
+          allOf:
+          - $ref: '#/components/schemas/NotificationRouting'
+          description: Optional routing configuration to override from the connector/preset for resolved notifications.
+        retriggeringPeriodMinutes:
+          description: The time in minutes before a new notification is sent for this destination
+          examples:
+          - 600
+          format: int64
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        triggeredRoutingOverrides:
+          allOf:
+          - $ref: '#/components/schemas/NotificationRouting'
+          description: The routing configuration to override from the connector/preset for triggered notifications.
+      description: Configuration for where and how alert notifications should be sent
+      externalDocs:
+        description: Learn more about alert notification destinations in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/configure-notifications/destinations/
+    NoDataPolicyState:
+      enum:
+      - NO_DATA_POLICY_STATE_UNSPECIFIED
+      - NO_DATA_POLICY_STATE_OK
+      - NO_DATA_POLICY_STATE_ALERTING
+      - NO_DATA_POLICY_STATE_KEEP_LAST
+      - NO_DATA_POLICY_STATE_NO_DATA
+      type: string
+      description: No data policy state.
+    FilterOptionCounts:
+      title: Filter option counts
+      type: object
+      properties:
+        enabledCounts:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/EnabledCount'
+          description: Counts for different alert enabled statuses
+        entityLabelCounts:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityLabelCount'
+          description: Counts for different entity label values
+        priorityCounts:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PriorityCount'
+          description: Counts for different alert priorities
+        statusCounts:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusCount'
+          description: Counts for different alert statuses
+        typeCounts:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeCount'
+          description: Counts for different alert types
+      description: Counts for different filter options
+    TracingTimeWindowValue:
+      enum:
+      - TRACING_TIME_WINDOW_VALUE_MINUTES_5_OR_UNSPECIFIED
+      - TRACING_TIME_WINDOW_VALUE_MINUTES_10
+      - TRACING_TIME_WINDOW_VALUE_MINUTES_15
+      - TRACING_TIME_WINDOW_VALUE_MINUTES_20
+      - TRACING_TIME_WINDOW_VALUE_MINUTES_30
+      - TRACING_TIME_WINDOW_VALUE_HOUR_1
+      - TRACING_TIME_WINDOW_VALUE_HOURS_2
+      - TRACING_TIME_WINDOW_VALUE_HOURS_4
+      - TRACING_TIME_WINDOW_VALUE_HOURS_6
+      - TRACING_TIME_WINDOW_VALUE_HOURS_12
+      - TRACING_TIME_WINDOW_VALUE_HOURS_24
+      - TRACING_TIME_WINDOW_VALUE_HOURS_36
+      type: string
+      description: Tracing time window value.
+    GetAlertDefResponse:
+      title: Get alert definition response
+      type: object
+      properties:
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefAccess'
+          description: The caller's access decision and the alert's raw access policy
+        alertDef:
+          allOf:
+          - $ref: '#/components/schemas/AlertDef'
+          description: The requested alert definition
+      description: A response containing the requested alert definition
+    LogsRatioRules:
+      title: Log-based ratio rules
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/LogsRatioCondition'
+          description: The condition for the ratio alert
+        override:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefOverride'
+          description: The override settings for the alert
+      description: Defines the rules for log-based ratio alerts
+    AlertDefLastTriggeredTimeFilter:
+      title: AlertDef Last Triggered Time Filter
+      type: object
+      properties:
+        lastTriggeredAtRange:
+          $ref: '#/components/schemas/v3.TimeRange'
+      description: Filter by alert definition last triggered times
+    alerts.v3.PaginationResponse:
+      type: object
+      properties:
+        nextPageToken:
+          description: Token for fetching the next page of results.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        totalSize:
+          description: Total number of results.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Pagination response.
+    CreateAlertDefResponse:
+      title: Create alert definition response
+      type: object
+      properties:
+        alertDef:
+          allOf:
+          - $ref: '#/components/schemas/AlertDef'
+          description: The newly created alert definition
+      description: A response that contains the newly created alert definition
+    TimeframeType:
+      enum:
+      - TIMEFRAME_TYPE_UNSPECIFIED
+      - TIMEFRAME_TYPE_UP_TO
+      type: string
+      description: Timeframe type.
+    AccessPolicyAction:
+      title: Access policy action
+      type: object
+      oneOf:
+      - required:
+        - upsert
+        type: object
+      - required:
+        - delete
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - upsert
+            type: object
+          - required:
+            - delete
+            type: object
+      properties:
+        delete:
+          allOf:
+          - $ref: '#/components/schemas/DeleteAccessPolicy'
+          description: Remove the alert's access policy entirely; a new policy and policy owner can be assigned afterward
+        upsert:
+          maxLength: 65536
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Raw access policy JSON to set on the alert
+      description: 'A change to the alert''s access policy: upsert a raw policy, or delete (remove) the existing policy. Changing the access policy requires the alerts:UpdateAccessPolicy permission.'
+    LabelFilters:
+      title: Label filters
+      type: object
+      properties:
+        applicationName:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelFilterType'
+          description: The application name.
+        severities:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/LogSeverity'
+          description: The severities.
+        subsystemName:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelFilterType'
+          description: The subsystem name.
+      description: Filters for application name, subsystem name, and log severities
+    LogsRatioConditionType:
+      enum:
+      - LOGS_RATIO_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+      - LOGS_RATIO_CONDITION_TYPE_LESS_THAN
+      type: string
+      description: Logs ratio condition type.
+    ErrorBudgetThreshold:
+      title: Error Budget Threshold
+      type: object
+      properties:
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/SloThresholdRule'
+          description: The rules for the error budget threshold
+      description: Error budget threshold definition
+    TracingFilterOperationType:
+      enum:
+      - TRACING_FILTER_OPERATION_TYPE_IS_OR_UNSPECIFIED
+      - TRACING_FILTER_OPERATION_TYPE_INCLUDES
+      - TRACING_FILTER_OPERATION_TYPE_ENDS_WITH
+      - TRACING_FILTER_OPERATION_TYPE_STARTS_WITH
+      - TRACING_FILTER_OPERATION_TYPE_IS_NOT
+      type: string
+      description: Tracing filter operation type.
+    MetricThresholdRule:
+      title: Metric Threshold Rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/MetricThresholdCondition'
+          description: The condition for the metric threshold alert
+        override:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefOverride'
+          description: Alert override settings
+      description: Defines a rule for metric-based threshold alerts
+    LogsThresholdCondition:
+      title: Logs Threshold Condition
+      type: object
+      properties:
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/LogsThresholdConditionType'
+          description: The type of condition for the alert
+          examples:
+          - LOGS_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+        threshold:
+          description: The threshold value for the alert condition
+          examples:
+          - 100
+          format: double
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeWindow'
+          description: The time window for the alert condition
+      description: LogsThresholdCondition is a message that defines the condition for log-based threshold alerts.
+    v3.LogsFilter:
+      title: Log filter
+      type: object
+      properties:
+        simpleFilter:
+          allOf:
+          - $ref: '#/components/schemas/LogsSimpleFilter'
+          description: A simple filter that uses a Lucene query and label filters
+      description: Filter configuration for log-based alerts
+    LogsTimeRelativeCondition:
+      title: Log-based time-relative condition
+      type: object
+      properties:
+        comparedTo:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeRelativeComparedTo'
+          description: The time frame to compare the current value against
+          examples:
+          - LOGS_TIME_RELATIVE_COMPARED_TO_YESTERDAY
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeRelativeConditionType'
+          description: The type of condition for the alert
+          examples:
+          - LOGS_TIME_RELATIVE_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+        threshold:
+          description: The threshold value for the alert condition.
+          format: double
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+      description: Defines conditions for time-relative comparison alerts
+    FilterOptionCountsNameFilter:
+      title: Filter option counts name filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS, CONTAINS)
+          examples:
+          - FILTER_MATCHER_CONTAINS
+        name:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The name(s) of the alert definition - multiple values are OR'd together
+          description: The name(s) of the alert definition - multiple values are OR'd together
+          examples:
+          - - My Alert
+            - Another Alert
+      description: Filter by alert definition names for counting options
+    AlertDefIdFilter:
+      title: AlertDef ID Filter
+      type: object
+      properties:
+        alertId:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 100
+            minLength: 1
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: The alert definition ID(s) to filter by - multiple values are OR'd together
+          description: The alert definition ID(s) to filter by - multiple values are OR'd together
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+        matchType:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefIdFilterMatchType'
+          description: Whether to include or exclude the specified alert definition IDs
+      description: Filter by alert definition IDs
+    v3.SloDefinition:
+      title: SLO Definition
+      type: object
+      properties:
+        sloId:
+          description: The SLO ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 1
+          type: string
+          x-coralogix-presence: true
+      description: Configuration for SLO definition
+    MetricTimeWindow:
+      title: Metric time window
+      type: object
+      oneOf:
+      - required:
+        - metricTimeWindowSpecificValue
+        type: object
+      - required:
+        - metricTimeWindowDynamicDuration
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - metricTimeWindowSpecificValue
+            type: object
+          - required:
+            - metricTimeWindowDynamicDuration
+            type: object
+      properties:
+        metricTimeWindowDynamicDuration:
+          description: The time window as a dynamic value
+          examples:
+          - 1h30m
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        metricTimeWindowSpecificValue:
+          allOf:
+          - $ref: '#/components/schemas/MetricTimeWindowValue'
+          description: The time window as a specific value
+          examples:
+          - METRIC_TIME_WINDOW_VALUE_MINUTES_5
+      description: Metric time window.
+    AlertDefPermissions:
+      title: Alert definition permissions
+      type: object
+      properties:
+        canManage:
+          type: boolean
+          description: Whether the caller may edit or delete this alert — granted the update-config permission for the alert's data pillar (logs / metrics / spans / flow / SLO)
+        canRead:
+          type: boolean
+          description: Whether the caller may view this alert — granted the read-config permission for the alert's data pillar (logs / metrics / spans / flow / SLO)
+        canReadAccessPolicy:
+          type: boolean
+          description: Whether the caller may view this alert's access policy / permissions (alerts:ReadAccessPolicy granted)
+        canUpdateAccessPolicy:
+          type: boolean
+          description: Whether the caller may change this alert's access policy (alerts:UpdateAccessPolicy granted)
+      description: The calling user's access decision for an alert
+    AnalyticsImmediateType:
+      title: Analytics immediate alert type
+      type: object
+      properties:
+        dataprimeQuery:
+          allOf:
+          - $ref: '#/components/schemas/DataprimeAlertQuery'
+          description: The DataPrime query to evaluate
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 300000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        noDataPolicy:
+          allOf:
+          - $ref: '#/components/schemas/NoDataPolicy'
+          description: Configuration for how to treat and what state to give to an alert with no data
+        timeframeMinutes:
+          description: The evaluation window duration in minutes
+          examples:
+          - 60
+          format: int32
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        useRowsAsPermutations:
+          description: Whether each result row is treated as a separate permutation. Defaults to false for immediate alerts to avoid high-cardinality alerts by mistake.
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+      description: Configuration for analytics alerts that fire immediately when a DataPrime query returns a result
+    AlertDef:
+      title: Alert definition
+      type: object
+      properties:
+        alertDefProperties:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefProperties'
+          description: The alert definition's properties
+        alertVersionId:
+          description: The old alert ID
+          maxLength: 36
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        createdTime:
+          description: The time when the alert definition was created
+          examples:
+          - '2023-10-01T12:00:00.000Z'
+          format: date-time
+          maxLength: 64
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: The alert definition's persistent ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 1
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        lastTriggeredTime:
+          description: The last time the alert definition was triggered
+          examples:
+          - '2023-10-01T12:00:00.000Z'
+          format: date-time
+          maxLength: 64
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefStatus'
+          description: The current status of the alert
+          examples:
+          - ALERT_DEF_STATUS_OK
+          x-coralogix-presence: true
+        updatedTime:
+          description: The time when the alert definition was last updated
+          examples:
+          - '2023-10-01T12:00:00.000Z'
+          format: date-time
+          maxLength: 64
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/introduction-to-alerts/
+    ListAlertDefsResponse:
+      title: List alert definitions response
+      type: object
+      properties:
+        access:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AlertDefAccess'
+          description: The caller's access decision and raw access policy per alert, keyed by alert definition ID
+        alertDefs:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDef'
+          description: List of alert definitions
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.PaginationResponse'
+          description: Pagination settings for the list of alert definitions
+      description: A response that contains a list of alert definitions
+    AlertDefWebhooksSettings:
+      title: Alert definition webhook settings
+      type: object
+      properties:
+        integration:
+          allOf:
+          - $ref: '#/components/schemas/v3.IntegrationType'
+          description: The integration type for webhook notifications
+        minutes:
+          description: The time in minutes before the alert can be retriggered
+          examples:
+          - 15
+          format: int64
+          maximum: 10080
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        notifyOn:
+          allOf:
+          - $ref: '#/components/schemas/NotifyOn'
+          description: The condition under which the alert should be notified
+          examples:
+          - NOTIFY_ON_TRIGGERED_AND_RESOLVED
+          x-coralogix-presence: true
+      description: Configuration for webhook notifications for an alert
+    MetricAnomalyCondition:
+      title: Metric-based anomaly condition
+      type: object
+      properties:
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/MetricAnomalyConditionType'
+          description: The type of condition for the alert.
+          examples:
+          - METRIC_ANOMALY_CONDITION_TYPE_LESS_THAN_USUAL
+        forOverPct:
+          description: The percentage of the metric that must exceed the threshold to trigger the alert
+          examples:
+          - 20
+          format: int64
+          maximum: 100
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        minNonNullValuesPct:
+          description: The percentage of non-null values required to trigger the alert
+          examples:
+          - 10
+          format: int64
+          maximum: 100
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        ofTheLast:
+          allOf:
+          - $ref: '#/components/schemas/MetricTimeWindow'
+          description: The time window for the alert condition.
+        threshold:
+          description: The threshold value for the alert condition
+          examples:
+          - 10
+          format: double
+          type: number
+          x-coralogix-presence: true
+      description: Metric anomaly condition.
+    AlertDefModifiedTimeFilter:
+      title: AlertDef Modified Time Filter
+      type: object
+      properties:
+        modifiedAtRange:
+          $ref: '#/components/schemas/v3.TimeRange'
+      description: Filter by alert definition modification times
+    TracingThresholdCondition:
+      title: Trace-based alert threshold condition
+      type: object
+      properties:
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/TracingThresholdConditionType'
+          description: The type of condition for the alert
+          examples:
+          - TRACING_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+        spanAmount:
+          description: The threshold value for the alert condition
+          examples:
+          - 100
+          format: double
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/TracingTimeWindow'
+          description: The time window for the alert condition
+      description: Tracing threshold condition.
+    FailedToCreateAlertDef:
+      title: Failed to create alert definition
+      required:
+      - index
+      - reason
+      type: object
+      properties:
+        index:
+          description: Zero-based index of the alert definition in the request list that failed to be created
+          examples:
+          - 0
+          format: int32
+          maximum: 99
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        reason:
+          description: Human-readable explanation of why the alert definition failed to be created
+          examples:
+          - Alert definition name must not be empty.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: A reference to an alert definition in the request that failed to be created
+    TracingLabelFilters:
+      title: Tracing label filters
+      type: object
+      properties:
+        applicationName:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TracingFilterType'
+          description: Filter by application names
+        operationName:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TracingFilterType'
+          description: Filter by operation names
+        serviceName:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TracingFilterType'
+          description: Filter by service names
+        spanFields:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TracingSpanFieldsFilterType'
+          description: Filter by span fields
+        subsystemName:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TracingFilterType'
+          description: Filter by subsystem names
+      description: Filters for application name, subsystem name, service name, operation name and span fields
+    AlertDefToReplace:
+      title: Alert definition to replace
+      type: object
+      properties:
+        accessPolicy:
+          allOf:
+          - $ref: '#/components/schemas/AccessPolicyAction'
+          description: 'Change to the alert''s access policy: upsert a raw policy, or delete (remove) the existing one. Optional; if omitted, the existing policy is left unchanged. Changing the access policy requires the alerts:UpdateAccessPolicy permission.'
+        alertDefProperties:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefProperties'
+          description: The properties of the alert definition
+        id:
+          description: The alert definition ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 1
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: An alert definition along with its ID for replacement
+    LogFilterOperationType:
+      enum:
+      - LOG_FILTER_OPERATION_TYPE_IS_OR_UNSPECIFIED
+      - LOG_FILTER_OPERATION_TYPE_INCLUDES
+      - LOG_FILTER_OPERATION_TYPE_ENDS_WITH
+      - LOG_FILTER_OPERATION_TYPE_STARTS_WITH
+      type: string
+      description: Log filter operation type.
+    AnalyticsThresholdRuleCondition:
+      title: Analytics threshold rule condition
+      type: object
+      properties:
+        threshold:
+          description: The threshold value to compare against
+          examples:
+          - 100
+          format: double
+          type: number
+          x-coralogix-presence: true
+      description: Defines the threshold value to compare against
+    AlertDefCaseEnrichmentQuery:
+      title: Alert definition case enrichment query
+      required:
+      - query
+      type: object
+      properties:
+        query:
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The enrichment query string
+        type:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefCaseEnrichmentQueryType'
+          description: The query language of the enrichment query. Defaults to DataPrime when omitted.
+          examples:
+          - ALERT_DEF_CASE_ENRICHMENT_QUERY_TYPE_DATAPRIME
+      description: A query used to enrich the case created by the alert.
+    LogsNewValueTimeWindowValue:
+      enum:
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_HOURS_12_OR_UNSPECIFIED
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_HOURS_24
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_HOURS_48
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_HOURS_72
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_WEEK_1
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_MONTH_1
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_MONTHS_2
+      - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_MONTHS_3
+      type: string
+      description: Logs new value time window value.
+    TracingSimpleFilter:
+      title: Simple tracing filter
+      type: object
+      properties:
+        latencyThresholdMs:
+          description: The latency threshold to filter traces in milliseconds
+          examples:
+          - '1000'
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        tracingLabelFilters:
+          allOf:
+          - $ref: '#/components/schemas/TracingLabelFilters'
+          description: Trace label filters
+      description: Basic filter configuration using a latency threshold and label filters
+    AlertDefProperties:
+      title: Alert definition properties
+      type: object
+      oneOf:
+      - required:
+        - logsImmediate
+        type: object
+      - required:
+        - tracingImmediate
+        type: object
+      - required:
+        - logsThreshold
+        type: object
+      - required:
+        - logsRatioThreshold
+        type: object
+      - required:
+        - logsTimeRelativeThreshold
+        type: object
+      - required:
+        - metricThreshold
+        type: object
+      - required:
+        - tracingThreshold
+        type: object
+      - required:
+        - flow
+        type: object
+      - required:
+        - logsAnomaly
+        type: object
+      - required:
+        - metricAnomaly
+        type: object
+      - required:
+        - logsNewValue
+        type: object
+      - required:
+        - logsUniqueCount
+        type: object
+      - required:
+        - sloThreshold
+        type: object
+      - required:
+        - analyticsImmediate
+        type: object
+      - required:
+        - analyticsThreshold
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - logsImmediate
+            type: object
+          - required:
+            - tracingImmediate
+            type: object
+          - required:
+            - logsThreshold
+            type: object
+          - required:
+            - logsRatioThreshold
+            type: object
+          - required:
+            - logsTimeRelativeThreshold
+            type: object
+          - required:
+            - metricThreshold
+            type: object
+          - required:
+            - tracingThreshold
+            type: object
+          - required:
+            - flow
+            type: object
+          - required:
+            - logsAnomaly
+            type: object
+          - required:
+            - metricAnomaly
+            type: object
+          - required:
+            - logsNewValue
+            type: object
+          - required:
+            - logsUniqueCount
+            type: object
+          - required:
+            - sloThreshold
+            type: object
+          - required:
+            - analyticsImmediate
+            type: object
+          - required:
+            - analyticsThreshold
+            type: object
+      properties:
+        activeOn:
+          allOf:
+          - $ref: '#/components/schemas/ActivitySchedule'
+          description: The schedule defining when the alert should be active
+        analyticsImmediate:
+          allOf:
+          - $ref: '#/components/schemas/AnalyticsImmediateType'
+          description: Configuration for analytics immediate alerts
+          x-stability: preview
+        analyticsThreshold:
+          allOf:
+          - $ref: '#/components/schemas/AnalyticsThresholdType'
+          description: Configuration for analytics threshold alerts
+          x-stability: preview
+        caseSettings:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefCaseSettings'
+          description: 'Settings controlling how the alert interacts with cases. When omitted on create, defaults apply (case auto-resolve enabled, no enrichment queries, no case destinations). Replace is a full overwrite: omitting this field on replace resets any previously configured case settings to those defaults. In read responses, this field is absent when no case settings were configured, meaning those same defaults are in effect.'
+          x-stability: preview
+        dataSources:
+          maxItems: 1
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefDataSource'
+          description: The sources from which to sample logs
+        deleted:
+          default: false
+          description: Whether the alert has been marked as deleted
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+        description:
+          description: A detailed description of what the alert monitors and when it triggers
+          examples:
+          - Alert description
+          maxLength: 3000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        enabled:
+          default: true
+          description: Whether the alert is currently active and monitoring
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+        entityLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: Labels used to identify and categorize the alert entity
+        flow:
+          allOf:
+          - $ref: '#/components/schemas/FlowType'
+          description: Configuration for flow-based alerts
+        groupByKeys:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: Keys used to group and aggregate alert data
+          description: Keys used to group and aggregate alert data
+          examples:
+          - - key1
+            - key2
+        incidentsSettings:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefIncidentSettings'
+          description: Incident creation and management settings
+        logsAnomaly:
+          allOf:
+          - $ref: '#/components/schemas/LogsAnomalyType'
+          description: Configuration for log-based anomaly detection alerts
+        logsImmediate:
+          allOf:
+          - $ref: '#/components/schemas/LogsImmediateType'
+          description: Configuration for immediate log-based alerts
+        logsNewValue:
+          allOf:
+          - $ref: '#/components/schemas/LogsNewValueType'
+          description: Configuration for alerts triggered by new log values
+        logsRatioThreshold:
+          allOf:
+          - $ref: '#/components/schemas/LogsRatioThresholdType'
+          description: Configuration for log-based ratio threshold alerts
+        logsThreshold:
+          allOf:
+          - $ref: '#/components/schemas/LogsThresholdType'
+          description: Configuration for log-based threshold alerts
+        logsTimeRelativeThreshold:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeRelativeThresholdType'
+          description: Configuration for time-relative log threshold alerts
+        logsUniqueCount:
+          allOf:
+          - $ref: '#/components/schemas/LogsUniqueCountType'
+          description: Configuration for alerts based on unique log value counts
+        metricAnomaly:
+          allOf:
+          - $ref: '#/components/schemas/MetricAnomalyType'
+          description: Configuration for metric-based anomaly detection alerts
+        metricThreshold:
+          allOf:
+          - $ref: '#/components/schemas/MetricThresholdType'
+          description: Configuration for metric-based threshold alerts
+        name:
+          description: The name of the alert definition
+          examples:
+          - My Alert
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        notificationGroup:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefNotificationGroup'
+          description: Primary notification group for alert events
+        notificationGroupExcess:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefNotificationGroup'
+          description: Additional notification groups for alerts (deprecated)
+          deprecated: true
+        phantomMode:
+          default: false
+          description: Whether the alert is in phantom mode (creating incidents or not)
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefPriority'
+          description: The priority level of the alert
+          examples:
+          - ALERT_DEF_PRIORITY_P4
+        sloThreshold:
+          allOf:
+          - $ref: '#/components/schemas/SloThresholdType'
+          description: Configuration for SLO-based alerts
+        tracingImmediate:
+          allOf:
+          - $ref: '#/components/schemas/TracingImmediateType'
+          description: Configuration for immediate tracing-based alerts
+        tracingThreshold:
+          allOf:
+          - $ref: '#/components/schemas/TracingThresholdType'
+          description: Configuration for tracing-based threshold alerts
+        type:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefType'
+          description: Alert type
+          examples:
+          - ALERT_DEF_TYPE_METRIC_THRESHOLD
+      description: User-configurable properties of an alert definition
+    v3.SourceOverrides:
+      title: Source overrides
+      type: object
+      properties:
+        connectorConfigFields:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v3.ConnectorConfigField'
+          description: Connector configuration fields
+        messageConfigFields:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v3.MessageConfigField'
+          description: Notification message configuration fields
+        payloadType:
+          minLength: 0
+          type: string
+          description: the payload type for the notification
+          examples:
+          - slack_raw, slack_structured, pagerduty_triggered, pagerduty_resolved, generic_https_default
+      description: Source overrides.
+    LogsTimeWindow:
+      title: Log-based alert time window
+      type: object
+      properties:
+        logsTimeWindowSpecificValue:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeWindowValue'
+          description: A time window defined by a specific value
+          examples:
+          - LOGS_TIME_WINDOW_VALUE_MINUTES_5_OR_UNSPECIFIED
+      description: Time window configuration for log-based alerts
+    AlertDefEnabledFilter:
+      title: AlertDef Enabled Filter
+      type: object
+      properties:
+        enabled:
+          description: Whether to filter for enabled (true) or disabled (false) alerts
+          type: boolean
+          x-coralogix-presence: true
+      description: Filter by alert definition enabled status
+    LogsUniqueValueTimeWindow:
+      title: Log-based unique value alert time window
+      type: object
+      properties:
+        logsUniqueValueTimeWindowSpecificValue:
+          allOf:
+          - $ref: '#/components/schemas/LogsUniqueValueTimeWindowValue'
+          description: A time window defined by a specific value
+          examples:
+          - LOGS_UNIQUE_VALUE_TIME_WINDOW_VALUE_HOURS_12
+      description: Time window configuration for log-based unique value alerts
+    BurnRateThreshold:
+      title: Burn Rate Threshold
+      type: object
+      oneOf:
+      - required:
+        - dual
+        type: object
+      - required:
+        - single
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - dual
+            type: object
+          - required:
+            - single
+            type: object
+      properties:
+        dual:
+          allOf:
+          - $ref: '#/components/schemas/BurnRateTypeDual'
+          description: Burn rate type dual
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/SloThresholdRule'
+          description: The rules for the burn rate threshold
+        single:
+          allOf:
+          - $ref: '#/components/schemas/BurnRateTypeSingle'
+          description: Burn rate type single
+      description: Burn rate threshold definition
+    MetricAnomalyConditionType:
+      enum:
+      - METRIC_ANOMALY_CONDITION_TYPE_MORE_THAN_USUAL_OR_UNSPECIFIED
+      - METRIC_ANOMALY_CONDITION_TYPE_LESS_THAN_USUAL
+      type: string
+      description: Metric anomaly condition type.
+    LogsThresholdRule:
+      title: Logs Threshold Rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/LogsThresholdCondition'
+          description: The condition for the threshold alert
+        override:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefOverride'
+          description: The override settings for the alert
+      description: LogsThresholdRule is a message that defines a rule for log-based threshold alerts.
+    LogsTimeRelativeThresholdType:
+      title: Log-based time-relative threshold alert type
+      type: object
+      properties:
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 60000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        ignoreInfinity:
+          description: Ignore infinity values in the alert
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+        logsFilter:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for the alert.
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The notification payload filter.
+          description: The notification payload filter.
+          examples:
+          - - obj.field
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LogsTimeRelativeRule'
+          description: The rules for the time-relative alert
+        undetectedValuesManagement:
+          allOf:
+          - $ref: '#/components/schemas/v3.UndetectedValuesManagement'
+          description: Configuration for handling the undetected values in the alert.
+      description: Configuration for alerts that are triggered when a fixed ratio reaches a set threshold compared to a past time frame.
+      externalDocs:
+        description: Learn more about log-based, time-relative alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/time-relative-alerts/
+    NotifyOn:
+      enum:
+      - NOTIFY_ON_TRIGGERED_ONLY_UNSPECIFIED
+      - NOTIFY_ON_TRIGGERED_AND_RESOLVED
+      type: string
+      description: Notify on.
+    v3.AutoRetireTimeframe:
+      enum:
+      - AUTO_RETIRE_TIMEFRAME_NEVER_OR_UNSPECIFIED
+      - AUTO_RETIRE_TIMEFRAME_MINUTES_5
+      - AUTO_RETIRE_TIMEFRAME_MINUTES_10
+      - AUTO_RETIRE_TIMEFRAME_HOUR_1
+      - AUTO_RETIRE_TIMEFRAME_HOURS_2
+      - AUTO_RETIRE_TIMEFRAME_HOURS_6
+      - AUTO_RETIRE_TIMEFRAME_HOURS_12
+      - AUTO_RETIRE_TIMEFRAME_HOURS_24
+      type: string
+      description: Auto retire timeframe.
+    AlertDefOverride:
+      title: Alert definition priority update
+      type: object
+      properties:
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefPriority'
+          description: The priority of the alert definition
+          examples:
+          - ALERT_DEF_PRIORITY_P3
+      description: Alert def override.
+    LabelFilterType:
+      title: Label filter type
+      type: object
+      properties:
+        operation:
+          allOf:
+          - $ref: '#/components/schemas/LogFilterOperationType'
+          description: The operation to perform on the label value
+          examples:
+          - LOG_FILTER_OPERATION_TYPE_INCLUDES
+        value:
+          description: The value of the label to filter by
+          examples:
+          - my-app
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Label filter type for log entries
+    AlertDefNameFilter:
+      title: AlertDef Name Filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS, CONTAINS)
+        name:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The name(s) of the alert definition - multiple values are OR'd together
+          description: The name(s) of the alert definition - multiple values are OR'd together
+      description: Filter by alert definition names
+    AlertDefCaseAutoResolveMode:
+      enum:
+      - ALERT_DEF_CASE_AUTO_RESOLVE_MODE_UNSPECIFIED
+      - ALERT_DEF_CASE_AUTO_RESOLVE_MODE_ENABLED
+      - ALERT_DEF_CASE_AUTO_RESOLVE_MODE_DISABLED
+      type: string
+      description: Case auto resolve mode.
+    LogsAnomalyRule:
+      title: Log-based anomaly rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/LogsAnomalyCondition'
+          description: The condition for the threshold alert
+      description: Defines a rule for detecting log anomalies
+    AlertDefToCreate:
+      title: Alert definition to create
+      required:
+      - alertDefProperties
+      type: object
+      properties:
+        accessPolicy:
+          description: The access policy for the alert as a raw JSON string. Optional; requires the alerts:UpdateAccessPolicy permission to set. If omitted, the alert is created without an access policy.
+          maxLength: 65536
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        alertDefProperties:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefProperties'
+          description: The properties of the alert definition
+      description: A single alert definition to create as part of a bulk create request
+    BulkCreateAlertDefsResponse:
+      title: Bulk create alert definitions response
+      type: object
+      properties:
+        alertDefs:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDef'
+          description: List of successfully created alert definitions, returned in the order of their corresponding request entries. Request entries that failed to be created are omitted here and reported by index in failedToCreateAlertDefs.
+        failedToCreateAlertDefs:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedToCreateAlertDef'
+          description: List of request entries that failed to be created, each identified by its zero-based index in the request list
+      description: A response that contains the results of the bulk create operation
+    AlertDefStatus:
+      enum:
+      - ALERT_DEF_STATUS_UNSPECIFIED
+      - ALERT_DEF_STATUS_ALERTING
+      - ALERT_DEF_STATUS_OK
+      - ALERT_DEF_STATUS_NO_DATA
+      type: string
+      description: Alert def status.
+    AlertDefSloSpecificFilter:
+      title: AlertDef SLO Specific Filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS)
+        sloId:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 1
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: The SLO ID(s) to filter by - multiple values are OR'd together
+          description: The SLO ID(s) to filter by - multiple values are OR'd together
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+      description: Filter SLO-based alerts by SLO-specific fields
+    AnalyticsThresholdType:
+      title: Analytics threshold alert type
+      type: object
+      properties:
+        dataprimeQuery:
+          allOf:
+          - $ref: '#/components/schemas/DataprimeAlertQuery'
+          description: The DataPrime query to evaluate
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 300000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        noDataPolicy:
+          allOf:
+          - $ref: '#/components/schemas/NoDataPolicy'
+          description: Configuration for how to treat and what state to give to an alert with no data
+        operator:
+          allOf:
+          - $ref: '#/components/schemas/AnalyticsThresholdOperator'
+          description: The comparison operator applied to all threshold rules
+          examples:
+          - ANALYTICS_THRESHOLD_OPERATOR_MORE_THAN_OR_UNSPECIFIED
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsThresholdRule'
+          description: The per-priority threshold rules
+        targetColumn:
+          description: The name of the numeric result column to compare
+          examples:
+          - error_count
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        timeframeMinutes:
+          description: The evaluation window duration in minutes
+          examples:
+          - 60
+          format: int32
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        useRowsAsPermutations:
+          description: Whether each result row is treated as a separate permutation. Defaults to true for threshold alerts as permutation count is easier to estimate.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: Configuration for alerts that fire when a numeric column in a DataPrime query result violates a threshold
+    TracingSpanFieldsFilterType:
+      title: Tracing span fields filter type
+      type: object
+      properties:
+        filterType:
+          allOf:
+          - $ref: '#/components/schemas/TracingFilterType'
+          description: The FilterType to filter by.
+        key:
+          description: The key of the span field to filter by
+          examples:
+          - span.field.key
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: A filter for span fields in trace entries
+    LogsRatioTimeWindowValue:
+      enum:
+      - LOGS_RATIO_TIME_WINDOW_VALUE_MINUTES_5_OR_UNSPECIFIED
+      - LOGS_RATIO_TIME_WINDOW_VALUE_MINUTES_10
+      - LOGS_RATIO_TIME_WINDOW_VALUE_MINUTES_15
+      - LOGS_RATIO_TIME_WINDOW_VALUE_MINUTES_30
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOUR_1
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOURS_2
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOURS_4
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOURS_6
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOURS_12
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOURS_24
+      - LOGS_RATIO_TIME_WINDOW_VALUE_HOURS_36
+      type: string
+      description: Logs ratio time window value.
+    LogsThresholdConditionType:
+      enum:
+      - LOGS_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+      - LOGS_THRESHOLD_CONDITION_TYPE_LESS_THAN
+      - LOGS_THRESHOLD_CONDITION_TYPE_EQUALS
+      - LOGS_THRESHOLD_CONDITION_TYPE_NOT_EQUALS
+      type: string
+      description: Logs threshold condition type.
+    AnomalyAlertSettings:
+      title: Anomaly alert settings
+      type: object
+      properties:
+        percentageOfDeviation:
+          description: The percentage of deviation from the baseline for triggering the alert.
+          format: float
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+      description: Common settings for anomaly-based alerts.
+    AlertDefCaseEnrichmentQueryType:
+      enum:
+      - ALERT_DEF_CASE_ENRICHMENT_QUERY_TYPE_UNSPECIFIED
+      - ALERT_DEF_CASE_ENRICHMENT_QUERY_TYPE_DATAPRIME
+      type: string
+      description: Enrichment query type.
+    StatusCount:
+      title: Status count
+      type: object
+      properties:
+        count:
+          description: The count for this alert status
+          examples:
+          - 15
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefStatus'
+          description: The alert status
+          examples:
+          - ALERT_DEF_STATUS_ALERTING
+      description: Count for a specific alert status
+    LogsTimeRelativeConditionType:
+      enum:
+      - LOGS_TIME_RELATIVE_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+      - LOGS_TIME_RELATIVE_CONDITION_TYPE_LESS_THAN
+      type: string
+      description: Logs time relative condition type.
+    FlowStagesGroupsAlertDefs:
+      title: Flow stage group alert definitions
+      type: object
+      properties:
+        id:
+          description: The alert definition ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        not:
+          description: Whether to negate the alert definition or not.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: Alert definitions for a flow stage group
+    ReplaceAlertDefResponse:
+      title: Replace alert definition response
+      type: object
+      properties:
+        alertDef:
+          allOf:
+          - $ref: '#/components/schemas/AlertDef'
+          description: The updated alert definition
+      description: A response that contains the updated alert definition
+    TypeCount:
+      title: Type count
+      type: object
+      properties:
+        count:
+          description: The count for this alert type
+          examples:
+          - 42
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefType'
+          description: The alert type
+          examples:
+          - ALERT_DEF_TYPE_LOGS_THRESHOLD
+      description: Count for a specific alert type
+    AlertDefPriority:
+      enum:
+      - ALERT_DEF_PRIORITY_P5_OR_UNSPECIFIED
+      - ALERT_DEF_PRIORITY_P4
+      - ALERT_DEF_PRIORITY_P3
+      - ALERT_DEF_PRIORITY_P2
+      - ALERT_DEF_PRIORITY_P1
+      type: string
+      description: Alert def priority.
+    FlowStagesGroup:
+      title: Flow stage group
+      type: object
+      properties:
+        alertDefs:
+          maxItems: 30
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowStagesGroupsAlertDefs'
+          description: The alert definitions for the flow stage group.
+        alertsOp:
+          allOf:
+          - $ref: '#/components/schemas/AlertsOp'
+          description: The logical operation to apply to the alerts in the group.
+          examples:
+          - ALERTS_OP_OR
+        nextOp:
+          allOf:
+          - $ref: '#/components/schemas/NextOp'
+          description: The logical operation to apply to the next stage.
+          examples:
+          - NEXT_OP_OR
+      description: Defines a group of stages in a flow alert
+    ActivitySchedule:
+      title: Alert activity schedule
+      type: object
+      properties:
+        dayOfWeek:
+          maxItems: 7
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DayOfWeek'
+          description: Day of the week.
+          examples:
+          - - DAY_OF_WEEK_MONDAY_OR_UNSPECIFIED
+            - DAY_OF_WEEK_TUESDAY
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/TimeOfDay'
+          description: End time of the alert activity
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/TimeOfDay'
+          description: Start time of the alert activity
+      description: Defines when an alert should be active based on days of the week and time windows
+    EnabledCount:
+      title: Enabled count
+      type: object
+      properties:
+        count:
+          description: The count for this enabled status
+          examples:
+          - 25
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        enabled:
+          description: Whether the alert is enabled (true) or disabled (false)
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: Count for a specific alert enabled status
+    BulkDeleteAlertDefsResponse:
+      title: Bulk delete alert definitions response
+      type: object
+      properties:
+        deletedIds:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 1
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: IDs of alert definitions that were successfully deleted
+          description: IDs of alert definitions that were successfully deleted
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+        notFoundIds:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 1
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: IDs of alert definitions that were not found
+          description: IDs of alert definitions that were not found
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+      description: A response to the bulk deletion of alert definitions. The operation is atomic - either all alerts are deleted or none are.
+    AlertDefNotificationGroup:
+      title: Alert definition notification group
+      type: object
+      properties:
+        destinations:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDestination'
+          description: The destinations for notifications.  (Notification Center feature)
+        groupByKeys:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The keys to group the alerts by
+          description: The keys to group the alerts by
+          examples:
+          - - key1
+            - key2
+        router:
+          allOf:
+          - $ref: '#/components/schemas/NotificationRouter'
+          description: The router for notifications.  (Notification Center feature)
+        webhooks:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefWebhooksSettings'
+          description: The settings for webhooks associated with the alert definition
+      description: Alert def notification group.
+    SloThresholdType:
+      title: SLO Threshold Type
+      type: object
+      oneOf:
+      - required:
+        - errorBudget
+        type: object
+      - required:
+        - burnRate
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - errorBudget
+            type: object
+          - required:
+            - burnRate
+            type: object
+      properties:
+        burnRate:
+          allOf:
+          - $ref: '#/components/schemas/BurnRateThreshold'
+          description: Burn rate threshold
+        errorBudget:
+          allOf:
+          - $ref: '#/components/schemas/ErrorBudgetThreshold'
+          description: Error budget threshold
+        sloDefinition:
+          allOf:
+          - $ref: '#/components/schemas/v3.SloDefinition'
+          description: SLO definition
+      description: SLO threshold type definition
+    NextOp:
+      enum:
+      - NEXT_OP_AND_OR_UNSPECIFIED
+      - NEXT_OP_OR
+      type: string
+      description: Next op.
+    alerts.v3.FilterMatcher:
+      enum:
+      - FILTER_MATCHER_UNSPECIFIED
+      - FILTER_MATCHER_EQUALS
+      - FILTER_MATCHER_NOT_EQUALS
+      - FILTER_MATCHER_CONTAINS
+      type: string
+    TracingImmediateType:
+      title: Trace-based immediate alert type
+      type: object
+      properties:
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Notification payload field filter
+          description: Notification payload field filter
+          examples:
+          - - obj.field
+        tracingFilter:
+          allOf:
+          - $ref: '#/components/schemas/TracingFilter'
+          description: A filter to match trace entries for immediate alerts
+      description: Configuration for immediate alerts triggered on trace entries
+      externalDocs:
+        description: Learn more about trace-based alerts in our documentation.
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/traces/tracing-alerts/
+    LogsUniqueCountType:
+      title: Log-based unique count alert type
+      type: object
+      properties:
+        logsFilter:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for the alert.
+        maxUniqueCountPerGroupByKey:
+          description: The maximum unique count per group by key
+          examples:
+          - '100'
+          maxLength: 20
+          minLength: 1
+          pattern: ^-?[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The filter to specify which fields to include in the notification payload
+          description: The filter to specify which fields to include in the notification payload
+          examples:
+          - - obj.field
+        rules:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LogsUniqueCountRule'
+          description: The rules for the log unique count alert
+        uniqueCountKeypath:
+          description: The keypath in the logs to be used for unique count
+          examples:
+          - obj.field
+          minLength: 1
+          type: string
+          x-coralogix-presence: true
+      description: Configuration for alerts based on unique value counts in logs
+      externalDocs:
+        description: Learn more about log-based, unique count alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/unique-count-alerts/
+    AlertDefEntityLabelsFilter:
+      title: AlertDef Entity Labels Filter
+      type: object
+      properties:
+        entityLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The entity label key-value pairs to filter by
+        valuesOperator:
+          allOf:
+          - $ref: '#/components/schemas/FilterValuesOperator'
+          description: Whether all labels must match (AND) or any label can match (OR)
+      description: Filter by alert definition entity labels
+    MetricThresholdCondition:
+      title: Metric Threshold Condition
+      type: object
+      properties:
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/MetricThresholdConditionType'
+          description: The type of the alert condition
+          examples:
+          - METRIC_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_EQUALS
+        forOverPct:
+          description: The percentage of values that must exceed the threshold to trigger the alert
+          examples:
+          - 80
+          format: int64
+          maximum: 100
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        ofTheLast:
+          allOf:
+          - $ref: '#/components/schemas/MetricTimeWindow'
+          description: The time window for the alert condition
+        threshold:
+          description: The threshold value for the alert condition
+          examples:
+          - 100
+          format: double
+          type: number
+          x-coralogix-presence: true
+      description: Defines conditions for metric threshold alerts
+    LogsRatioGroupByFor:
+      enum:
+      - LOGS_RATIO_GROUP_BY_FOR_BOTH_OR_UNSPECIFIED
+      - LOGS_RATIO_GROUP_BY_FOR_NUMERATOR_ONLY
+      - LOGS_RATIO_GROUP_BY_FOR_DENUMERATOR_ONLY
+      type: string
+      description: Logs ratio group by for.
+    LogsRatioCondition:
+      title: Log-based ratio condition
+      type: object
+      properties:
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/LogsRatioConditionType'
+          description: The type of condition for the alert
+          examples:
+          - LOGS_RATIO_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+        threshold:
+          description: The threshold value for the alert condition
+          examples:
+          - 10
+          format: double
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/LogsRatioTimeWindow'
+          description: The time window for the alert condition
+          examples:
+          - 10
+      description: Defines conditions for ratio-based alerts
+    SloThresholdCondition:
+      title: SLO Threshold Condition
+      type: object
+      properties:
+        threshold:
+          description: Threshold value.
+          format: double
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+      description: Condition for the SLO threshold rule
+    AlertDefIncidentSettings:
+      title: Alert definition incident settings
+      type: object
+      properties:
+        minutes:
+          description: The time in minutes before the alert can be retriggered
+          examples:
+          - 30
+          format: int64
+          maximum: 10080
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        notifyOn:
+          allOf:
+          - $ref: '#/components/schemas/NotifyOn'
+          description: The condition to notify about the alert
+          examples:
+          - NOTIFY_ON_TRIGGERED_AND_RESOLVED
+      description: Alert def incident settings.
+    FlowType:
+      title: Flow alert type
+      type: object
+      properties:
+        enforceSuppression:
+          description: The enforce suppression.
+          type: boolean
+          x-coralogix-presence: true
+        stages:
+          maxItems: 30
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowStages'
+          description: The stages of the flow alert.
+      description: Configuration for flow-based alerts with multiple stages
+      externalDocs:
+        description: Learn more about flow alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/flow-alerts/
+    TracingThresholdType:
+      title: Trace-based threshold alert type
+      type: object
+      properties:
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Notification payload field filter
+          description: Notification payload field filter
+          examples:
+          - - obj.field
+        rules:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/TracingThresholdRule'
+          description: The rules for the trace threshold alert.
+        tracingFilter:
+          allOf:
+          - $ref: '#/components/schemas/TracingFilter'
+          description: The filter to match trace entries for the alert.
+      description: Configuration for alerts based on trace count thresholds
+      externalDocs:
+        description: Learn more about trace-based alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/traces/tracing-alerts/
+    LogsAnomalyConditionType:
+      enum:
+      - LOGS_ANOMALY_CONDITION_TYPE_MORE_THAN_USUAL_OR_UNSPECIFIED
+      type: string
+      description: Logs anomaly condition type.
+    TracingFilterType:
+      title: Tracing filter type
+      type: object
+      properties:
+        operation:
+          allOf:
+          - $ref: '#/components/schemas/TracingFilterOperationType'
+          description: The operation to perform on the label value
+          examples:
+          - TRACING_FILTER_OPERATION_TYPE_STARTS_WITH
+        values:
+          minItems: 1
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The values of the label to filter by
+          description: The values of the label to filter by
+          examples:
+          - - value1
+            - value2
+      description: Filter type for trace entries
+    AlertDefStatusFilter:
+      title: AlertDef Status Filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS)
+        status:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefStatus'
+          description: The status(es) of the alert definition - multiple values are OR'd together
+      description: Filter by alert definition status
+    LogsThresholdType:
+      title: Log-based threshold alert type
+      type: object
+      properties:
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 60000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        logsFilter:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for threshold alerts
+        noDataPolicy:
+          allOf:
+          - $ref: '#/components/schemas/NoDataPolicy'
+          description: User configuration to decide how to treat and what state to give to an alert with no data.
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The filter to specify which fields to include in the notification payload
+          description: The filter to specify which fields to include in the notification payload
+          examples:
+          - - obj.field
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LogsThresholdRule'
+          description: The rules for the threshold alert
+        undetectedValuesManagement:
+          allOf:
+          - $ref: '#/components/schemas/v3.UndetectedValuesManagement'
+          description: Configuration for handling the undetected values in the alert
+      description: Configuration for alerts triggered when log counts exceed or fall below specified thresholds
+      externalDocs:
+        description: Learn more about log-based threshold alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/threshold-alerts/
+    LogsTimeRelativeRule:
+      title: Logs Time Relative Rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeRelativeCondition'
+          description: The condition for the time-relative alert.
+        override:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefOverride'
+          description: The override settings for the alert.
+      description: LogsTimeRelativeRule is a message that defines a rule for log-based time-relative alerts
+    GetAlertDefByVersionIdResponse:
+      title: Get alert definition by version ID response
+      type: object
+      properties:
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefAccess'
+          description: The caller's access decision and the alert's raw access policy
+        alertDef:
+          allOf:
+          - $ref: '#/components/schemas/AlertDef'
+          description: The requested alert definition
+      description: A response that contains an alert definition for the requested version
+    LogsUniqueCountCondition:
+      title: Logs unique count condition
+      type: object
+      properties:
+        maxUniqueCount:
+          description: The maximum unique count
+          examples:
+          - '100'
+          maxLength: 20
+          minLength: 1
+          pattern: ^-?[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/LogsUniqueValueTimeWindow'
+          description: The time window for the unique count alert.
+      description: Defines conditions for unique count alerts
+    DayOfWeek:
+      enum:
+      - DAY_OF_WEEK_MONDAY_OR_UNSPECIFIED
+      - DAY_OF_WEEK_TUESDAY
+      - DAY_OF_WEEK_WEDNESDAY
+      - DAY_OF_WEEK_THURSDAY
+      - DAY_OF_WEEK_FRIDAY
+      - DAY_OF_WEEK_SATURDAY
+      - DAY_OF_WEEK_SUNDAY
+      type: string
+    DownloadAlertsResponse:
+      title: Download alerts response
+      type: object
+      properties:
+        content:
+          minLength: 0
+          pattern: ^[A-Za-z0-9+/]*={0,2}$
+          type: string
+          description: Base64-encoded binary data of the alert definitions
+          format: byte
+          examples:
+          - SGVsbG8gV29ybGQ=
+        notFoundIds:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 0
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: Requested alert definition IDs that were not included in the download because they were not found or are not accessible. Populated on the first streamed message.
+          description: Requested alert definition IDs that were not included in the download because they were not found or are not accessible. Populated on the first streamed message.
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+      description: A response containing the downloaded alert data
+    DeleteAccessPolicy:
+      title: Delete access policy
+      type: object
+      additionalProperties: false
+      description: Marker to remove the alert's access policy entirely; carries no fields. Removal does not assign any replacement — a new access policy and policy owner can be assigned afterward.
+    FailedToReplaceAlertDef:
+      title: Failed to replace alert definition
+      type: object
+      properties:
+        id:
+          description: The alert definition ID
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          maxLength: 36
+          minLength: 1
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        reason:
+          description: Human-readable explanation of why the alert definition failed to be replaced. May be omitted when no further detail is available.
+          examples:
+          - Alert definition failed validation.
+          maxLength: 4096
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: An alert definition id that failed to be replaced
+    BurnRateTypeDual:
+      title: Burn Rate Type Dual
+      type: object
+      properties:
+        timeDuration:
+          $ref: '#/components/schemas/TimeDuration'
+      description: Burn rate type dual definition
+    DataprimeAlertQuery:
+      title: DataPrime alert query
+      type: object
+      properties:
+        query:
+          description: The DataPrime query string
+          examples:
+          - source logs | filter severity == 'error' | count_agg_key by applicationName
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: A DataPrime query
+    AlertDefDataSource:
+      type: object
+      properties:
+        dataSet:
+          description: File name of the dataset
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        dataSpace:
+          description: Folder name of the datasource
+          maxLength: 50
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    FlowStages:
+      title: Flow stages
+      type: object
+      properties:
+        flowStagesGroups:
+          allOf:
+          - $ref: '#/components/schemas/FlowStagesGroups'
+          description: The flow stages groups.
+        timeframeMs:
+          description: The timeframe ms.
+          maxLength: 20
+          minLength: 1
+          pattern: ^-?[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        timeframeType:
+          allOf:
+          - $ref: '#/components/schemas/TimeframeType'
+          description: The type of timeframe for the flow alert.
+          examples:
+          - TIMEFRAME_TYPE_UP_TO
+      description: Defines stages in a flow alert
+    LogsAnomalyCondition:
+      title: Log-based anomaly condition
+      type: object
+      properties:
+        conditionType:
+          allOf:
+          - $ref: '#/components/schemas/LogsAnomalyConditionType'
+          description: The type of condition for the alert
+          examples:
+          - LOGS_ANOMALY_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+        minimumThreshold:
+          description: The threshold value for the alert condition
+          examples:
+          - 10
+          format: double
+          type: number
+          x-coralogix-presence: true
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/LogsTimeWindow'
+          description: The time window for the alert condition
+      description: Defines conditions for detecting log anomalies
+    FilterOptionCountsTypeFilter:
+      title: Filter option counts type filter
+      type: object
+      properties:
+        type:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefType'
+          description: The alert types
+          examples:
+          - - ALERT_DEF_TYPE_LOGS_THRESHOLD
+            - ALERT_DEF_TYPE_LOGS_NEW_VALUE
+            - ALERT_DEF_TYPE_LOGS_UNIQUE_COUNT
+            - ALERT_DEF_TYPE_TRACING_THRESHOLD
+      description: Filter by alert definition types for counting options
+    LogsImmediateType:
+      title: Logs immediate alert type
+      type: object
+      properties:
+        logsFilter:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for immediate alerts.
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The notification payload filter.
+          description: The notification payload filter.
+          examples:
+          - - obj.field
+      description: Configuration for immediate alerts triggered on log entries matching specific filters.
+      externalDocs:
+        description: Learn more about logs immediate alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/immediate-notifications/
+    FilterOptionCountsEntityLabelsFilter:
+      title: Filter option counts entity labels filter
+      type: object
+      properties:
+        entityLabels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The entity label key-value pairs to filter by
+        valuesOperator:
+          allOf:
+          - $ref: '#/components/schemas/FilterValuesOperator'
+          description: Whether all labels must match (AND) or any label can match (OR)
+          examples:
+          - FILTER_VALUES_OPERATOR_AND
+      description: Filter by alert definition entity labels with And/Or options
+    AlertDefPriorityFilter:
+      title: AlertDef Priority Filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS)
+        priority:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefPriority'
+          description: The priority(ies) of the alert definition - multiple values are OR'd together
+      description: Filter by alert definition priorities
+    MetricMissingValues:
+      title: Metric Missing Values Configuration
+      type: object
+      oneOf:
+      - required:
+        - replaceWithZero
+        type: object
+      - required:
+        - minNonNullValuesPct
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - replaceWithZero
+            type: object
+          - required:
+            - minNonNullValuesPct
+            type: object
+      properties:
+        minNonNullValuesPct:
+          description: If set, specifies the minimum percentage of non-null values required for the alert to be triggered
+          examples:
+          - 80
+          format: int64
+          maximum: 100
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        replaceWithZero:
+          description: If set to true, missing values will be replaced with zero
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: Configuration for handling missing values in metric threshold alerts.
+    AlertDefOrderByFields:
+      enum:
+      - ALERT_DEF_ORDER_BY_FIELDS_UNSPECIFIED
+      - ALERT_DEF_ORDER_BY_FIELDS_PRIORITY
+      - ALERT_DEF_ORDER_BY_FIELDS_LAST_TRIGGERED_TIME
+      - ALERT_DEF_ORDER_BY_FIELDS_UPDATED_TIME
+      - ALERT_DEF_ORDER_BY_FIELDS_ENABLED
+      type: string
+      description: Alert def order by fields.
+    AlertsOp:
+      enum:
+      - ALERTS_OP_AND_OR_UNSPECIFIED
+      - ALERTS_OP_OR
+      type: string
+      description: Alerts op.
+    AlertDefIdFilterMatchType:
+      enum:
+      - ALERT_DEF_ID_FILTER_MATCH_TYPE_UNSPECIFIED
+      - ALERT_DEF_ID_FILTER_MATCH_TYPE_INCLUDE
+      - ALERT_DEF_ID_FILTER_MATCH_TYPE_EXCLUDE
+      type: string
+    LogsRatioThresholdType:
+      title: Log-based ratio threshold alert type
+      type: object
+      properties:
+        denominator:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for the denominator of the ratio
+        denominatorAlias:
+          description: The alias for the denominator filter, used for display purposes
+          examples:
+          - denominator_alias
+          maxLength: 200
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 60000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        groupByFor:
+          allOf:
+          - $ref: '#/components/schemas/LogsRatioGroupByFor'
+          description: The group by settings for the numerator and denominator filters
+          examples:
+          - LOGS_RATIO_GROUP_BY_FOR_NUMERATOR_ONLY
+        ignoreInfinity:
+          description: The configuration for ignoring infinity values in the ratio
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The notification payload filter.
+          description: The notification payload filter.
+          examples:
+          - - obj.field
+        numerator:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for the numerator of the ratio
+        numeratorAlias:
+          description: The alias for the numerator filter, used for display purposes
+          examples:
+          - numerator_alias
+          maxLength: 200
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LogsRatioRules'
+          description: The rules for the ratio alert
+        undetectedValuesManagement:
+          allOf:
+          - $ref: '#/components/schemas/v3.UndetectedValuesManagement'
+          description: Configuration for handling the undetected values in the alert
+      description: Configuration for alerts based on the ratio between two log queries
+      externalDocs:
+        description: Learn more about logs ratio alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/ratio-alerts/
+    LogsRatioTimeWindow:
+      title: Logs ratio time window
+      type: object
+      properties:
+        logsRatioTimeWindowSpecificValue:
+          allOf:
+          - $ref: '#/components/schemas/LogsRatioTimeWindowValue'
+          description: Specifies the time window for the ratio alert
+          examples:
+          - LOGS_RATIO_TIME_WINDOW_VALUE_MINUTES_5_OR_UNSPECIFIED
+      description: Time window configuration for ratio alerts
+      externalDocs:
+        description: Learn more about log-based ratio alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/ratio-alerts/
+    LogsNewValueRule:
+      title: Log-based new value rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/LogsNewValueCondition'
+          description: The condition for detecting new values in logs.
+      description: Defines the condition for detecting new values in logs
+    FlowStagesGroups:
+      title: Flow stage groups
+      type: object
+      properties:
+        groups:
+          maxItems: 30
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowStagesGroup'
+          description: List of groups.
+      description: Groups of stages in a flow alert
+    v3.IntegrationType:
+      title: Integration type
+      type: object
+      oneOf:
+      - required:
+        - integrationId
+        type: object
+      - required:
+        - recipients
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - integrationId
+            type: object
+          - required:
+            - recipients
+            type: object
+      properties:
+        integrationId:
+          description: The integration ID for the notification
+          examples:
+          - 123
+          format: int64
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        recipients:
+          allOf:
+          - $ref: '#/components/schemas/Recipients'
+          description: The recipients for the notification.
+      description: Defines the type of integration to use for notifications
+    AlertDefTypeFilter:
+      title: AlertDef Type Filter
+      type: object
+      properties:
+        matcher:
+          allOf:
+          - $ref: '#/components/schemas/alerts.v3.FilterMatcher'
+          description: The filter operator (EQUALS, NOT_EQUALS)
+        type:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefType'
+          description: The alert type(s) - multiple values are OR'd together
+      description: Filter by alert definition types
+    LogsSimpleFilter:
+      title: Simple log filter
+      type: object
+      properties:
+        labelFilters:
+          $ref: '#/components/schemas/LabelFilters'
+        luceneQuery:
+          description: The lucene query.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: Basic filter configuration using a Lucene query and label filters
+    TracingTimeWindow:
+      title: Tracing time window
+      type: object
+      properties:
+        tracingTimeWindowValue:
+          allOf:
+          - $ref: '#/components/schemas/TracingTimeWindowValue'
+          description: A time window defined by a specific value
+          examples:
+          - TRACING_TIME_WINDOW_VALUE_MINUTES_5_OR_UNSPECIFIED
+      description: Tracing time window.
+    MetricThresholdType:
+      title: Metric-based threshold alert type
+      type: object
+      properties:
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 60000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        metricFilter:
+          allOf:
+          - $ref: '#/components/schemas/MetricFilter'
+          description: The filter to match metric entries for the alert.
+        missingValues:
+          allOf:
+          - $ref: '#/components/schemas/MetricMissingValues'
+          description: Configuration for handling missing values in the alert.
+        noDataPolicy:
+          allOf:
+          - $ref: '#/components/schemas/NoDataPolicy'
+          description: User configuration to decide how to treat and what state to give to an alert with no data.
+        rules:
+          maxItems: 5
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricThresholdRule'
+          description: The rules for the metric threshold alert
+        undetectedValuesManagement:
+          allOf:
+          - $ref: '#/components/schemas/v3.UndetectedValuesManagement'
+          description: Configuration for handling undetected values in the alert.
+      description: Configuration for alerts based on metric threshold violations
+      externalDocs:
+        description: Learn more about metric-based threshold alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/metrics/threshold-alerts/
+    TracingThresholdRule:
+      title: Trace Threshold Rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/TracingThresholdCondition'
+          description: The condition for the threshold alert.
+      description: A rule for trace-based threshold alerts
+    LogsAnomalyType:
+      title: Log-based anomaly alert type
+      type: object
+      properties:
+        anomalyAlertSettings:
+          allOf:
+          - $ref: '#/components/schemas/AnomalyAlertSettings'
+          description: Anomaly alert settings configuration
+        evaluationDelayMs:
+          description: The delay in milliseconds before evaluating the alert condition
+          examples:
+          - 60000
+          format: int32
+          maximum: 10800000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        logsFilter:
+          $ref: '#/components/schemas/v3.LogsFilter'
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The filter to specify which fields to include in the notification payload
+          description: The filter to specify which fields to include in the notification payload
+          examples:
+          - - obj.field
+        rules:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LogsAnomalyRule'
+          description: The rules for the log anomaly alert
+      description: Configuration for alerts triggered by anomalous log patterns
+      externalDocs:
+        description: Learn more about logs anomaly alerts in our documentation
+        url: https://coralogix.com/docs/user-guides/alerting/create-an-alert/logs/anomaly-detection-alerts/
+    LogsTimeWindowValue:
+      enum:
+      - LOGS_TIME_WINDOW_VALUE_MINUTES_5_OR_UNSPECIFIED
+      - LOGS_TIME_WINDOW_VALUE_MINUTES_10
+      - LOGS_TIME_WINDOW_VALUE_MINUTES_20
+      - LOGS_TIME_WINDOW_VALUE_MINUTES_15
+      - LOGS_TIME_WINDOW_VALUE_MINUTES_30
+      - LOGS_TIME_WINDOW_VALUE_HOUR_1
+      - LOGS_TIME_WINDOW_VALUE_HOURS_2
+      - LOGS_TIME_WINDOW_VALUE_HOURS_4
+      - LOGS_TIME_WINDOW_VALUE_HOURS_6
+      - LOGS_TIME_WINDOW_VALUE_HOURS_12
+      - LOGS_TIME_WINDOW_VALUE_HOURS_24
+      - LOGS_TIME_WINDOW_VALUE_HOURS_36
+      type: string
+      description: Logs time window value.
+    MetricThresholdConditionType:
+      enum:
+      - METRIC_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+      - METRIC_THRESHOLD_CONDITION_TYPE_LESS_THAN
+      - METRIC_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_EQUALS
+      - METRIC_THRESHOLD_CONDITION_TYPE_LESS_THAN_OR_EQUALS
+      - METRIC_THRESHOLD_CONDITION_TYPE_EQUALS
+      - METRIC_THRESHOLD_CONDITION_TYPE_NOT_EQUALS
+      type: string
+      description: Metric threshold condition type.
+    AlertDefCaseDestination:
+      title: Alert definition case destination
+      required:
+      - connectorId
+      - condition
+      type: object
+      properties:
+        condition:
+          maxLength: 20000
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Notification Center routing condition, rendered to true or false against the case notification context to decide whether this destination is notified. Use "true" to notify on every case notification; otherwise filter on caseMetadata.notificationReason (for example caseActivated, caseResolved, casePriorityChanged, caseUnacknowledged). The expression syntax is documented with Notification Center routing conditions.
+          examples:
+          - (caseMetadata.notificationReason not in ["caseUnacknowledged","casePriorityChanged"])
+        connectorId:
+          maxLength: 128
+          minLength: 1
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          description: ID of the Notification Center connector to notify. The connector must support the CASES entity type; list compatible connectors with GET /notifications/notification-center/v1/connectors?supported_by_entity_type=CASES.
+          examples:
+          - connector_id_example
+        presetId:
+          description: Optional Notification Center preset ID used to render the notification. The preset must be defined for the CASES entity type and for the selected connector's type; list compatible presets with GET /notifications/notification-center/v1/presets:summariesList?entity_type=CASES&connector_type=<type>. When omitted, the connector type's default preset is used.
+          examples:
+          - preset_id_example
+          maxLength: 128
+          minLength: 0
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9_-]*$
+          type: string
+          x-coralogix-presence: true
+      description: A Notification Center connector that receives notifications about cases opened by this alert.
+    PriorityCount:
+      title: Priority count
+      type: object
+      properties:
+        count:
+          description: The count for this alert priority
+          examples:
+          - 15
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefPriority'
+          description: The alert priority
+          examples:
+          - ALERT_DEF_PRIORITY_P1
+      description: Count for a specific alert priority
+    LogsUniqueCountRule:
+      title: Log-based unique count rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/LogsUniqueCountCondition'
+          description: The condition for detecting unique counts in logs.
+      description: Defines the rule for detecting unique counts in logs
+    BurnRateTypeSingle:
+      title: Burn Rate Type Single
+      type: object
+      properties:
+        timeDuration:
+          $ref: '#/components/schemas/TimeDuration'
+      description: Burn rate type single definition
+    NotificationRouter:
+      title: Notification router
+      type: object
+      properties:
+        id:
+          description: The ID of the notification router
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        notifyOn:
+          allOf:
+          - $ref: '#/components/schemas/NotifyOn'
+          description: The condition under which the notification should be sent
+          examples:
+          - NOTIFY_ON_TRIGGERED_ONLY_UNSPECIFIED
+          x-coralogix-presence: true
+      description: Configuration for routing notifications
+    NoDataPolicy:
+      type: object
+      properties:
+        autoRetireSeconds:
+          description: The timeframe in seconds for auto retiring values that were detected as no-data. accepts only multiples of 60 seconds
+          examples:
+          - 3600
+          format: int32
+          minimum: 60
+          type: integer
+          x-coralogix-presence: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/NoDataPolicyState'
+          description: The state to which the alert falls back to when theres no data (replaces UndetectedValuesManagement - this feature is being released gradually and might not be available for all customers yet)
+          examples:
+          - NO_DATA_POLICY_STATE_ALERTING
+      description: No data policy.
+    FilterValuesOperator:
+      enum:
+      - FILTER_VALUES_OPERATOR_UNSPECIFIED
+      - FILTER_VALUES_OPERATOR_OR
+      - FILTER_VALUES_OPERATOR_AND
+      type: string
+    AnalyticsThresholdOperator:
+      enum:
+      - ANALYTICS_THRESHOLD_OPERATOR_MORE_THAN_OR_UNSPECIFIED
+      - ANALYTICS_THRESHOLD_OPERATOR_LESS_THAN
+      - ANALYTICS_THRESHOLD_OPERATOR_MORE_THAN_OR_EQUALS
+      - ANALYTICS_THRESHOLD_OPERATOR_LESS_THAN_OR_EQUALS
+      - ANALYTICS_THRESHOLD_OPERATOR_EQUALS
+      - ANALYTICS_THRESHOLD_OPERATOR_NOT_EQUALS
+      type: string
+      description: The comparison operator applied to analytics threshold rules.
+    TimeOfDay:
+      title: Time of day
+      type: object
+      properties:
+        hours:
+          maximum: 23
+          minimum: 0
+          type: integer
+          description: The hours.
+          format: int32
+          examples:
+          - 14
+        minutes:
+          maximum: 59
+          minimum: 0
+          type: integer
+          description: The minutes.
+          format: int32
+          examples:
+          - 30
+      description: Represents a specific time in a 24-hour format
+    LogsNewValueType:
+      title: Log-based new value alert type
+      type: object
+      properties:
+        logsFilter:
+          allOf:
+          - $ref: '#/components/schemas/v3.LogsFilter'
+          description: The filter to match log entries for the alert.
+        notificationPayloadFilter:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The filter to specify which fields to include in the notification payload.
+          description: The filter to specify which fields to include in the notification payload.
+          examples:
+          - - obj.field
+        rules:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LogsNewValueRule'
+          description: The rules for the log new value alert.
+      description: Configuration for alerts triggered by new values appearing in logs
+    SloThresholdRule:
+      title: SLO Threshold Rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/SloThresholdCondition'
+          description: Condition for the SLO threshold rule
+        override:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefOverride'
+          description: The override settings for the alert
+      description: SLO threshold rule definition
+    NotificationRouting:
+      title: Notification routing
+      type: object
+      properties:
+        configOverrides:
+          allOf:
+          - $ref: '#/components/schemas/v3.SourceOverrides'
+          description: Configuration for routing notifications
+      description: Notification routing.
+    v3.UndetectedValuesManagement:
+      title: Undetected value management
+      type: object
+      properties:
+        autoRetireTimeframe:
+          allOf:
+          - $ref: '#/components/schemas/v3.AutoRetireTimeframe'
+          description: The timeframe for auto-retiring the alert when undetected values are detected
+          examples:
+          - AUTO_RETIRE_TIMEFRAME_HOURS_24
+          x-coralogix-presence: true
+        triggerUndetectedValues:
+          description: Should trigger the alert when undetected values are detected
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: Configuration for handling undetected values in alerts
+    v3.TimeRange:
+      title: Time range
+      type: object
+      properties:
+        endTime:
+          description: End time of the range
+          format: date-time
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        startTime:
+          description: Start time of the range
+          format: date-time
+          maxLength: 64
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Represents a time range with start and end timestamps
+    TracingFilter:
+      title: Tracing filter
+      type: object
+      properties:
+        simpleFilter:
+          allOf:
+          - $ref: '#/components/schemas/TracingSimpleFilter'
+          description: Simple filter using latency threshold and label filters
+      description: Filter configuration for tracing-based alerts
+    TracingThresholdConditionType:
+      enum:
+      - TRACING_THRESHOLD_CONDITION_TYPE_MORE_THAN_OR_UNSPECIFIED
+      type: string
+      description: Tracing threshold condition type.
+    DurationUnit:
+      enum:
+      - DURATION_UNIT_UNSPECIFIED
+      - DURATION_UNIT_HOURS
+      type: string
+      description: Duration unit.
+    AlertDefCaseSettings:
+      title: Alert definition case settings
+      type: object
+      properties:
+        autoResolveMode:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefCaseAutoResolveMode'
+          description: Controls whether the associated case is automatically resolved when the alert resolves. Defaults to enabled when unspecified.
+          examples:
+          - ALERT_DEF_CASE_AUTO_RESOLVE_MODE_ENABLED
+        destinations:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefCaseDestination'
+          description: 'Destinations notified about the cases opened by this alert. Independent of notificationGroup.destinations: both are delivered. Replace is a full overwrite: omitting destinations removes any previously configured case destinations.'
+        enrichmentQueries:
+          maxItems: 1
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDefCaseEnrichmentQuery'
+          description: Queries used to enrich the case created by this alert
+      description: Settings controlling how the alert interacts with cases.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    Recipients:
+      title: Recipients
+      type: object
+      properties:
+        emails:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The list of email recipients for alert notifications
+          description: The list of email recipients for alert notifications
+          examples:
+          - - mail@gmail.com
+      description: List of email recipients for alert notifications
+    BulkReplaceAlertDefsResponse:
+      title: Bulk replace alert definitions response
+      type: object
+      properties:
+        alertDefs:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertDef'
+          description: List of successfully replaced alert definitions
+        failedToReplaceAlertDefs:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedToReplaceAlertDef'
+          description: List of alert definitions that failed to be replaced
+        notFoundIds:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 1
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: List of alert definition IDs that were not found
+          description: List of alert definition IDs that were not found
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+        skippedIds:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 36
+            minLength: 1
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            description: List of alert definition IDs that were skipped (no changes detected)
+          description: List of alert definition IDs that were skipped (no changes detected)
+          examples:
+          - - 123e4567-e89b-12d3-a456-426614174000
+      description: A response that contains the results of the bulk replace operation
+    AnalyticsThresholdRule:
+      title: Analytics threshold rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/AnalyticsThresholdRuleCondition'
+          description: The condition for the threshold rule
+        override:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefOverride'
+          description: The override settings for the alert
+      description: A rule that defines a threshold condition and its priority override
+    MetricTimeWindowValue:
+      enum:
+      - METRIC_TIME_WINDOW_VALUE_MINUTES_1_OR_UNSPECIFIED
+      - METRIC_TIME_WINDOW_VALUE_MINUTES_5
+      - METRIC_TIME_WINDOW_VALUE_MINUTES_10
+      - METRIC_TIME_WINDOW_VALUE_MINUTES_15
+      - METRIC_TIME_WINDOW_VALUE_MINUTES_20
+      - METRIC_TIME_WINDOW_VALUE_MINUTES_30
+      - METRIC_TIME_WINDOW_VALUE_HOUR_1
+      - METRIC_TIME_WINDOW_VALUE_HOURS_2
+      - METRIC_TIME_WINDOW_VALUE_HOURS_4
+      - METRIC_TIME_WINDOW_VALUE_HOURS_6
+      - METRIC_TIME_WINDOW_VALUE_HOURS_12
+      - METRIC_TIME_WINDOW_VALUE_HOURS_24
+      - METRIC_TIME_WINDOW_VALUE_HOURS_36
+      type: string
+      description: Metric time window value.
+    AlertDefAccess:
+      title: Alert definition access
+      type: object
+      properties:
+        accessPolicy:
+          description: The alert's raw access policy as an opaque JSON string. Present only when the caller may read it (alerts:ReadAccessPolicy granted)
+          maxLength: 65536
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permissions:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefPermissions'
+          description: The caller's access decision (permission booleans) for the alert
+      description: The caller's access decision for an alert together with the alert's raw access policy
+    LogsNewValueTimeWindow:
+      title: Log-based new value alert time window
+      type: object
+      properties:
+        logsNewValueTimeWindowSpecificValue:
+          allOf:
+          - $ref: '#/components/schemas/LogsNewValueTimeWindowValue'
+          description: A time window defined by a specific value
+          examples:
+          - LOGS_NEW_VALUE_TIME_WINDOW_VALUE_HOURS_12_OR_UNSPECIFIED
+      description: Time window configuration for log-based new value alerts
+    FilterOptionCountsEnabledFilter:
+      title: Filter option counts enabled filter
+      type: object
+      properties:
+        enabled:
+          description: Whether to filter for enabled (true) or disabled (false) alerts
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      description: Filter by alert definition enabled status for counting options
+    MetricFilter:
+      title: Metric filter configuration in alerts
+      type: object
+      properties:
+        promql:
+          description: A PromQL filter for metrics
+          examples:
+          - avg_over_time(metric_name[5m]) > 10
+          maxLength: 65535
+          minLength: 1
+          type: string
+          x-coralogix-presence: true
+      description: Metric filter.
+    LogsNewValueCondition:
+      title: Log-based new value condition
+      type: object
+      properties:
+        keypathToTrack:
+          description: The keypath to track for new values
+          examples:
+          - metadata.field
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/LogsNewValueTimeWindow'
+          description: The time window for detecting new values
+      description: Defines conditions for detecting new values in logs
+    AlertDefTypeSpecificFilter:
+      title: AlertDef Type Specific Filter
+      type: object
+      properties:
+        sloFilter:
+          allOf:
+          - $ref: '#/components/schemas/AlertDefSloSpecificFilter'
+          description: Filter SLO-based alerts by SLO-specific fields
+      description: Filter by fields specific to alert type definitions
+    v3.ConnectorConfigField:
+      title: Connector config field
+      type: object
+      properties:
+        fieldName:
+          minLength: 0
+          type: string
+          description: The name of the configuration field
+          examples:
+          - description
+        template:
+          minLength: 0
+          type: string
+          description: The template for the configuration field
+          examples:
+          - template_example
+    FilterOptionCountsResponse:
+      title: Filter option counts response
+      type: object
+      properties:
+        counts:
+          allOf:
+          - $ref: '#/components/schemas/FilterOptionCounts'
+          description: The counts for different filter options
+      description: Response containing counts for different filter options
+    AlertDefOrderByDirection:
+      enum:
+      - ALERT_DEF_ORDER_BY_DIRECTION_ASC_OR_UNSPECIFIED
+      - ALERT_DEF_ORDER_BY_DIRECTION_DESC
+      type: string
+      description: Alert def order by direction.
+    MetricAnomalyRule:
+      title: Metric-based anomaly rule
+      type: object
+      properties:
+        condition:
+          allOf:
+          - $ref: '#/components/schemas/MetricAnomalyCondition'
+          description: The condition for the metric anomaly alert.
+      description: A rule for metric-based anomaly detection alerts
+    DeleteAlertDefResponse:
+      title: Delete alert definition response
+      type: object
+      additionalProperties: false
+      description: A response to the deletion of an alert definition
+    v3.MessageConfigField:
+      title: Message config field
+      type: object
+      properties:
+        fieldName:
+          minLength: 0
+          type: string
+          description: The name of the configuration field
+          examples:
+          - description
+        template:
+          minLength: 0
+          type: string
+          description: The template for the configuration field
+          examples:
+          - template_example
+      description: Configuration field for a notification message
+    TimeDuration:
+      title: Time duration
+      type: object
+      properties:
+        duration:
+          description: The duration value
+          examples:
+          - '24'
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        unit:
+          allOf:
+          - $ref: '#/components/schemas/DurationUnit'
+          description: The unit of the duration
+          examples:
+          - DURATION_UNIT_HOURS
+      description: Configuration for time duration
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

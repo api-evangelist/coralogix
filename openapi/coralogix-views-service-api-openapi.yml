@@ -1,0 +1,496 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Views service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Views service
+  description: Create and manage views.
+paths:
+  /data-exploration/views/v1/views:
+    get:
+      description: Lists all company public views
+      operationId: ViewsService_ListViews
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                views:
+                - filters:
+                    filters:
+                    - name: applicationName
+                      selectedValues:
+                        demo: true
+                    - name: subsystemName
+                      selectedValues:
+                        demo: true
+                    - name: operationName
+                      selectedValues:
+                        demo: true
+                    - name: serviceName
+                      selectedValues:
+                        demo: true
+                    - name: severity
+                      selectedValues:
+                        demo: true
+                  id: 52
+                  name: Logs view
+                  searchQuery:
+                    query: logs
+                  timeSelection:
+                    customSelection:
+                      fromTime: '2024-01-25T11:31:43.152Z'
+                      toTime: '2024-01-25T11:37:13.238Z'
+              schema:
+                $ref: '#/components/schemas/ListViewsResponse'
+          description: ''
+      summary: List views service
+      tags:
+      - Views service
+    post:
+      description: Creates a new view
+      operationId: ViewsService_CreateView
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: View folder.
+              properties:
+                filters:
+                  $ref: '#/components/schemas/SelectedFilters'
+                folderId:
+                  description: Unique identifier for folders
+                  examples:
+                  - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+                  maxLength: 36
+                  minLength: 36
+                  pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+                  type: string
+                  x-coralogix-presence: true
+                name:
+                  description: View name
+                  examples:
+                  - Logs view
+                  maxLength: 250
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                searchQuery:
+                  allOf:
+                  - $ref: '#/components/schemas/SearchQuery'
+                  description: The search query.
+                timeSelection:
+                  $ref: '#/components/schemas/TimeSelection'
+                viewType:
+                  $ref: '#/components/schemas/ViewType'
+                  default: VIEW_TYPE_LOGS
+              required:
+              - name
+              - timeSelection
+              title: ViewFolder
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                filters:
+                  filters:
+                  - name: applicationName
+                    selectedValues:
+                      demo: true
+                  - name: subsystemName
+                    selectedValues:
+                      demo: true
+                  - name: operationName
+                    selectedValues:
+                      demo: true
+                  - name: serviceName
+                    selectedValues:
+                      demo: true
+                  - name: severity
+                    selectedValues:
+                      demo: true
+                id: 52
+                name: Logs view
+                searchQuery:
+                  query: logs
+                timeSelection:
+                  customSelection:
+                    fromTime: '2024-01-25T11:31:43.152Z'
+                    toTime: '2024-01-25T11:37:13.238Z'
+              schema:
+                $ref: '#/components/schemas/View'
+          description: ''
+      summary: Create a view service
+      tags:
+      - Views service
+  /data-exploration/views/v1/views/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        description: id
+        examples:
+        - 52
+        format: int32
+        maximum: 2147483647
+        minimum: 1
+        type: integer
+        x-coralogix-presence: true
+    get:
+      description: Gets a view by ID
+      operationId: ViewsService_GetView
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                filters:
+                  filters:
+                  - name: applicationName
+                    selectedValues:
+                      demo: true
+                  - name: subsystemName
+                    selectedValues:
+                      demo: true
+                  - name: operationName
+                    selectedValues:
+                      demo: true
+                  - name: serviceName
+                    selectedValues:
+                      demo: true
+                  - name: severity
+                    selectedValues:
+                      demo: true
+                id: 52
+                name: Logs view
+                searchQuery:
+                  query: logs
+                timeSelection:
+                  customSelection:
+                    fromTime: '2024-01-25T11:31:43.152Z'
+                    toTime: '2024-01-25T11:37:13.238Z'
+              schema:
+                $ref: '#/components/schemas/View'
+          description: ''
+      summary: Get view service
+      tags:
+      - Views service
+    put:
+      description: Replaces an existing view
+      operationId: ViewsService_ReplaceView
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Response for views.
+              properties:
+                filters:
+                  $ref: '#/components/schemas/SelectedFilters'
+                folderId:
+                  description: Unique identifier for folders
+                  examples:
+                  - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+                  maxLength: 36
+                  minLength: 36
+                  pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+                  type: string
+                  x-coralogix-presence: true
+                isCompactMode:
+                  default: false
+                  description: Whether the view opens in compact mode. Create stores false, and a replace that omits the value stores false.
+                  type: boolean
+                  x-coralogix-presence: true
+                name:
+                  description: View name
+                  examples:
+                  - Logs view
+                  maxLength: 250
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                searchQuery:
+                  $ref: '#/components/schemas/SearchQuery'
+                timeSelection:
+                  $ref: '#/components/schemas/TimeSelection'
+                viewType:
+                  $ref: '#/components/schemas/ViewType'
+              required:
+              - name
+              - timeSelection
+              title: View
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                filters:
+                  filters:
+                  - name: applicationName
+                    selectedValues:
+                      demo: true
+                  - name: subsystemName
+                    selectedValues:
+                      demo: true
+                  - name: operationName
+                    selectedValues:
+                      demo: true
+                  - name: serviceName
+                    selectedValues:
+                      demo: true
+                  - name: severity
+                    selectedValues:
+                      demo: true
+                id: 52
+                name: Logs view
+                searchQuery:
+                  query: logs new
+                timeSelection:
+                  customSelection:
+                    fromTime: '2024-01-25T11:31:43.152Z'
+                    toTime: '2024-01-25T11:37:13.238Z'
+              schema:
+                $ref: '#/components/schemas/View'
+          description: ''
+      summary: Replace a view service
+      tags:
+      - Views service
+    delete:
+      description: Deletes a view by ID
+      operationId: ViewsService_DeleteView
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteViewResponse'
+          description: ''
+      summary: Delete view service
+      tags:
+      - Views service
+components:
+  schemas:
+    DeleteViewResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a view.
+    SyntaxType:
+      enum:
+      - SYNTAX_TYPE_UNSPECIFIED
+      - SYNTAX_TYPE_LUCENE
+      - SYNTAX_TYPE_DATAPRIME
+      type: string
+      description: Syntax type.
+    TimeSelection:
+      type: object
+      oneOf:
+      - required:
+        - quickSelection
+        type: object
+      - required:
+        - customSelection
+        type: object
+      properties:
+        customSelection:
+          $ref: '#/components/schemas/CustomTimeSelection'
+        quickSelection:
+          $ref: '#/components/schemas/QuickTimeSelection'
+      description: Time selection.
+    views.v1.Filter:
+      title: ViewFolder
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          description: Filter name
+          examples:
+          - applicationName
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        selectedValues:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Filter values to select, each set to true. The service keeps only the values set to true and drops a value set to false.
+      description: View folder.
+    SelectedFilters:
+      type: object
+      properties:
+        filters:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/views.v1.Filter'
+          description: List of filters.
+      description: Selected filters.
+    ListViewsResponse:
+      type: object
+      properties:
+        views:
+          maxItems: 100000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/View'
+          description: The views.
+      description: Response containing a list of views.
+    SearchQuery:
+      title: SearchQuery
+      required:
+      - query
+      type: object
+      properties:
+        query:
+          description: Query string.
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        syntaxType:
+          $ref: '#/components/schemas/SyntaxType'
+          default: SYNTAX_TYPE_LUCENE
+      description: Search query.
+    CustomTimeSelection:
+      required:
+      - fromTime
+      - toTime
+      type: object
+      properties:
+        fromTime:
+          description: The from time.
+          examples:
+          - '2024-01-25T11:31:43.152Z'
+          format: date-time
+          maxLength: 35
+          minLength: 1
+          type: string
+          x-coralogix-presence: true
+        toTime:
+          description: The to time.
+          examples:
+          - '2024-01-25T11:35:43.152Z'
+          format: date-time
+          maxLength: 35
+          minLength: 1
+          type: string
+          x-coralogix-presence: true
+      description: Custom time selection.
+    ViewType:
+      enum:
+      - VIEW_TYPE_UNSPECIFIED
+      - VIEW_TYPE_LOGS
+      - VIEW_TYPE_TEMPLATES
+      - VIEW_TYPE_ARCHIVE_LOGS
+      - VIEW_TYPE_ARCHIVE_TEMPLATES
+      type: string
+      description: View type.
+    View:
+      title: View
+      required:
+      - name
+      - id
+      - timeSelection
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/SelectedFilters'
+        folderId:
+          description: Unique identifier for folders
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: id
+          examples:
+          - 52
+          format: int32
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        isCompactMode:
+          default: false
+          description: Whether the view opens in compact mode. Create stores false, and a replace that omits the value stores false.
+          type: boolean
+          x-coralogix-presence: true
+        name:
+          description: View name
+          examples:
+          - Logs view
+          maxLength: 250
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        searchQuery:
+          $ref: '#/components/schemas/SearchQuery'
+        timeSelection:
+          $ref: '#/components/schemas/TimeSelection'
+        viewType:
+          $ref: '#/components/schemas/ViewType'
+      description: Response for views.
+    QuickTimeSelection:
+      required:
+      - seconds
+      type: object
+      properties:
+        caption:
+          deprecated: true
+          description: Display label for the quick time range.
+          examples:
+          - Last Hour
+          maxLength: 100
+          minLength: 1
+          pattern: ^[\s\S]*$
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        seconds:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          description: Length of the quick time range, in seconds. The service stores the nearest of 60, 120, 300, 900, 1800, 3600, 7200, 21600, 43200, 86400, 172800, 259200, 432000, and 604800.
+          format: int64
+          examples:
+          - 3600
+      description: Quick time selection.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

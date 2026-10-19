@@ -1,0 +1,686 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Actions Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Actions Service
+  description: View and manage your Actions.
+paths:
+  /actions/actions/v2:
+    get:
+      description: Returns all actions for the team.
+      operationId: ActionsService_ListActions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListActionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Actions
+      tags:
+      - Actions Service
+    put:
+      description: Replaces all actions with the provided set.
+      operationId: ActionsService_ReplaceAction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                action:
+                  $ref: '#/components/schemas/v2.Action'
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceActionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace Action
+      tags:
+      - Actions Service
+    post:
+      description: Creates a new action.
+      operationId: ActionsService_CreateAction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                applicationNames:
+                  description: The application names.
+                  items:
+                    description: The application names.
+                    maxLength: 1024
+                    minLength: 0
+                    pattern: ^[\s\S]*$
+                    type: string
+                  maxItems: 1000
+                  minItems: 0
+                  type: array
+                description:
+                  description: Human-readable description.
+                  maxLength: 65535
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                dpxlFilter:
+                  description: The dpxl filter.
+                  maxLength: 65535
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                isPrivate:
+                  description: The is private.
+                  type: boolean
+                  x-coralogix-presence: true
+                name:
+                  description: Display name.
+                  maxLength: 50
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                sourceType:
+                  $ref: '#/components/schemas/v2.SourceType'
+                subsystemNames:
+                  description: The subsystem names.
+                  items:
+                    description: The subsystem names.
+                    maxLength: 1024
+                    minLength: 0
+                    pattern: ^[\s\S]*$
+                    type: string
+                  maxItems: 1000
+                  minItems: 0
+                  type: array
+                url:
+                  description: URL. Must start with http:// or https://.
+                  maxLength: 32768
+                  minLength: 1
+                  pattern: ^https?://.*$
+                  type: string
+                  x-coralogix-presence: true
+                urlFields:
+                  description: The url fields. Each field requires both name and required, and names must be unique within the list.
+                  items:
+                    $ref: '#/components/schemas/UrlField'
+                  maxItems: 1000
+                  minItems: 0
+                  type: array
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateActionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create Action
+      tags:
+      - Actions Service
+  /actions/actions/v2/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: Unique identifier.
+      required: true
+      schema:
+        description: Unique identifier.
+        maxLength: 36
+        minLength: 36
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        type: string
+        x-coralogix-presence: true
+    get:
+      description: Returns the details of a specific action.
+      operationId: ActionsService_GetAction
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetActionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Action
+      tags:
+      - Actions Service
+    delete:
+      description: Deletes the action with the specified ID.
+      operationId: ActionsService_DeleteAction
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteActionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete Action
+      tags:
+      - Actions Service
+  /actions/batch/v2:
+    post:
+      description: Creates multiple actions in a single request.
+      operationId: ActionsService_AtomicBatchExecuteActions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                requests:
+                  description: The requests.
+                  items:
+                    $ref: '#/components/schemas/ActionExecutionRequest'
+                  maxItems: 1000
+                  minItems: 0
+                  type: array
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtomicBatchExecuteActionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Atomic Batch Execute Actions
+      tags:
+      - Actions Service
+  /actions/order/v2:
+    post:
+      description: Updates the display order of actions.
+      operationId: ActionsService_OrderActions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                privateActionsOrder:
+                  additionalProperties:
+                    format: int64
+                    maximum: 4294967295
+                    minimum: 0
+                    type: integer
+                  description: The private actions order.
+                  type: object
+                sharedActionsOrder:
+                  additionalProperties:
+                    format: int64
+                    maximum: 4294967295
+                    minimum: 0
+                    type: integer
+                  description: The shared actions order.
+                  type: object
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderActionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Order Actions
+      tags:
+      - Actions Service
+components:
+  schemas:
+    DeleteActionRequest:
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+    ActionExecutionResponse:
+      type: object
+      oneOf:
+      - required:
+        - create
+        type: object
+      - required:
+        - replace
+        type: object
+      - required:
+        - delete
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - create
+            type: object
+          - required:
+            - replace
+            type: object
+          - required:
+            - delete
+            type: object
+      properties:
+        create:
+          $ref: '#/components/schemas/CreateActionResponse'
+        delete:
+          $ref: '#/components/schemas/DeleteActionResponse'
+        replace:
+          $ref: '#/components/schemas/ReplaceActionResponse'
+    CreateActionRequest:
+      type: object
+      properties:
+        applicationNames:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The application names.
+          description: The application names.
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        dpxlFilter:
+          description: The dpxl filter.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        isPrivate:
+          description: The is private.
+          type: boolean
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 50
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        sourceType:
+          $ref: '#/components/schemas/v2.SourceType'
+        subsystemNames:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The subsystem names.
+          description: The subsystem names.
+        url:
+          description: URL. Must start with http:// or https://.
+          maxLength: 32768
+          minLength: 1
+          pattern: ^https?://.*$
+          type: string
+          x-coralogix-presence: true
+        urlFields:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/UrlField'
+          description: The url fields. Each field requires both name and required, and names must be unique within the list.
+    ReplaceActionRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/v2.Action'
+    OrderActionsResponse:
+      type: object
+      additionalProperties: false
+    v2.Action:
+      type: object
+      properties:
+        applicationNames:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The application names.
+          description: The application names.
+        createdBy:
+          description: The creating user's username. Set by the server; ignored on requests.
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        dpxlFilter:
+          description: The dpxl filter.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        isHidden:
+          description: The is hidden.
+          type: boolean
+          x-coralogix-presence: true
+        isPrivate:
+          description: The is private.
+          type: boolean
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 50
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        sourceType:
+          $ref: '#/components/schemas/v2.SourceType'
+        subsystemNames:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The subsystem names.
+          description: The subsystem names.
+        url:
+          description: URL. Must start with http:// or https://.
+          maxLength: 32768
+          minLength: 1
+          pattern: ^https?://.*$
+          type: string
+          x-coralogix-presence: true
+        urlFields:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/UrlField'
+          description: The url fields. Each field requires both name and required, and names must be unique within the list.
+    DeleteActionResponse:
+      type: object
+      additionalProperties: false
+    ActionExecutionRequest:
+      type: object
+      oneOf:
+      - required:
+        - create
+        type: object
+      - required:
+        - replace
+        type: object
+      - required:
+        - delete
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - create
+            type: object
+          - required:
+            - replace
+            type: object
+          - required:
+            - delete
+            type: object
+      properties:
+        create:
+          $ref: '#/components/schemas/CreateActionRequest'
+        delete:
+          $ref: '#/components/schemas/DeleteActionRequest'
+        replace:
+          $ref: '#/components/schemas/ReplaceActionRequest'
+    UrlField:
+      required:
+      - name
+      - required
+      type: object
+      properties:
+        name:
+          description: Display name.
+          maxLength: 1024
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        required:
+          description: The required.
+          type: boolean
+          x-coralogix-presence: true
+      description: Declares a URL field that may be required for the Action to be invokable on a log.
+    GetActionResponse:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/v2.Action'
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    AtomicBatchExecuteActionsResponse:
+      type: object
+      properties:
+        matchingResponses:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionExecutionResponse'
+          description: The matching responses.
+    ReplaceActionResponse:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/v2.Action'
+    ListActionsResponse:
+      type: object
+      properties:
+        actions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v2.Action'
+          description: List of actions.
+    v2.SourceType:
+      enum:
+      - SOURCE_TYPE_UNSPECIFIED
+      - SOURCE_TYPE_LOG
+      - SOURCE_TYPE_DATA_MAP
+      type: string
+      description: Source type.
+    CreateActionResponse:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/v2.Action'
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

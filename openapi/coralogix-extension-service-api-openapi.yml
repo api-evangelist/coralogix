@@ -1,0 +1,772 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Extension service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Extension service
+  description: A service that enables querying for extension information.
+  externalDocs:
+    description: Learn more about extensions in our documentation.
+    url: https://coralogix.com/docs/integrations/extensions/
+paths:
+  /integrations/extensions/v1:
+    post:
+      description: 'Creates a new extension.
+
+
+        Requires the following permissions:
+
+        - `extensions:ReadConfig`'
+      operationId: ExtensionService_GetAllExtensions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to list all extensions
+              properties:
+                filter:
+                  $ref: '#/components/schemas/GetAllExtensionsRequest.Filter'
+                includeHiddenExtensions:
+                  default: false
+                  description: Whether to include hidden extensions that are not publicly listed in the catalog.
+                  type: boolean
+                  x-coralogix-presence: true
+              title: Get all extensions request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllExtensionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get all extensions
+      tags:
+      - Extension service
+      x-coralogixPermissions:
+      - extensions:ReadConfig
+  /integrations/extensions/v1/catalog/{id}:
+    get:
+      description: 'Returns the details of the specified extension.
+
+
+        Requires the following permissions:
+
+        - `extensions:ReadConfig`'
+      operationId: ExtensionService_GetExtension
+      parameters:
+      - description: Unique identifier.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: Whether to include dashboard binaries in the response.
+        in: query
+        name: include_dashboard_binaries
+        required: false
+        schema:
+          default: false
+          description: Whether to include dashboard binaries in the response.
+          type: boolean
+          x-coralogix-presence: true
+      - description: Whether to include testing revisions in the response.
+        in: query
+        name: include_testing_revision
+        required: false
+        schema:
+          default: false
+          description: Whether to include testing revisions in the response.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.Extension'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get extension by ID
+      tags:
+      - Extension service
+      x-coralogixPermissions:
+      - extensions:ReadConfig
+components:
+  schemas:
+    IntegrationDetail:
+      title: Integration detail
+      type: object
+      properties:
+        link:
+          description: Link.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ExtensionItemBinary:
+      title: Extension item binary
+      type: object
+      properties:
+        data:
+          description: Data payload.
+          maxLength: 5000000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        fileName:
+          description: The file name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/ExtensionItemBinary.BinaryType'
+    PermissionResource:
+      enum:
+      - UNKNOWN
+      - ACTION
+      - ALERT
+      - CUSTOM_ENRICHMENT
+      - GEO_ENRICHMENT
+      - SECURITY_ENRICHMENT
+      - RESOURCE_CLOUD_METADATA_ENRICHMENT
+      - GRAFANA_DASHBOARD
+      - KIBANA_DASHBOARD
+      - PARSING_RULE
+      - SAVED_VIEW
+      - CX_CUSTOM_DASHBOARD
+      - METRICS_RULE_GROUP
+      - SPAN_EVENTS_TO_METRICS
+      - LOGS_EVENTS_TO_METRICS
+      type: string
+      description: Permission resource.
+    GetAllExtensionsResponse:
+      title: Get all extensions response
+      type: object
+      properties:
+        extensions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/GetAllExtensionsResponse.Extension'
+          description: The extensions.
+          default: []
+      description: Response to list all extensions
+    ItemCounts:
+      title: Item counts
+      type: object
+      properties:
+        actions:
+          default: 0
+          description: List of actions.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        alerts:
+          default: 0
+          description: List of alerts.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        customDashboards:
+          default: 0
+          description: The custom dashboards.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        enrichments:
+          default: 0
+          description: List of enrichments.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        eventsToMetrics:
+          default: 0
+          description: The events to metrics.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        grafanaDashboards:
+          default: 0
+          description: The grafana dashboards.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        kibanaDashboards:
+          default: 0
+          description: The kibana dashboards.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        metricsRuleGroup:
+          default: 0
+          description: The metrics rule group.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        parsingRules:
+          default: 0
+          description: The parsing rules.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        savedViews:
+          default: 0
+          description: The saved views.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Item counts.
+    GetAllExtensionsResponse.Revision:
+      title: Revision
+      type: object
+      properties:
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        excerpt:
+          description: The excerpt.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationDetails:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationDetail'
+          description: The integration details.
+          default: []
+        labels:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of labels.
+          description: List of labels.
+          default: []
+        summary:
+          $ref: '#/components/schemas/GetAllExtensionsResponse.RevisionSummary'
+        version:
+          description: Version number.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ExtensionRevision:
+      title: Extension revision
+      type: object
+      properties:
+        binaries:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionBinary'
+          description: The binaries.
+          default: []
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        excerpt:
+          description: The excerpt.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationDetails:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationDetail'
+          description: The integration details.
+          default: []
+        isTesting:
+          default: false
+          description: The is testing.
+          type: boolean
+          x-coralogix-presence: true
+        items:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionItem'
+          description: List of items.
+          default: []
+        labels:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of labels.
+          description: List of labels.
+          default: []
+        permissionDeniedItems:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionItem'
+          description: The permission denied items.
+          default: []
+        version:
+          description: Version.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ExtensionItem:
+      title: Extension item
+      type: object
+      properties:
+        binaries:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionItemBinary'
+          description: The binaries.
+          default: []
+        data:
+          type: object
+          description: Data payload.
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        extendedInternalId:
+          description: The extended internal id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        isMandatory:
+          default: false
+          description: The is mandatory.
+          type: boolean
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permissionResource:
+          $ref: '#/components/schemas/PermissionResource'
+        stableId:
+          description: The stable id.
+          maxLength: 63
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        targetDomain:
+          $ref: '#/components/schemas/TargetDomain'
+        uniqueId:
+          description: The unique id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    GetAllExtensionsResponse.Extension:
+      title: Extension
+      type: object
+      properties:
+        darkModeImage:
+          description: The dark mode image.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        deprecation:
+          $ref: '#/components/schemas/Deprecation'
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        image:
+          description: Image reference.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrations:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The integrations.
+          description: The integrations.
+          default: []
+        isHidden:
+          default: false
+          description: The is hidden.
+          type: boolean
+          x-coralogix-presence: true
+        keywords:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The keywords.
+          description: The keywords.
+          default: []
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        revisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/GetAllExtensionsResponse.Revision'
+          description: The revisions.
+          default: []
+    ExtensionBinary:
+      title: Extension binary
+      type: object
+      properties:
+        data:
+          description: Data payload.
+          maxLength: 5000000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/ExtensionBinary.BinaryType'
+    v1.Extension:
+      title: Extension metadata
+      type: object
+      properties:
+        changelog:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangelogEntry'
+          description: The changelog.
+          default: []
+        darkModeImage:
+          description: The dark mode image.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        deprecation:
+          $ref: '#/components/schemas/Deprecation'
+        id:
+          description: Unique identifier of the extension.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        image:
+          description: Image reference.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrations:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The integrations.
+          description: The integrations.
+          default: []
+        isHidden:
+          default: false
+          description: The is hidden.
+          type: boolean
+          x-coralogix-presence: true
+        keywords:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The keywords.
+          description: The keywords.
+          default: []
+        name:
+          description: Display name of the extension.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permissionDeniedRevisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionRevision'
+          description: The permission denied revisions.
+          default: []
+        revisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionRevision'
+          description: The revisions.
+          default: []
+      description: Represents a Coralogix extension package containing pre-built resources.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    ChangelogEntry:
+      title: Changelog entry
+      type: object
+      properties:
+        descriptionMd:
+          description: The description md.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        version:
+          description: Version.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    GetAllExtensionsResponse.RevisionSummary:
+      title: Revision summary
+      type: object
+      properties:
+        isNew:
+          default: false
+          description: The is new.
+          type: boolean
+          x-coralogix-presence: true
+        itemCounts:
+          $ref: '#/components/schemas/ItemCounts'
+      description: Revision summary.
+    ExtensionBinary.BinaryType:
+      enum:
+      - KIBANA_INDEX_PATTERN
+      type: string
+      description: Type of binary content stored in the extension.
+    GetAllExtensionsRequest.Filter:
+      title: A filter structure for a request to get all extensions
+      type: object
+      properties:
+        integrations:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The integrations.
+          description: The integrations.
+          default: []
+      description: Filter by integration ids
+    ExtensionItemBinary.BinaryType:
+      enum:
+      - PREVIEW_IMAGE
+      - KIBANA_DASHBOARD_DEFINITION
+      - GRAFANA_DASHBOARD_DEFINITION
+      - ENRICHMENT_CSV
+      - CX_CUSTOM_DASHBOARD_DEFINITION
+      type: string
+      description: Binary type.
+    TargetDomain:
+      enum:
+      - ACTION
+      - ALERT
+      - ENRICHMENT
+      - GRAFANA_DASHBOARD
+      - KIBANA_DASHBOARD
+      - PARSING_RULE
+      - SAVED_VIEW
+      - CX_CUSTOM_DASHBOARD
+      - METRICS_RULE_GROUP
+      - EVENTS_TO_METRICS
+      - ALERT_V3
+      type: string
+      description: Target domain.
+    Deprecation:
+      title: Deprecation
+      type: object
+      properties:
+        reason:
+          description: Reason.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        replacementExtensions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The replacement extensions.
+          description: The replacement extensions.
+          default: []
+      description: Deprecation.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

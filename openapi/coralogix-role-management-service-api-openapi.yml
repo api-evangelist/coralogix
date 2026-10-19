@@ -1,0 +1,476 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Role Management Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Role Management Service
+  description: Service for managing system and custom roles.
+paths:
+  /aaa/custom-roles/v1:
+    get:
+      description: Returns all custom roles for the authenticated team.
+      operationId: RoleManagementService_ListCustomRoles
+      parameters:
+      - description: Team identifier.
+        in: query
+        name: team_id
+        required: false
+        schema:
+          description: Team identifier.
+          format: int64
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCustomRolesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Custom Roles
+      tags:
+      - Role Management Service
+    put:
+      description: Creates a new custom role.
+      operationId: RoleManagementService_CreateRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for creating a custom role.
+              oneOf:
+              - required:
+                - parentRoleId
+                type: object
+              - required:
+                - parentRoleName
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - parentRoleId
+                    type: object
+                  - required:
+                    - parentRoleName
+                    type: object
+                type: object
+              properties:
+                description:
+                  description: Human-readable description.
+                  minLength: 0
+                  type: string
+                name:
+                  description: Display name.
+                  minLength: 0
+                  type: string
+                parentRoleId:
+                  description: The parent role id.
+                  format: int64
+                  minimum: 0
+                  type: integer
+                parentRoleName:
+                  description: The parent role name.
+                  minLength: 0
+                  type: string
+                permissions:
+                  description: List of permissions.
+                  items:
+                    description: List of permissions.
+                    minLength: 0
+                    type: string
+                  minItems: 0
+                  type: array
+                teamId:
+                  description: Team identifier.
+                  format: int64
+                  minimum: 0
+                  type: integer
+                  x-coralogix-presence: true
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateRoleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Role already exists
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create Role
+      tags:
+      - Role Management Service
+  /aaa/custom-roles/v1/{role_id}:
+    parameters:
+    - name: role_id
+      in: path
+      description: The role id.
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+        description: The role id.
+        format: int64
+    get:
+      description: Returns the details of the specified custom role.
+      operationId: RoleManagementService_GetCustomRole
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCustomRoleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Role not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Custom Role
+      tags:
+      - Role Management Service
+    post:
+      description: Updates the specified custom role.
+      operationId: RoleManagementService_UpdateRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for updating a custom role.
+              properties:
+                newDescription:
+                  description: The new description.
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                newName:
+                  description: The new name.
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                newPermissions:
+                  $ref: '#/components/schemas/v2.Permissions'
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRoleResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Role not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update Role
+      tags:
+      - Role Management Service
+    delete:
+      description: Deletes the custom role with the specified ID.
+      operationId: RoleManagementService_DeleteRole
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteRoleResponse'
+          description: ''
+        '204':
+          description: Role deleted
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Role not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete Role
+      tags:
+      - Role Management Service
+  /aaa/system-roles/v1:
+    get:
+      description: Returns all built-in system roles.
+      operationId: RoleManagementService_ListSystemRoles
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSystemRolesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List System Roles
+      tags:
+      - Role Management Service
+components:
+  schemas:
+    DeleteRoleResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a custom role.
+    CreateRoleResponse:
+      type: object
+      properties:
+        id:
+          minimum: 0
+          type: integer
+          description: Unique identifier.
+          format: int64
+      description: Response returned after successfully creating a custom role.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    CustomRole:
+      type: object
+      properties:
+        description:
+          minLength: 0
+          type: string
+          description: Human-readable description.
+        name:
+          minLength: 0
+          type: string
+          description: Display name.
+        parentRoleId:
+          minimum: 0
+          type: integer
+          description: The parent role id.
+          format: int64
+        parentRoleName:
+          minLength: 0
+          type: string
+          description: The parent role name.
+        permissions:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of permissions.
+          description: List of permissions.
+        roleId:
+          minimum: 0
+          type: integer
+          description: The role id.
+          format: int64
+        teamId:
+          minimum: 0
+          type: integer
+          description: Team identifier.
+          format: int64
+      description: Custom role.
+    GetCustomRoleResponse:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/CustomRole'
+      description: Response containing the details of a custom role.
+    ListSystemRolesResponse:
+      type: object
+      properties:
+        roles:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemRole'
+          description: List of roles.
+      description: Response containing a list of system roles.
+    UpdateRoleResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully updating a custom role.
+    ListCustomRolesResponse:
+      type: object
+      properties:
+        roles:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomRole'
+          description: List of roles.
+      description: Response containing a list of custom roles.
+    v2.Permissions:
+      type: object
+      properties:
+        permissions:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of permissions.
+          description: List of permissions.
+      description: Permissions.
+    SystemRole:
+      type: object
+      properties:
+        description:
+          minLength: 0
+          type: string
+          description: Human-readable description.
+        name:
+          minLength: 0
+          type: string
+          description: Display name.
+        permissions:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of permissions.
+          description: List of permissions.
+        roleId:
+          minimum: 0
+          type: integer
+          description: The role id.
+          format: int64
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

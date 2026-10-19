@@ -1,0 +1,414 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Teams Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Teams Service
+  description: Deprecated. Read and manage the teams in an organization and the daily quota assigned to each of them.
+paths:
+  /aaa/teams/v2:
+    get:
+      deprecated: true
+      description: Deprecated. Returns every team in the calling user's organization, together with the organization's default team.
+      operationId: TeamService_ListTeams
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                defaultTeam:
+                  dailyQuota: 10
+                  retention: 30
+                  teamId:
+                    id: 1001
+                  teamName: Default
+                teams:
+                - dailyQuota: 10
+                  retention: 30
+                  teamId:
+                    id: 1001
+                  teamName: Default
+                - dailyQuota: 2.5
+                  retention: 7
+                  teamId:
+                    id: 1002
+                  teamName: Platform
+              schema:
+                $ref: '#/components/schemas/ListTeamsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List teams
+      tags:
+      - Teams Service
+    post:
+      deprecated: true
+      description: Deprecated. Creates a team in the calling user's organization and returns its identifier.
+      operationId: TeamService_CreateTeamInOrg
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to create a team in the calling user's organization.
+              properties:
+                dailyQuota:
+                  description: Daily quota to assign to the new team, in quota units per day. Defaults to 0.01 when omitted.
+                  format: double
+                  type: number
+                  x-coralogix-presence: true
+                teamAdminsEmail:
+                  description: Email addresses of the users to add to the new team as administrators.
+                  items:
+                    description: Email addresses of the users to add to the new team as administrators.
+                    maxLength: 320
+                    minLength: 1
+                    pattern: ^[^@\s]+@[^@\s]+$
+                    type: string
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                teamName:
+                  description: Display name of the team to create.
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+              required:
+              - teamName
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                teamId:
+                  id: 1002
+              schema:
+                $ref: '#/components/schemas/CreateTeamInOrgResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A team with the same name already exists
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create team
+      tags:
+      - Teams Service
+  /aaa/teams/v2/{team_id}:
+    parameters:
+    - name: team_id
+      in: path
+      description: Unique team identifier.
+      required: true
+      schema:
+        maximum: 4294967295
+        minimum: 0
+        type: integer
+        description: Unique team identifier.
+        format: int64
+    get:
+      deprecated: true
+      description: Deprecated. Returns a single team by its identifier.
+      operationId: TeamService_GetTeam
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                dailyQuota: 2.5
+                retention: 7
+                teamId:
+                  id: 1002
+                teamName: Platform
+              schema:
+                $ref: '#/components/schemas/GetTeamResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Team not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get team
+      tags:
+      - Teams Service
+    put:
+      deprecated: true
+      description: Deprecated. Updates a team.
+      operationId: TeamService_UpdateTeam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to update a team. Omitted optional fields keep their existing values.
+              properties:
+                dailyQuota:
+                  description: New daily quota for the team, in quota units per day. Omit to keep the current quota.
+                  format: double
+                  type: number
+                  x-coralogix-presence: true
+                teamName:
+                  description: New display name for the team. Omit to keep the current name.
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                $ref: '#/components/schemas/UpdateTeamResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Team not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update team
+      tags:
+      - Teams Service
+    delete:
+      deprecated: true
+      description: Deprecated. Deletes a team and releases its daily quota back to the organization.
+      operationId: TeamService_DeleteTeam
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                $ref: '#/components/schemas/DeleteTeamResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Team not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete team
+      tags:
+      - Teams Service
+components:
+  schemas:
+    ListTeamsResponse:
+      type: object
+      properties:
+        defaultTeam:
+          allOf:
+          - $ref: '#/components/schemas/ListTeamsResponse.TeamInfo'
+          description: The organization's default team.
+        teams:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ListTeamsResponse.TeamInfo'
+          description: Every team in the organization, including the default team.
+      description: Response containing the teams in the calling user's organization.
+    CreateTeamInOrgResponse:
+      type: object
+      properties:
+        teamId:
+          allOf:
+          - $ref: '#/components/schemas/v2.TeamId'
+          description: Identifier of the created team.
+      description: Response containing the identifier of the created team.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    v2.TeamId:
+      type: object
+      properties:
+        id:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          description: Unique team identifier.
+          format: int64
+      description: Team id.
+    ListTeamsResponse.TeamInfo:
+      type: object
+      properties:
+        dailyQuota:
+          type: number
+          description: Daily quota assigned to the team, in quota units per day.
+          format: double
+        retention:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Retention period of the team's data, in days.
+          format: int32
+        teamId:
+          allOf:
+          - $ref: '#/components/schemas/v2.TeamId'
+          description: The team id.
+        teamName:
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name of the team.
+      description: A team and the quota and retention settings assigned to it.
+    DeleteTeamResponse:
+      type: object
+      additionalProperties: false
+      description: Empty response returned after deleting a team.
+    UpdateTeamResponse:
+      type: object
+      additionalProperties: false
+      description: Empty response returned after updating a team.
+    GetTeamResponse:
+      type: object
+      properties:
+        dailyQuota:
+          type: number
+          description: Daily quota assigned to the team, in quota units per day.
+          format: double
+        retention:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Retention period of the team's data, in days.
+          format: int32
+        teamId:
+          allOf:
+          - $ref: '#/components/schemas/v2.TeamId'
+          description: Identifier of the team.
+        teamName:
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Display name of the team.
+      description: Response containing the requested team.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

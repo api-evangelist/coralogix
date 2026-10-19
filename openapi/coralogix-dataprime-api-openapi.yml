@@ -88,11 +88,6 @@ paths:
         collapsed_from: 2 example path(s) differing only at dataprimeId
 components:
   schemas:
-    PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest:
-      type: object
-      properties:
-        queryId:
-          type: string
     PostApiV1DataprimeDataprimeidRequest:
       type: object
       properties:
@@ -109,6 +104,11 @@ components:
         nowDate:
           type: string
           format: date-time
+    PostApiV1DataprimeBackgroundQueryBackgroundqueryidRequest:
+      type: object
+      properties:
+        queryId:
+          type: string
   securitySchemes:
     bearer:
       type: http

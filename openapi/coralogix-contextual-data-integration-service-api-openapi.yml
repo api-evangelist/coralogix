@@ -1,0 +1,2139 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Contextual data integration service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Contextual data integration service
+  description: Query for contextual data integration information.
+paths:
+  /integrations/contextual-data/v1:
+    get:
+      description: 'Returns all contextual data integrations for the team.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:ReadConfig`'
+      operationId: ContextualDataIntegrationService_GetContextualDataIntegrations
+      parameters:
+      - description: Whether to include testing integrations in the results.
+        in: query
+        name: include_testing_integrations
+        required: false
+        schema:
+          description: Whether to include testing integrations in the results.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContextualDataIntegrationsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get all contextual data integrations accessible
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:ReadConfig
+    put:
+      description: 'Updates an existing contextual data integration.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:UpdateConfig`'
+      operationId: ContextualDataIntegrationService_UpdateContextualDataIntegration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for updating a contextual data integration.
+              properties:
+                integrationId:
+                  description: ID of the contextual data integration to update.
+                  maxLength: 65535
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                metadata:
+                  $ref: '#/components/schemas/IntegrationMetadata'
+              title: Update contextual data integration request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateContextualDataIntegrationResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update contextual data integration
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:UpdateConfig
+    post:
+      description: 'Creates a new contextual data integration.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:UpdateConfig`'
+      operationId: ContextualDataIntegrationService_SaveContextualDataIntegration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for creating a contextual data integration.
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/IntegrationMetadata'
+              title: Save contextual data integration request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveContextualDataIntegrationResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Save contextual data integration
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:UpdateConfig
+  /integrations/contextual-data/v1/definitions/{id}:
+    get:
+      description: 'Returns the definition for the specified contextual data integration type.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:ReadConfig`'
+      operationId: ContextualDataIntegrationService_GetContextualDataIntegrationDefinition
+      parameters:
+      - description: The unique identifier of the contextual data integration definition.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the contextual data integration definition.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: Whether to include testing integrations in the results.
+        in: query
+        name: include_testing_integrations
+        required: false
+        schema:
+          description: Whether to include testing integrations in the results.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContextualDataIntegrationDefinitionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get contextual data integration definition
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:ReadConfig
+  /integrations/contextual-data/v1/test/{integration_id}:
+    post:
+      description: 'Tests the specified contextual data integration.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:UpdateConfig`'
+      operationId: ContextualDataIntegrationService_TestContextualDataIntegration
+      parameters:
+      - description: The unique identifier of the contextual data integration to test.
+        in: path
+        name: integration_id
+        required: true
+        schema:
+          description: The unique identifier of the contextual data integration to test.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for testing a contextual data integration.
+              properties:
+                integrationData:
+                  $ref: '#/components/schemas/IntegrationMetadata'
+              title: Test contextual data integration request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestContextualDataIntegrationResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Test contextual data integration
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:UpdateConfig
+  /integrations/contextual-data/v1/{id}:
+    get:
+      description: 'Returns the details of the specified contextual data integration.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:ReadConfig`'
+      operationId: ContextualDataIntegrationService_GetContextualDataIntegrationDetails
+      parameters:
+      - description: The unique identifier of the contextual data integration.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the contextual data integration.
+          examples:
+          - 076f4188-05e0-4ed3-afeb-653ad182ccb7
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: Whether to include testing revisions in the results.
+        in: query
+        name: include_testing_revisions
+        required: false
+        schema:
+          description: Whether to include testing revisions in the results.
+          type: boolean
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContextualDataIntegrationDetailsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get contextual data integration details
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:ReadConfig
+    delete:
+      description: 'Deletes the specified contextual data integration.
+
+
+        Requires the following permissions:
+
+        - `contextual-data:UpdateConfig`'
+      operationId: ContextualDataIntegrationService_DeleteContextualDataIntegration
+      parameters:
+      - description: The integration id.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The integration id.
+          examples:
+          - 076f4188-05e0-4ed3-afeb-653ad182ccb7
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteContextualDataIntegrationResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete contextual data integration
+      tags:
+      - Contextual data integration service
+      x-coralogixPermissions:
+      - contextual-data:UpdateConfig
+components:
+  schemas:
+    IntegrationDetail:
+      title: Integration detail
+      type: object
+      properties:
+        link:
+          description: Link.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ExternalUrl:
+      title: External URL
+      type: object
+      properties:
+        url:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL.
+      description: External url.
+    Cloudformation:
+      title: CloudFormation
+      type: object
+      additionalProperties: false
+    InputType:
+      enum:
+      - API_KEY
+      - TEXT
+      - LIST_TEXT
+      - MULTIPLE_SELECTION
+      - BOOLEAN
+      - SELECT
+      - JSON
+      - NUMBER
+      - SENSITIVE_DATA
+      - JSON_OBJECT_ARRAY
+      - AWS_REGION_SELECT
+      - AWS_REGION_MULTISELECT
+      - AWS_CLOUDWATCH_NAMESPACE_LIST
+      type: string
+      description: Input type.
+    GetContextualDataIntegrationDetailsResponse:
+      title: Get contextual data integration details response
+      type: object
+      properties:
+        integrationDetail:
+          $ref: '#/components/schemas/IntegrationDetails'
+      description: Response containing the details of a contextual data integration.
+    GetContextualDataIntegrationsResponse:
+      title: Get contextual data integrations response
+      type: object
+      properties:
+        integrations:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/GetContextualDataIntegrationsResponse.IntegrationWithCounts'
+          description: The integrations.
+      description: Response containing a list of contextual data integrations.
+    TestIntegrationResult.Success:
+      title: Success
+      type: object
+      additionalProperties: false
+      description: Success.
+    ManagedService:
+      title: Managed service
+      type: object
+      additionalProperties: false
+    Managed:
+      title: Managed
+      type: object
+      properties:
+        variant:
+          $ref: '#/components/schemas/Variant'
+    v1.RevisionSummary:
+      type: object
+      properties:
+        lifecycle:
+          $ref: '#/components/schemas/RevisionLifecycle'
+        version:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Version number.
+    ExtensionBinary:
+      title: Extension binary
+      type: object
+      properties:
+        data:
+          description: Data payload.
+          maxLength: 5000000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/ExtensionBinary.BinaryType'
+    FieldCondition.ConditionType:
+      enum:
+      - UNKNOWN
+      - OR
+      - AND
+      type: string
+      description: Condition type.
+    ApiKeyData:
+      title: API key data
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        value:
+          description: The value.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Api key data.
+    SelectionValue:
+      title: Selection value
+      type: object
+      properties:
+        defaultValue:
+          description: The default value.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        options:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Options.
+          description: Options.
+      description: Selection value.
+    CloudFormationTemplate:
+      title: CloudFormation template
+      type: object
+      properties:
+        commands:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandInformation'
+          description: The commands.
+        parameters:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The parameters.
+        postInstallationSteps:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: The post installation steps.
+        templateUrl:
+          description: The template url.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Cloud formation template.
+    GetContextualDataIntegrationsResponse.IntegrationWithCounts:
+      title: Integration with counts
+      type: object
+      properties:
+        amountIntegrations:
+          description: The amount integrations.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        errors:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of errors.
+          description: List of errors.
+        integration:
+          $ref: '#/components/schemas/Integration'
+        isDeprecated:
+          description: The is deprecated.
+          type: boolean
+          x-coralogix-presence: true
+        isNew:
+          description: The is new.
+          type: boolean
+          x-coralogix-presence: true
+        upgradeAvailable:
+          description: The upgrade available.
+          type: boolean
+          x-coralogix-presence: true
+    HelmChart:
+      title: Helm chart
+      type: object
+      properties:
+        commands:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandInformation'
+          description: The commands.
+        guide:
+          $ref: '#/components/schemas/IntegrationGuide'
+        template:
+          description: The template.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    IntegrationRevision.Group:
+      title: Group
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    Deprecation:
+      title: Deprecation
+      type: object
+      properties:
+        reason:
+          description: Reason.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        replacementExtensions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The replacement extensions.
+          description: The replacement extensions.
+          default: []
+      description: Deprecation.
+    Parameter:
+      title: Parameter
+      type: object
+      oneOf:
+      - required:
+        - stringValue
+        type: object
+      - required:
+        - booleanValue
+        type: object
+      - required:
+        - stringList
+        type: object
+      - required:
+        - apiKey
+        type: object
+      - required:
+        - numericValue
+        type: object
+      - required:
+        - sensitiveData
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - stringValue
+            type: object
+          - required:
+            - booleanValue
+            type: object
+          - required:
+            - stringList
+            type: object
+          - required:
+            - apiKey
+            type: object
+          - required:
+            - numericValue
+            type: object
+          - required:
+            - sensitiveData
+            type: object
+      properties:
+        apiKey:
+          $ref: '#/components/schemas/ApiKeyData'
+        booleanValue:
+          description: Boolean value for this integration parameter.
+          type: boolean
+          x-coralogix-presence: true
+        key:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The key.
+        numericValue:
+          description: Numeric value for this integration parameter.
+          format: double
+          type: number
+          x-coralogix-presence: true
+        sensitiveData:
+          $ref: '#/components/schemas/SensitiveDataPlaceholder'
+        stringList:
+          $ref: '#/components/schemas/StringList'
+        stringValue:
+          description: String value for this integration parameter.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    v1.IntegrationType:
+      title: Integration type
+      type: object
+      oneOf:
+      - required:
+        - managed
+        type: object
+      - required:
+        - untracked
+        type: object
+      - required:
+        - cloudformation
+        type: object
+      - required:
+        - arm
+        type: object
+      - required:
+        - pushBasedContextualData
+        type: object
+      - required:
+        - contextualData
+        type: object
+      - required:
+        - genericWebhook
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - managed
+            type: object
+          - required:
+            - untracked
+            type: object
+          - required:
+            - cloudformation
+            type: object
+          - required:
+            - arm
+            type: object
+          - required:
+            - pushBasedContextualData
+            type: object
+          - required:
+            - contextualData
+            type: object
+          - required:
+            - genericWebhook
+            type: object
+      properties:
+        arm:
+          $ref: '#/components/schemas/AzureArm'
+        cloudformation:
+          $ref: '#/components/schemas/Cloudformation'
+        contextualData:
+          $ref: '#/components/schemas/ContextualData'
+        genericWebhook:
+          $ref: '#/components/schemas/GenericWebhook'
+        managed:
+          $ref: '#/components/schemas/Managed'
+        pushBasedContextualData:
+          $ref: '#/components/schemas/PushBasedContextualData'
+        untracked:
+          $ref: '#/components/schemas/Untracked'
+    CloudFormationStack:
+      title: CloudFormation stack
+      type: object
+      properties:
+        arn:
+          description: The arn.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        region:
+          description: Region.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about the AWS CloudFormation integration in our documentation
+        url: https://coralogix.com/docs/integrations/aws/aws-cloudformation-logs/
+    AzureArm:
+      title: Azure ARM
+      type: object
+      additionalProperties: false
+    PushBasedContextualData:
+      title: Push based contextual data
+      type: object
+      additionalProperties: false
+    RevisionRef:
+      title: Revision reference
+      type: object
+      properties:
+        descriptionMd:
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The description md.
+        version:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Version number.
+    DefaultIntegrationDetails:
+      title: Default integration details
+      type: object
+      properties:
+        registered:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/RegisteredInstance'
+          description: The registered.
+      description: Default integration details.
+    TestContextualDataIntegrationResponse:
+      title: Test contextual data integration response
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/TestIntegrationResult'
+      description: Response containing the results of a contextual data integration test.
+    IntegrationDetails:
+      title: Integration details
+      type: object
+      oneOf:
+      - required:
+        - local
+        type: object
+      - required:
+        - external
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - local
+            type: object
+          - required:
+            - external
+            type: object
+      properties:
+        default:
+          $ref: '#/components/schemas/DefaultIntegrationDetails'
+        docs:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationDoc'
+          description: Documentation links associated with this integration.
+        extensions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.Extension'
+          description: Extensions bundled with this integration for pre-built dashboards and alerts.
+        external:
+          $ref: '#/components/schemas/ExternalUrl'
+        integration:
+          $ref: '#/components/schemas/Integration'
+        local:
+          $ref: '#/components/schemas/LocalChangelog'
+    GenericIntegrationParameters:
+      title: Generic integration parameters
+      type: object
+      properties:
+        parameters:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Parameter'
+          description: The parameters.
+      description: Generic integration parameters.
+    LocalChangelog:
+      title: Local changelog
+      type: object
+      properties:
+        changes:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/RevisionRef'
+          description: The changes.
+      description: Local changelog.
+    RevisionLifecycle:
+      enum:
+      - REVISION_LIFECYCLE_UNSPECIFIED
+      - REVISION_LIFECYCLE_ALPHA
+      - REVISION_LIFECYCLE_PRIVATE_BETA
+      - REVISION_LIFECYCLE_PUBLIC_BETA
+      - REVISION_LIFECYCLE_GA
+      - REVISION_LIFECYCLE_DEPRECATED
+      type: string
+      description: Revision lifecycle.
+    v1.Extension:
+      title: Extension metadata
+      type: object
+      properties:
+        changelog:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangelogEntry'
+          description: The changelog.
+          default: []
+        darkModeImage:
+          description: The dark mode image.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        deprecation:
+          $ref: '#/components/schemas/Deprecation'
+        id:
+          description: Unique identifier of the extension.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        image:
+          description: Image reference.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrations:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The integrations.
+          description: The integrations.
+          default: []
+        isHidden:
+          default: false
+          description: The is hidden.
+          type: boolean
+          x-coralogix-presence: true
+        keywords:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The keywords.
+          description: The keywords.
+          default: []
+        name:
+          description: Display name of the extension.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permissionDeniedRevisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionRevision'
+          description: The permission denied revisions.
+          default: []
+        revisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionRevision'
+          description: The revisions.
+          default: []
+      description: Represents a Coralogix extension package containing pre-built resources.
+    DeleteContextualDataIntegrationResponse:
+      title: Delete contextual data integration response
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully deleting a contextual data integration.
+    Link:
+      title: Link
+      type: object
+      properties:
+        key:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The key.
+        text:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The text.
+        url:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: URL.
+    MultipleSelectionValue:
+      title: Multiple selection value
+      type: object
+      properties:
+        options:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Options.
+          description: Options.
+      description: Multiple selection value.
+    ExtensionBinary.BinaryType:
+      enum:
+      - KIBANA_INDEX_PATTERN
+      type: string
+      description: Type of binary content stored in the extension.
+    GetContextualDataIntegrationDefinitionResponse:
+      title: Get contextual data integration definition response
+      type: object
+      properties:
+        integrationDefinition:
+          $ref: '#/components/schemas/IntegrationDefinition'
+      description: Response containing the definition of a contextual data integration type.
+    ListTextValue:
+      title: List text value
+      type: object
+      properties:
+        defaultValues:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The default values.
+          description: The default values.
+        options:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Options.
+          description: Options.
+      description: List text value.
+    Variant:
+      enum:
+      - DEFAULT
+      - GCP
+      - OAUTH
+      - CUSTOM
+      type: string
+      description: Variant.
+    TargetDomain:
+      enum:
+      - ACTION
+      - ALERT
+      - ENRICHMENT
+      - GRAFANA_DASHBOARD
+      - KIBANA_DASHBOARD
+      - PARSING_RULE
+      - SAVED_VIEW
+      - CX_CUSTOM_DASHBOARD
+      - METRICS_RULE_GROUP
+      - EVENTS_TO_METRICS
+      - ALERT_V3
+      type: string
+      description: Target domain.
+    RegisteredInstance:
+      title: Registered instance
+      type: object
+      oneOf:
+      - required:
+        - empty
+        type: object
+      - required:
+        - cloudformation
+        type: object
+      - required:
+        - arm
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - empty
+            type: object
+          - required:
+            - cloudformation
+            type: object
+          - required:
+            - arm
+            type: object
+      properties:
+        arm:
+          $ref: '#/components/schemas/ARMStack'
+        cloudformation:
+          $ref: '#/components/schemas/CloudFormationStack'
+        definitionVersion:
+          description: The definition version.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        empty:
+          $ref: '#/components/schemas/NoDeployment'
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationStatus:
+          $ref: '#/components/schemas/IntegrationStatus'
+        isTesting:
+          description: Whether this is a testing instance used for validation purposes only.
+          type: boolean
+          x-coralogix-presence: true
+        lastUpdated:
+          description: Timestamp of the last update to this integration instance.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        parameters:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Parameter'
+          description: The parameters.
+        revisionLifecycle:
+          $ref: '#/components/schemas/RevisionLifecycle'
+    FieldCondition:
+      title: Field condition
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldCondition.ConditionType'
+        values:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldCondition.FieldValue'
+          description: List of values.
+      description: Field condition.
+    ConnectionStatus:
+      enum:
+      - PENDING
+      - ACTIVE
+      - FAILING
+      - STATUS_UNKNOWN
+      type: string
+      description: Connection status.
+    ExtensionRevision:
+      title: Extension revision
+      type: object
+      properties:
+        binaries:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionBinary'
+          description: The binaries.
+          default: []
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        excerpt:
+          description: The excerpt.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationDetails:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationDetail'
+          description: The integration details.
+          default: []
+        isTesting:
+          default: false
+          description: The is testing.
+          type: boolean
+          x-coralogix-presence: true
+        items:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionItem'
+          description: List of items.
+          default: []
+        labels:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of labels.
+          description: List of labels.
+          default: []
+        permissionDeniedItems:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionItem'
+          description: The permission denied items.
+          default: []
+        version:
+          description: Version.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    TestIntegrationResult:
+      title: Test integration result
+      type: object
+      oneOf:
+      - required:
+        - success
+        type: object
+      - required:
+        - failure
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - success
+            type: object
+          - required:
+            - failure
+            type: object
+      properties:
+        failure:
+          $ref: '#/components/schemas/v1.Failure'
+        success:
+          $ref: '#/components/schemas/TestIntegrationResult.Success'
+      description: Test integration result.
+    FieldCondition.FieldValue:
+      title: Field value
+      type: object
+      properties:
+        fieldName:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+        valuePattern:
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: The value pattern.
+    IntegrationDoc:
+      title: Integration doc
+      type: object
+      properties:
+        link:
+          description: Link.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    SingleValue:
+      title: Single value
+      type: object
+      properties:
+        defaultValue:
+          description: The default value.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Single value.
+    IntegrationMetadata:
+      title: Integration metadata
+      type: object
+      properties:
+        integrationKey:
+          description: The integration key.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationParameters:
+          $ref: '#/components/schemas/GenericIntegrationParameters'
+        version:
+          description: Version number.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    IntegrationDefinition:
+      title: Integration definition
+      type: object
+      properties:
+        featureFlag:
+          description: The feature flag.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationType:
+          $ref: '#/components/schemas/v1.IntegrationType'
+        key:
+          description: The key.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        revisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationRevision'
+          description: The revisions.
+    SaveContextualDataIntegrationResponse:
+      title: Save contextual data integration response
+      type: object
+      properties:
+        integrationId:
+          description: The integration id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Response returned after successfully saving a contextual data integration.
+    SingleBooleanValue:
+      title: Single boolean value
+      type: object
+      properties:
+        defaultValue:
+          description: The default value.
+          type: boolean
+          x-coralogix-presence: true
+      description: Single boolean value.
+    NoDeployment:
+      title: No deployment
+      type: object
+      additionalProperties: false
+    FieldInformation:
+      title: Field information
+      type: object
+      oneOf:
+      - required:
+        - single
+        type: object
+      - required:
+        - multiText
+        type: object
+      - required:
+        - multipleSelection
+        type: object
+      - required:
+        - singleBoolean
+        type: object
+      - required:
+        - selection
+        type: object
+      - required:
+        - singleNumber
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - single
+            type: object
+          - required:
+            - multiText
+            type: object
+          - required:
+            - multipleSelection
+            type: object
+          - required:
+            - singleBoolean
+            type: object
+          - required:
+            - selection
+            type: object
+          - required:
+            - singleNumber
+            type: object
+      properties:
+        allowedPattern:
+          description: Regular expression pattern that the field value must match for validation.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        applicableIf:
+          $ref: '#/components/schemas/FieldCondition'
+        documentationReference:
+          description: Link to documentation providing more information about this field.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        groupId:
+          description: Identifier of the UI group this field belongs to for form layout purposes.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        multiText:
+          $ref: '#/components/schemas/ListTextValue'
+        multipleSelection:
+          $ref: '#/components/schemas/MultipleSelectionValue'
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        placeholder:
+          description: Placeholder text shown in the input field before a value is entered.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        predefined:
+          description: Whether this field has a predefined value that is suggested to the user.
+          type: boolean
+          x-coralogix-presence: true
+        readonly:
+          description: Whether this field is read-only and cannot be modified by the user.
+          type: boolean
+          x-coralogix-presence: true
+        required:
+          description: Whether this field must be filled in before the integration can be deployed.
+          type: boolean
+          x-coralogix-presence: true
+        selection:
+          $ref: '#/components/schemas/SelectionValue'
+        single:
+          $ref: '#/components/schemas/SingleValue'
+        singleBoolean:
+          $ref: '#/components/schemas/SingleBooleanValue'
+        singleNumber:
+          $ref: '#/components/schemas/IntegrationRevision.SingleNumericValue'
+        templateParamName:
+          description: Name of the template parameter this field maps to in the deployment template.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        tooltip:
+          description: Tooltip text displayed on hover to provide additional context for this field.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/InputType'
+        upgradeNotice:
+          description: Notice displayed to users when an upgrade is required to use this field.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        visible:
+          description: Whether this field is visible in the integration configuration UI.
+          type: boolean
+          x-coralogix-presence: true
+    Rum:
+      title: RUM
+      type: object
+      properties:
+        browserSdkCommands:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandInformation'
+          description: The browser sdk commands.
+        sourceMapCommands:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandInformation'
+          description: The source map commands.
+    IntegrationRevision:
+      title: Integration revision
+      type: object
+      oneOf:
+      - required:
+        - cloudFormation
+        type: object
+      - required:
+        - managedService
+        type: object
+      - required:
+        - helmChart
+        type: object
+      - required:
+        - azureArmTemplate
+        type: object
+      - required:
+        - rum
+        type: object
+      - required:
+        - terraform
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - cloudFormation
+            type: object
+          - required:
+            - managedService
+            type: object
+          - required:
+            - helmChart
+            type: object
+          - required:
+            - azureArmTemplate
+            type: object
+          - required:
+            - rum
+            type: object
+          - required:
+            - terraform
+            type: object
+      properties:
+        azureArmTemplate:
+          $ref: '#/components/schemas/AzureArmTemplate'
+        cloudFormation:
+          $ref: '#/components/schemas/CloudFormationTemplate'
+        featureFlag:
+          description: The feature flag.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        fields:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldInformation'
+          description: Configuration fields that users must fill in to deploy this integration revision.
+        groups:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationRevision.Group'
+          description: UI groups used to organize configuration fields into logical sections.
+        helmChart:
+          $ref: '#/components/schemas/HelmChart'
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        managedService:
+          $ref: '#/components/schemas/ManagedService'
+        revisionDeploymentSupported:
+          type: boolean
+          description: Whether this revision supports automated deployment through the Coralogix platform.
+        rum:
+          $ref: '#/components/schemas/Rum'
+        terraform:
+          $ref: '#/components/schemas/Terraform'
+        upgradeInstructionsMd:
+          description: Markdown-formatted upgrade instructions shown when upgrading from a previous revision.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    Terraform:
+      title: Terraform
+      type: object
+      properties:
+        configurationBlocks:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigurationBlock'
+          description: The configuration blocks.
+    GenericWebhook:
+      title: Generic webhook
+      type: object
+      additionalProperties: false
+    IntegrationRevision.SingleNumericValue:
+      title: Single numeric value
+      type: object
+      properties:
+        defaultValue:
+          description: The default value.
+          format: double
+          type: number
+          x-coralogix-presence: true
+      description: Single numeric value.
+    CommandInformation:
+      title: Command information
+      type: object
+      properties:
+        command:
+          description: The command.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        language:
+          $ref: '#/components/schemas/Language'
+          x-coralogix-presence: true
+        links:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+          description: List of links.
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        tooltipText:
+          description: The tooltip text.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ContextualData:
+      title: Contextual data
+      type: object
+      additionalProperties: false
+    ExtensionItemBinary.BinaryType:
+      enum:
+      - PREVIEW_IMAGE
+      - KIBANA_DASHBOARD_DEFINITION
+      - GRAFANA_DASHBOARD_DEFINITION
+      - ENRICHMENT_CSV
+      - CX_CUSTOM_DASHBOARD_DEFINITION
+      type: string
+      description: Binary type.
+    UpdateContextualDataIntegrationResponse:
+      title: Update contextual data integration response
+      type: object
+      additionalProperties: false
+      description: Response returned after successfully updating a contextual data integration.
+    ExtensionItemBinary:
+      title: Extension item binary
+      type: object
+      properties:
+        data:
+          description: Data payload.
+          maxLength: 5000000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        fileName:
+          description: The file name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        type:
+          $ref: '#/components/schemas/ExtensionItemBinary.BinaryType'
+    Language:
+      enum:
+      - UNKNOWN
+      - BASH
+      - JAVASCRIPT
+      type: string
+      description: Language.
+    ConfigurationBlock:
+      title: Configuration block
+      type: object
+      properties:
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        value:
+          description: The value.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    PermissionResource:
+      enum:
+      - UNKNOWN
+      - ACTION
+      - ALERT
+      - CUSTOM_ENRICHMENT
+      - GEO_ENRICHMENT
+      - SECURITY_ENRICHMENT
+      - RESOURCE_CLOUD_METADATA_ENRICHMENT
+      - GRAFANA_DASHBOARD
+      - KIBANA_DASHBOARD
+      - PARSING_RULE
+      - SAVED_VIEW
+      - CX_CUSTOM_DASHBOARD
+      - METRICS_RULE_GROUP
+      - SPAN_EVENTS_TO_METRICS
+      - LOGS_EVENTS_TO_METRICS
+      type: string
+      description: Permission resource.
+    ExtensionItem:
+      title: Extension item
+      type: object
+      properties:
+        binaries:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionItemBinary'
+          description: The binaries.
+          default: []
+        data:
+          type: object
+          description: Data payload.
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        extendedInternalId:
+          description: The extended internal id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        isMandatory:
+          default: false
+          description: The is mandatory.
+          type: boolean
+          x-coralogix-presence: true
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permissionResource:
+          $ref: '#/components/schemas/PermissionResource'
+        stableId:
+          description: The stable id.
+          maxLength: 63
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        targetDomain:
+          $ref: '#/components/schemas/TargetDomain'
+        uniqueId:
+          description: The unique id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    ARMStack:
+      title: ARM stack
+      type: object
+      properties:
+        resourceGroupName:
+          description: The resource group name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        subscriptionId:
+          description: The subscription id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about the Azure Resource Manager (ARM) integration in our documentation
+        url: https://coralogix.com/docs/integrations/azure/azure-resource-manager-integration-packages/
+    Integration:
+      title: Integration
+      type: object
+      properties:
+        darkIcon:
+          description: The dark icon.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        featureFlag:
+          description: The feature flag.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        icon:
+          description: Icon identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        integrationType:
+          $ref: '#/components/schemas/v1.IntegrationType'
+        name:
+          description: Display name.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        revisions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.RevisionSummary'
+          description: The revisions.
+        tags:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of tags.
+          description: List of tags.
+        versions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The versions.
+          description: The versions.
+    v1.Failure:
+      title: Failure
+      type: object
+      properties:
+        errorMessage:
+          description: The error message.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Failure.
+    StringList:
+      title: String list
+      type: object
+      properties:
+        values:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of values.
+          description: List of values.
+      description: String list.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    SensitiveDataPlaceholder:
+      title: Sensitive data placeholder
+      type: object
+      additionalProperties: false
+      description: Sensitive data placeholder.
+    ChangelogEntry:
+      title: Changelog entry
+      type: object
+      properties:
+        descriptionMd:
+          description: The description md.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        version:
+          description: Version.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    AzureArmTemplate:
+      title: Azure ARM template
+      type: object
+      properties:
+        templateUrl:
+          description: The template url.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    Untracked:
+      title: Untracked
+      type: object
+      additionalProperties: false
+    IntegrationGuide:
+      title: Integration guide
+      type: object
+      properties:
+        installationRequirements:
+          description: The installation requirements.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        introduction:
+          description: The introduction.
+          maxLength: 1048576
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Integration guide.
+    IntegrationStatus:
+      title: Integration status
+      type: object
+      properties:
+        connectionStatus:
+          $ref: '#/components/schemas/ConnectionStatus'
+        details:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: List of details.
+        messages:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The messages.
+          description: The messages.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

@@ -1,0 +1,1737 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Policies Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Policies Service
+  description: View and manage your TCO policies
+paths:
+  /dataplans/log-policies/v1:
+    put:
+      description: Updates the log data retention policies.
+      operationId: PoliciesService_AtomicOverwriteLogPolicies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: In an atomic operation delete all existing log policies and create the provided list by order.
+              properties:
+                policies:
+                  description: Policies.
+                  items:
+                    $ref: '#/components/schemas/CreateLogPolicyRequest'
+                  maxItems: 200
+                  minItems: 0
+                  type: array
+              required:
+              - policies
+              title: Atomic Overwrite Log Policies Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtomicOverwriteLogPoliciesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Policy limit exceeded. Request a limit increase or reduce the number of policies.
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Atomic Overwrite Log Policies
+      tags:
+      - Policies Service
+  /dataplans/policies/v1:
+    get:
+      description: Returns all data policies for the team.
+      operationId: PoliciesService_GetCompanyPolicies
+      parameters:
+      - description: When true, return only policies that are currently enabled.
+        in: query
+        name: enabled_only
+        required: false
+        schema:
+          description: When true, return only policies that are currently enabled.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+      - description: Filter policies by data source type (for example logs or spans).
+        in: query
+        name: source_type
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/v1.SourceType'
+          description: Filter policies by data source type (for example logs or spans).
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCompanyPoliciesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Company Policies
+      tags:
+      - Policies Service
+    put:
+      description: Updates an existing data policy.
+      operationId: PoliciesService_UpdatePolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This data structue is used to update an existing policy.
+              oneOf:
+              - required:
+                - logRules
+                type: object
+              - required:
+                - spanRules
+                type: object
+              - required:
+                - rumRules
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - logRules
+                    type: object
+                  - required:
+                    - spanRules
+                    type: object
+                  - required:
+                    - rumRules
+                    type: object
+                type: object
+              properties:
+                applicationRule:
+                  $ref: '#/components/schemas/quota.v1.Rule'
+                archiveRetention:
+                  $ref: '#/components/schemas/ArchiveRetention'
+                description:
+                  description: Optional free-text description of the policy's purpose. Only Latin-1 characters are accepted.
+                  examples:
+                  - My Policy Description
+                  maxLength: 255
+                  minLength: 0
+                  pattern: ^[\x00-\xFF]*$
+                  type: string
+                  x-coralogix-presence: true
+                enabled:
+                  description: Indicates whether the policy should be actively evaluated and applied.
+                  examples:
+                  - true
+                  type: boolean
+                  x-coralogix-presence: true
+                id:
+                  description: Unique identifier of the policy to update.
+                  examples:
+                  - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+                  maxLength: 36
+                  minLength: 36
+                  pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                  type: string
+                  x-coralogix-presence: true
+                logRules:
+                  $ref: '#/components/schemas/LogRules'
+                name:
+                  description: Human-readable name for the policy. Only Latin-1 characters are accepted.
+                  examples:
+                  - My Policy
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\x00-\xFF]*$
+                  type: string
+                  x-coralogix-presence: true
+                priority:
+                  $ref: '#/components/schemas/quota.v1.Priority'
+                priorityOverride:
+                  $ref: '#/components/schemas/PriorityOverride'
+                rumRules:
+                  $ref: '#/components/schemas/LogRules'
+                spanRules:
+                  $ref: '#/components/schemas/SpanRules'
+                subsystemRule:
+                  $ref: '#/components/schemas/quota.v1.Rule'
+                targets:
+                  description: List of data targets/destinations to which this policy routes data.
+                  items:
+                    $ref: '#/components/schemas/v1.Target'
+                  maxItems: 5
+                  minItems: 0
+                  type: array
+              required:
+              - id
+              title: Update Policy Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePolicyResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update Policy
+      tags:
+      - Policies Service
+    post:
+      description: Creates a new data policy.
+      operationId: PoliciesService_CreatePolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This data structue is used to create a new policy. The number of policies per source type is limited per account (200 by default).
+              oneOf:
+              - required:
+                - logRules
+                type: object
+              - required:
+                - spanRules
+                type: object
+              - required:
+                - rumRules
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - logRules
+                    type: object
+                  - required:
+                    - spanRules
+                    type: object
+                  - required:
+                    - rumRules
+                    type: object
+                type: object
+              properties:
+                applicationRule:
+                  $ref: '#/components/schemas/quota.v1.Rule'
+                archiveRetention:
+                  $ref: '#/components/schemas/ArchiveRetention'
+                description:
+                  description: Optional free-text description of the policy's purpose. Only Latin-1 characters are accepted.
+                  examples:
+                  - My Policy Description
+                  maxLength: 255
+                  minLength: 0
+                  pattern: ^[\x00-\xFF]*$
+                  type: string
+                  x-coralogix-presence: true
+                disabled:
+                  description: When true, the policy is disabled and will not be evaluated.
+                  type: boolean
+                logRules:
+                  $ref: '#/components/schemas/LogRules'
+                name:
+                  description: Human-readable name for the policy. Only Latin-1 characters are accepted.
+                  examples:
+                  - My Policy
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\x00-\xFF]*$
+                  type: string
+                  x-coralogix-presence: true
+                placement:
+                  $ref: '#/components/schemas/Placement'
+                priority:
+                  $ref: '#/components/schemas/quota.v1.Priority'
+                priorityOverride:
+                  $ref: '#/components/schemas/PriorityOverride'
+                rumRules:
+                  $ref: '#/components/schemas/LogRules'
+                spanRules:
+                  $ref: '#/components/schemas/SpanRules'
+                subsystemRule:
+                  $ref: '#/components/schemas/quota.v1.Rule'
+                targets:
+                  description: List of data targets/destinations to which this policy routes data.
+                  examples:
+                  - - archive_retention:
+                        id: archive_retention_id
+                      dataset: dataset1
+                      name: My Target
+                      priority: PRIORITY_TYPE_HIGH
+                  items:
+                    $ref: '#/components/schemas/v1.Target'
+                  maxItems: 5
+                  minItems: 0
+                  type: array
+              required:
+              - name
+              - priority
+              title: Create Policy Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePolicyResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Policy limit exceeded. Request a limit increase or reduce the number of policies.
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create Policy
+      tags:
+      - Policies Service
+  /dataplans/policies/v1/all/forecast-usage:
+    post:
+      description: Forecasts the usage in bytes that a draft TCO policy would match over the requested time window, given its application/subsystem rules and log or span filters. Use this before saving a new or modified policy to see the impact on your quota.
+      operationId: PoliciesService_ForecastPolicyUsage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - oneOf:
+                - required:
+                  - logRules
+                  type: object
+                - required:
+                  - spanRules
+                  type: object
+                - required:
+                  - rumRules
+                  type: object
+                - not:
+                    anyOf:
+                    - required:
+                      - logRules
+                      type: object
+                    - required:
+                      - spanRules
+                      type: object
+                    - required:
+                      - rumRules
+                      type: object
+                  type: object
+              - oneOf:
+                - required:
+                  - day
+                  type: object
+                - required:
+                  - week
+                  type: object
+                - not:
+                    anyOf:
+                    - required:
+                      - day
+                      type: object
+                    - required:
+                      - week
+                      type: object
+                  type: object
+              description: Request to forecast the usage in bytes of a draft TCO policy, based on the bytes matched by its filter rules over a given time window.
+              properties:
+                applicationRule:
+                  $ref: '#/components/schemas/quota.v1.Rule'
+                day:
+                  $ref: '#/components/schemas/Day'
+                logRules:
+                  $ref: '#/components/schemas/LogRules'
+                rumRules:
+                  $ref: '#/components/schemas/LogRules'
+                spanRules:
+                  $ref: '#/components/schemas/SpanRules'
+                subsystemRule:
+                  $ref: '#/components/schemas/quota.v1.Rule'
+                timeBucketMs:
+                  description: Optional bucket size, in milliseconds, used to split the forecast into time buckets. When set, the response includes a per-bucket breakdown in usage_buckets; when omitted, only the total estimated bytes are returned.
+                  examples:
+                  - '3600000'
+                  maxLength: 20
+                  minLength: 1
+                  pattern: ^-?[0-9]+$
+                  type: string
+                  x-coralogix-presence: true
+                week:
+                  $ref: '#/components/schemas/Week'
+              title: Forecast Policy Usage Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                estimatedBytes: '13251739648'
+              schema:
+                $ref: '#/components/schemas/ForecastPolicyUsageResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Forecast Policy Usage
+      tags:
+      - Policies Service
+  /dataplans/policies/v1/all/reorder:
+    post:
+      description: Reorders all data policies.
+      operationId: PoliciesService_ReorderPolicies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This data structue is used to reorder policies.
+              properties:
+                orders:
+                  description: The orders.
+                  items:
+                    $ref: '#/components/schemas/PolicyOrder'
+                  maxItems: 200
+                  minItems: 0
+                  type: array
+                sourceType:
+                  $ref: '#/components/schemas/v1.SourceType'
+              required:
+              - orders
+              - sourceType
+              title: Reorder Policies Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReorderPoliciesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Reorder Policies
+      tags:
+      - Policies Service
+  /dataplans/policies/v1/all/test-policies:
+    post:
+      description: Tests the data policies against sample data.
+      operationId: PoliciesService_BulkTestLogPolicies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to test multiple log policies.
+              properties:
+                metaFieldsValuesList:
+                  description: The meta fields values list.
+                  items:
+                    $ref: '#/components/schemas/LogMetaFieldsValues'
+                  maxItems: 50
+                  minItems: 0
+                  type: array
+              required:
+              - metaFieldsValuesList
+              title: Bulk Test Log Policies Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkTestLogPoliciesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Bulk Test Log Policies
+      tags:
+      - Policies Service
+  /dataplans/policies/v1/{id}:
+    get:
+      description: Returns the details of the specified data policy.
+      operationId: PoliciesService_GetPolicy
+      parameters:
+      - description: The unique identifier of the data policy to retrieve.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the data policy to retrieve.
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPolicyResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Policy by ID
+      tags:
+      - Policies Service
+    delete:
+      description: Deletes the data policy with the specified ID.
+      operationId: PoliciesService_DeletePolicy
+      parameters:
+      - description: The unique identifier of the data policy to delete.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: The unique identifier of the data policy to delete.
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletePolicyResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete Policy
+      tags:
+      - Policies Service
+  /dataplans/policiy-settings/v1:
+    post:
+      description: Updates data policy settings.
+      operationId: PoliciesService_ReplacePolicySettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This data structure is used to replace default policy priority settings for logs and/or spans. Server-generated fields (created_at, updated_at) will be ignored if provided.
+              properties:
+                logsPolicySettings:
+                  $ref: '#/components/schemas/LogsPolicySettings'
+                spansPolicySettings:
+                  $ref: '#/components/schemas/SpansPolicySettings'
+              title: Replace Policy Settings Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplacePolicySettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace Policy Settings
+      tags:
+      - Policies Service
+  /dataplans/policy-settings/v1:
+    get:
+      description: Returns the current data policy settings.
+      operationId: PoliciesService_GetPolicySettings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPolicySettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Policy Priority Settings
+      tags:
+      - Policies Service
+  /dataplans/rum-policies/v1:
+    put:
+      description: Updates RUM data retention policies.
+      operationId: PoliciesService_AtomicOverwriteRumPolicies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: In an atomic operation delete all existing RUM policies and create the provided list by order.
+              properties:
+                policies:
+                  description: List of RUM policies to create as part of the atomic overwrite.
+                  items:
+                    $ref: '#/components/schemas/CreateRumPolicyRequest'
+                  maxItems: 10000
+                  minItems: 0
+                  type: array
+              required:
+              - policies
+              title: Atomic Overwrite Rum Policies Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                createResponses:
+                - policy:
+                    companyId: 1234
+                    deleted: false
+                    description: My RUM Policy Description
+                    enabled: true
+                    id: 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+                    name: My RUM Policy
+                    order: 1
+                    priority: PRIORITY_TYPE_MEDIUM
+                    rumRules:
+                      severities:
+                      - SEVERITY_ERROR
+                      - SEVERITY_CRITICAL
+              schema:
+                $ref: '#/components/schemas/AtomicOverwriteRumPoliciesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Policy limit exceeded. Request a limit increase or reduce the number of policies.
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Atomic Overwrite Rum Policies
+      tags:
+      - Policies Service
+  /dataplans/span-policies/v1:
+    put:
+      description: Updates span data retention policies.
+      operationId: PoliciesService_AtomicOverwriteSpanPolicies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: In an atomic operation delete all existing span policies and create the provided list by order.
+              properties:
+                policies:
+                  description: List of span policies to create as part of the atomic overwrite.
+                  items:
+                    $ref: '#/components/schemas/CreateSpanPolicyRequest'
+                  maxItems: 200
+                  minItems: 0
+                  type: array
+              required:
+              - policies
+              title: Atomic Overwrite Span Policies Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtomicOverwriteSpanPoliciesResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Policy limit exceeded. Request a limit increase or reduce the number of policies.
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Atomic Overwrite Span Policies
+      tags:
+      - Policies Service
+components:
+  schemas:
+    UsageTier:
+      type: object
+      properties:
+        dailyQuotaPercentage:
+          maximum: 100
+          minimum: 0
+          type: number
+          description: The daily quota percentage. Must be between 0 and 100.
+          format: double
+          examples:
+          - 80
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/quota.v1.Priority'
+          examples:
+          - PRIORITY_TYPE_HIGH
+    GetPolicyResponse:
+      title: Get Policy Response
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/Policy'
+      description: This data structue is obtained when retrieving a policy by its ID.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    BulkTestLogPoliciesResponse:
+      title: Bulk Test Log Policies Response
+      required:
+      - testPoliciesBulkResult
+      type: object
+      properties:
+        testPoliciesBulkResult:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TestPoliciesResult'
+          description: The test policies bulk result.
+      description: Response to test multiple log policies.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    DeletePolicyResponse:
+      title: Delete Policy Response
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: This data structue is obtained when deleting a policy by its ID.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    Placement:
+      type: object
+      oneOf:
+      - required:
+        - first
+        type: object
+      - required:
+        - last
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - first
+            type: object
+          - required:
+            - last
+            type: object
+      properties:
+        first:
+          $ref: '#/components/schemas/First'
+        last:
+          $ref: '#/components/schemas/Last'
+      description: Placement.
+    LogRules:
+      title: Log Rules
+      required:
+      - severities
+      type: object
+      properties:
+        dpxlExpression:
+          description: The dpxl expression.
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        severities:
+          maxItems: 6
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/quota.v1.Severity'
+          description: The severities.
+      description: Log rules for a policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    TestPoliciesResult:
+      title: Test Policies Result
+      required:
+      - metaFieldsValues
+      - matched
+      - policy
+      type: object
+      properties:
+        matched:
+          description: The matched.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+        metaFieldsValues:
+          $ref: '#/components/schemas/LogMetaFieldsValues'
+        policy:
+          $ref: '#/components/schemas/Policy'
+      description: Result of testing policies.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    SpanRules:
+      type: object
+      properties:
+        actionRule:
+          $ref: '#/components/schemas/quota.v1.Rule'
+        dpxlExpression:
+          description: The dpxl expression.
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        serviceRule:
+          $ref: '#/components/schemas/quota.v1.Rule'
+        tagRules:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/TagRule'
+          description: The tag rules.
+      description: Span rules.
+    CreateSpanPolicyRequest:
+      title: Create Span Policy Request
+      required:
+      - policy
+      - spanRules
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/CreateGenericPolicyRequest'
+        spanRules:
+          $ref: '#/components/schemas/SpanRules'
+      description: This data structue is used to create a new span policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    quota.v1.Priority:
+      enum:
+      - PRIORITY_TYPE_UNSPECIFIED
+      - PRIORITY_TYPE_BLOCK
+      - PRIORITY_TYPE_LOW
+      - PRIORITY_TYPE_MEDIUM
+      - PRIORITY_TYPE_HIGH
+      type: string
+      description: TCO priority level assigned to a policy, controlling how data is routed and archived.
+    ReorderPoliciesResponse:
+      title: Reorder Policies Response
+      required:
+      - orders
+      type: object
+      properties:
+        orders:
+          maxItems: 200
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyOrder'
+          description: The orders.
+      description: This data structure is obtained when reordering policies.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    Last:
+      type: object
+      additionalProperties: false
+      description: Last.
+    CreateGenericPolicyRequest:
+      title: Create Generic Policy Request
+      required:
+      - name
+      - description
+      - priority
+      type: object
+      properties:
+        applicationRule:
+          $ref: '#/components/schemas/quota.v1.Rule'
+        archiveRetention:
+          $ref: '#/components/schemas/ArchiveRetention'
+        description:
+          description: Human-readable description. Only Latin-1 characters are accepted.
+          examples:
+          - My Policy Description
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\x00-\xFF]*$
+          type: string
+          x-coralogix-presence: true
+        disabled:
+          type: boolean
+          description: The disabled.
+        name:
+          description: Display name. Only Latin-1 characters are accepted.
+          examples:
+          - My Policy
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\x00-\xFF]*$
+          type: string
+          x-coralogix-presence: true
+        priority:
+          $ref: '#/components/schemas/quota.v1.Priority'
+        priorityOverride:
+          $ref: '#/components/schemas/PriorityOverride'
+        subsystemRule:
+          $ref: '#/components/schemas/quota.v1.Rule'
+        targets:
+          maxItems: 5
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.Target'
+          description: List of targets.
+      description: This data structue is used to create a new policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    GetCompanyPoliciesResponse:
+      title: Get Company Policies Response
+      required:
+      - policies
+      type: object
+      properties:
+        policies:
+          maxItems: 30000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy'
+          description: List of policies.
+      description: This data structue is obtained when retrieving all policies of a company.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    Policy:
+      title: Policy
+      required:
+      - id
+      - companyId
+      - name
+      - priority
+      - deleted
+      - enabled
+      - order
+      type: object
+      oneOf:
+      - required:
+        - logRules
+        type: object
+      - required:
+        - spanRules
+        type: object
+      - required:
+        - rumRules
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - logRules
+            type: object
+          - required:
+            - spanRules
+            type: object
+          - required:
+            - rumRules
+            type: object
+      properties:
+        applicationRule:
+          $ref: '#/components/schemas/quota.v1.Rule'
+        archiveRetention:
+          $ref: '#/components/schemas/ArchiveRetention'
+        companyId:
+          description: Internal Coralogix company/team identifier that owns this policy.
+          examples:
+          - 1234
+          format: int32
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        createdAt:
+          description: Timestamp (RFC 3339) when the policy was created.
+          examples:
+          - '2021-01-01T00:00:00.000Z'
+          maxLength: 64
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        deleted:
+          description: Soft-delete marker; when true the policy has been deleted and is no longer applied.
+          examples:
+          - false
+          type: boolean
+          x-coralogix-presence: true
+        description:
+          description: Optional free-text description of the policy's purpose. Only Latin-1 characters are accepted.
+          examples:
+          - My Policy Description
+          maxLength: 255
+          minLength: 0
+          pattern: ^[\x00-\xFF]*$
+          type: string
+          x-coralogix-presence: true
+        enabled:
+          description: Indicates whether the policy is actively evaluated and applied.
+          examples:
+          - true
+          type: boolean
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier for the policy.
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        logRules:
+          $ref: '#/components/schemas/LogRules'
+        name:
+          description: Human-readable name for the policy. Only Latin-1 characters are accepted.
+          examples:
+          - My Policy
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\x00-\xFF]*$
+          type: string
+          x-coralogix-presence: true
+        order:
+          description: Ordering priority that determines the sequence in which policies are evaluated. Can be negative for policies placed first.
+          examples:
+          - 1
+          format: int32
+          maximum: 2147483647
+          minimum: -2147483648
+          type: integer
+          x-coralogix-presence: true
+        priority:
+          $ref: '#/components/schemas/quota.v1.Priority'
+        priorityOverride:
+          $ref: '#/components/schemas/PriorityOverride'
+        priorityOverrideStatus:
+          $ref: '#/components/schemas/PriorityOverrideStatus'
+        rumRules:
+          $ref: '#/components/schemas/LogRules'
+        spanRules:
+          $ref: '#/components/schemas/SpanRules'
+        subsystemRule:
+          $ref: '#/components/schemas/quota.v1.Rule'
+        targets:
+          maxItems: 5
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v1.Target'
+          description: List of data targets/destinations to which this policy routes data.
+          examples:
+          - - name: My Target
+              dataset: dataset1
+              priority: PRIORITY_TYPE_HIGH
+              archive_retention:
+                id: archive_retention_id
+        updatedAt:
+          description: Timestamp (RFC 3339) when the policy was last updated.
+          examples:
+          - '2021-01-01T00:00:00.000Z'
+          maxLength: 64
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: A policy is a set of rules that define the behavior of the Coralogix system for a specific company.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    quota.v1.Rule:
+      type: object
+      properties:
+        name:
+          description: The value(s) to match. For IS and IS_NOT rules, up to 50 comma-separated values.
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        ruleTypeId:
+          $ref: '#/components/schemas/RuleTypeId'
+      description: Rule.
+    AtomicOverwriteSpanPoliciesResponse:
+      title: Atomic Overwrite Span Policies Response
+      type: object
+      properties:
+        createResponses:
+          maxItems: 200
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePolicyResponse'
+          description: The create responses.
+      description: This data structue is obtained when overwriting span policies atomically.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    QuotaBased:
+      type: object
+      properties:
+        usageTiers:
+          maxItems: 3
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageTier'
+          description: Ordered list of usage tiers that map daily quota consumption percentages to priority levels. Percentages must be strictly increasing and priorities strictly decreasing, using only LOW, MEDIUM, or HIGH.
+          examples:
+          - - daily_quota_percentage: 80
+              priority: PRIORITY_TYPE_HIGH
+      description: Quota based.
+    RuleTypeId:
+      enum:
+      - RULE_TYPE_ID_UNSPECIFIED
+      - RULE_TYPE_ID_IS
+      - RULE_TYPE_ID_IS_NOT
+      - RULE_TYPE_ID_START_WITH
+      - RULE_TYPE_ID_INCLUDES
+      type: string
+      description: Rule type id.
+    AtomicOverwriteLogPoliciesResponse:
+      title: Atomic Overwrite Log Policies Response
+      type: object
+      properties:
+        createResponses:
+          maxItems: 200
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePolicyResponse'
+          description: The create responses.
+      description: This data structue is obtained when overwriting log policies atomically.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    SpansPolicySettings:
+      title: Spans Source Policy
+      type: object
+      properties:
+        defaultPriority:
+          $ref: '#/components/schemas/quota.v1.Priority'
+    LogsPolicySettings:
+      title: Logs Source Policy
+      type: object
+      properties:
+        defaultPriority:
+          $ref: '#/components/schemas/quota.v1.Priority'
+    UpdatePolicyResponse:
+      title: Update Policy Response
+      required:
+      - policy
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/Policy'
+      description: This data structue is obtained when updating a policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    UsageBucket:
+      title: Usage Bucket
+      required:
+      - bucketStartMs
+      - bytes
+      type: object
+      properties:
+        bucketStartMs:
+          maxLength: 20
+          minLength: 1
+          pattern: ^-?[0-9]+$
+          type: string
+          description: Start of the bucket window, in epoch milliseconds (the rounded-down bucket timestamp).
+          examples:
+          - '1728763200000'
+        bytes:
+          maxLength: 20
+          minLength: 1
+          pattern: ^-?[0-9]+$
+          type: string
+          description: Number of bytes the draft policy would match within this bucket.
+          examples:
+          - '552155648'
+      description: Bytes matched within a single time bucket of the forecast window.
+    quota.v1.Severity:
+      enum:
+      - SEVERITY_UNSPECIFIED
+      - SEVERITY_DEBUG
+      - SEVERITY_VERBOSE
+      - SEVERITY_INFO
+      - SEVERITY_WARNING
+      - SEVERITY_ERROR
+      - SEVERITY_CRITICAL
+      type: string
+    CreatePolicyResponse:
+      title: Create Policy Response
+      required:
+      - policy
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/Policy'
+      description: This data structue is obtained when creating a policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    PolicyOrder:
+      title: Policy Order
+      required:
+      - order
+      - id
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          examples:
+          - 3dc02998-0b50-4ea8-b68a-4779d716fa1f
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        order:
+          description: Sort order. Must be a positive number.
+          examples:
+          - 1
+          format: int32
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+      description: Order of a policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    v1.SourceType:
+      enum:
+      - SOURCE_TYPE_UNSPECIFIED
+      - SOURCE_TYPE_LOGS
+      - SOURCE_TYPE_SPANS
+      - SOURCE_TYPE_RUM
+      type: string
+      description: Source type.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    LogMetaFieldsValues:
+      title: Log Meta Fields Values
+      required:
+      - applicationNameValues
+      - severityValues
+      - subsystemNameValues
+      type: object
+      properties:
+        applicationNameValues:
+          description: The application name values.
+          examples:
+          - application_name
+          maxLength: 1024
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        severityValues:
+          description: The severity values.
+          examples:
+          - severity
+          maxLength: 1024
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        subsystemNameValues:
+          description: The subsystem name values.
+          examples:
+          - subsystem_name
+          maxLength: 1024
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Values for log meta fields.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    ReplacePolicySettingsResponse:
+      title: Replace Policy Settings Response
+      type: object
+      properties:
+        logsPolicySettings:
+          $ref: '#/components/schemas/LogsPolicySettings'
+        spansPolicySettings:
+          $ref: '#/components/schemas/SpansPolicySettings'
+      description: This data structure is returned when replacing policy settings. It contains the complete resource including server-generated fields.
+    First:
+      type: object
+      additionalProperties: false
+      description: First.
+    AtomicOverwriteRumPoliciesResponse:
+      title: Atomic Overwrite Rum Policies Response
+      type: object
+      properties:
+        createResponses:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePolicyResponse'
+          description: The create responses.
+      description: This data structure is obtained when overwriting RUM policies atomically.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    CreateLogPolicyRequest:
+      title: Create Log Policy Request
+      required:
+      - policy
+      - logRules
+      type: object
+      properties:
+        logRules:
+          $ref: '#/components/schemas/LogRules'
+        policy:
+          $ref: '#/components/schemas/CreateGenericPolicyRequest'
+      description: This data structue is used to create a new log policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    PriorityOverride:
+      type: object
+      properties:
+        quotaBased:
+          $ref: '#/components/schemas/QuotaBased'
+      description: Priority override.
+    PriorityOverrideStatus:
+      type: object
+      properties:
+        quotaBased:
+          $ref: '#/components/schemas/QuotaBasedStatus'
+      description: Priority override status.
+    Day:
+      title: Day
+      type: object
+      additionalProperties: false
+      description: Marker selecting a one-day forecast window.
+    CreateRumPolicyRequest:
+      title: Create Rum Policy Request
+      required:
+      - policy
+      - rumRules
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/CreateGenericPolicyRequest'
+        rumRules:
+          $ref: '#/components/schemas/LogRules'
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    TagRule:
+      title: Tag Rule
+      required:
+      - ruleTypeId
+      - tagName
+      - tagValue
+      type: object
+      properties:
+        ruleTypeId:
+          allOf:
+          - $ref: '#/components/schemas/RuleTypeId'
+          examples:
+          - rule_type_id
+        tagName:
+          description: The tag name. Must start with "tags.".
+          examples:
+          - tags.environment
+          maxLength: 255
+          minLength: 1
+          pattern: ^tags\..*$
+          type: string
+          x-coralogix-presence: true
+        tagValue:
+          description: The tag value(s) to match. For IS and IS_NOT rules, up to 50 comma-separated values.
+          examples:
+          - tag_value
+          maxLength: 65535
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Tag rule for a policy.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    v1.Target:
+      title: Target
+      type: object
+      properties:
+        archiveRetention:
+          allOf:
+          - $ref: '#/components/schemas/ArchiveRetention'
+          description: Optional archive retention configuration for the target.
+        dataset:
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The dataset.
+          examples:
+          - dataset1
+        dataspace:
+          maxLength: 50
+          minLength: 1
+          pattern: ^[A-Za-z](?:[A-Za-z0-9_]|\.[A-Za-z0-9_])*$
+          type: string
+          description: The dataspace.
+          examples:
+          - dataspace1
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/quota.v1.Priority'
+          description: The base priority for the target.
+          examples:
+          - PRIORITY_TYPE_MEDIUM
+          x-coralogix-presence: true
+        priorityOverride:
+          allOf:
+          - $ref: '#/components/schemas/PriorityOverride'
+          description: Optional quota-based tiered priority override for the target.
+      description: This data structure represents a target for quota policies. It defines a named group of datasets with a priority level and optional archive retention configuration.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    ForecastPolicyUsageResponse:
+      title: Forecast Policy Usage Response
+      required:
+      - estimatedBytes
+      type: object
+      properties:
+        estimatedBytes:
+          maxLength: 20
+          minLength: 1
+          pattern: ^-?[0-9]+$
+          type: string
+          description: Estimated number of bytes the draft policy would match over the requested time window.
+          examples:
+          - '13251739648'
+        usageBuckets:
+          maxItems: 10080
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageBucket'
+          description: Per-bucket breakdown of matched bytes over the requested time window. Empty unless time_bucket_ms was set on the request.
+      description: Forecasted usage in bytes for a draft TCO policy, based on bytes matched over a given time window.
+      externalDocs:
+        description: Find out more about quota management.
+        url: https://coralogix.com/docs/user-guides/account-management/payment-and-billing/quota-management/
+    Week:
+      title: Week
+      type: object
+      additionalProperties: false
+      description: Marker selecting a one-week forecast window.
+    GetPolicySettingsResponse:
+      title: Get Policy Priority Settings Response
+      type: object
+      properties:
+        logsPolicySettings:
+          $ref: '#/components/schemas/LogsPolicySettings'
+        spansPolicySettings:
+          $ref: '#/components/schemas/SpansPolicySettings'
+      description: This data structure is returned when getting policy priority settings.
+    QuotaBasedStatus:
+      type: object
+      properties:
+        currentPriority:
+          $ref: '#/components/schemas/quota.v1.Priority'
+        currentUsage:
+          description: The current usage.
+          format: double
+          type: number
+          x-coralogix-presence: true
+        dailyLimit:
+          description: The daily limit.
+          format: double
+          type: number
+          x-coralogix-presence: true
+      description: Quota based status.
+    ArchiveRetention:
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: Archive retention.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

@@ -1,0 +1,347 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Quota Allocation Rule Set service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Quota Allocation Rule Set service
+  description: Manage quota allocation rules for different entity types.
+paths:
+  /dataplan/quota-rules/v1:
+    get:
+      description: 'Returns the current quota allocation rules.
+
+
+        Requires the following permissions:
+
+        - `team-quota-rules:Read`'
+      operationId: QuotaAllocationRuleSetService_GetQuotaAllocationRuleSet
+      parameters:
+      - description: Unique identifier.
+        in: query
+        name: id
+        required: false
+        schema:
+          description: Unique identifier.
+          minLength: 0
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetQuotaAllocationRuleSetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Rule set not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get quota allocation rule set
+      tags:
+      - Quota Allocation Rule Set service
+      x-coralogixPermissions:
+      - team-quota-rules:Read
+    put:
+      description: 'Updates the quota allocation rules.
+
+
+        Requires the following permissions:
+
+        - `team-quota-rules:Manage`'
+      operationId: QuotaAllocationRuleSetService_ReplaceQuotaAllocationRuleSet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to replace quota allocation rule set
+              properties:
+                ruleSet:
+                  $ref: '#/components/schemas/QuotaAllocationEntityTypeRuleSet'
+              required:
+              - ruleSet
+              title: Replace quota allocation rule set request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceQuotaAllocationRuleSetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Rule set not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace quota allocation rule set
+      tags:
+      - Quota Allocation Rule Set service
+      x-coralogixPermissions:
+      - team-quota-rules:Manage
+    post:
+      description: 'Creates new quota allocation rules.
+
+
+        Requires the following permissions:
+
+        - `team-quota-rules:Manage`'
+      operationId: QuotaAllocationRuleSetService_CreateQuotaAllocationRuleSet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to create a new quota allocation rule set
+              properties:
+                ruleSet:
+                  $ref: '#/components/schemas/QuotaAllocationEntityTypeRuleSet'
+              required:
+              - ruleSet
+              title: Create quota allocation rule set request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateQuotaAllocationRuleSetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Rule set already exists
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create quota allocation rule set
+      tags:
+      - Quota Allocation Rule Set service
+      x-coralogixPermissions:
+      - team-quota-rules:Manage
+    delete:
+      description: 'Deletes the quota allocation rules.
+
+
+        Requires the following permissions:
+
+        - `team-quota-rules:Manage`'
+      operationId: QuotaAllocationRuleSetService_DeleteQuotaAllocationRuleSet
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteQuotaAllocationRuleSetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Rule set not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete quota allocation rule set
+      tags:
+      - Quota Allocation Rule Set service
+      x-coralogixPermissions:
+      - team-quota-rules:Manage
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    DeleteQuotaAllocationRuleSetResponse:
+      title: Delete quota allocation rule set response
+      type: object
+      properties:
+        id:
+          minLength: 0
+          type: string
+          description: Unique identifier.
+      description: Response confirming quota allocation rule set has been successfully deleted
+    CreateQuotaAllocationRuleSetResponse:
+      title: Create quota allocation rule set response
+      type: object
+      properties:
+        ruleSet:
+          $ref: '#/components/schemas/QuotaAllocationEntityTypeRuleSet'
+      description: Response confirming quota allocation rule set has been successfully created
+    ReplaceQuotaAllocationRuleSetResponse:
+      title: Replace quota allocation rule set response
+      type: object
+      properties:
+        ruleSet:
+          $ref: '#/components/schemas/QuotaAllocationEntityTypeRuleSet'
+      description: Response confirming quota allocation rule set has been successfully replaced
+    QuotaAllocationEntityTypeRuleSet:
+      title: Quota allocation entity type rule set
+      type: object
+      properties:
+        id:
+          minLength: 0
+          type: string
+          description: Unique identifier.
+        rules:
+          description: 'List of rules. The server does not keep the order of the rules. Each entity type can have one rule: the service rejects a request with two rules for the same entity type, so a list never has two equal rules. In a `POST` or `PUT` request, an empty or omitted list clears the rules of the customer. In a response, an omitted list is an empty rule set.'
+          items:
+            $ref: '#/components/schemas/QuotaAllocationEntityTypeRule'
+          minItems: 0
+          type: array
+          x-coralogix-collection: set
+      description: Contains a collection of quota allocation rules for entity types
+    QuotaAllocationEntityTypeRule:
+      title: Quota allocation entity type rule
+      required:
+      - entityType
+      - allocation
+      - enabled
+      - canOverflow
+      type: object
+      properties:
+        allocation:
+          minimum: 0
+          type: number
+          description: The allocation. A percentage allocation (the default type) is between 0 and 100, and the percentages of the enabled rules must sum to at most 100. A locked units allocation is a non-negative number of units.
+          format: float
+        allocationType:
+          allOf:
+          - $ref: '#/components/schemas/QuotaAllocationType'
+          description: Determines whether allocation is interpreted as a percentage or locked units. Unspecified defaults to percentage for backwards compatibility.
+        canOverflow:
+          type: boolean
+          description: The can overflow.
+        cxManaged:
+          type: boolean
+          description: Indicates whether the quota allocation rule is managed by Coralogix. This field is returned by the service and must not be sent in Create or Replace requests.
+          readOnly: true
+        enabled:
+          type: boolean
+          description: Whether this resource is enabled.
+        entityType:
+          minLength: 1
+          type: string
+          description: The entity type.
+      description: Defines quota allocation rule for a specific entity type
+    QuotaAllocationType:
+      title: Quota allocation type
+      enum:
+      - QUOTA_ALLOCATION_TYPE_UNSPECIFIED
+      - QUOTA_ALLOCATION_TYPE_PERCENTAGE
+      - QUOTA_ALLOCATION_TYPE_LOCKED_UNITS
+      type: string
+      description: Specifies whether the allocation value is interpreted as a percentage or as locked units.
+    GetQuotaAllocationRuleSetResponse:
+      title: Get quota allocation rule set response
+      type: object
+      properties:
+        ruleSet:
+          $ref: '#/components/schemas/QuotaAllocationEntityTypeRuleSet'
+      description: Response containing quota allocation rule set
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

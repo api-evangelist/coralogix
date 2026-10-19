@@ -1,0 +1,599 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Enrichments Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Enrichments Service
+  description: Manage your enrichments.
+paths:
+  /enrichment-rules/enrichment-rules/v1:
+    get:
+      description: Returns all enrichment rules for the team.
+      operationId: EnrichmentService_GetEnrichments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEnrichmentsResponse'
+          description: ''
+      summary: Get Enrichments
+      tags:
+      - Enrichments Service
+    put:
+      description: Updates enrichment rules.
+      operationId: EnrichmentService_AtomicOverwriteEnrichments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to atomically update enrichment rules.
+              properties:
+                enrichmentFields:
+                  deprecated: true
+                  description: 'Deprecated: enrichment field definitions.'
+                  items:
+                    $ref: '#/components/schemas/EnrichmentFieldDefinition'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+                enrichmentType:
+                  allOf:
+                  - $ref: '#/components/schemas/EnrichmentType'
+                  deprecated: true
+                requestEnrichments:
+                  description: List of enrichment rules to atomically replace existing rules. The total number of enrichment rules is limited by the account's enrichment limit (5 by default).
+                  items:
+                    $ref: '#/components/schemas/EnrichmentRequestModel'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtomicOverwriteEnrichmentsResponse'
+          description: ''
+      summary: Atomic Overwrite for CustomEnrichments only
+      tags:
+      - Enrichments Service
+    post:
+      description: Creates new enrichment rules.
+      operationId: EnrichmentService_AddEnrichments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: This response data structure represents a collection of enrichments
+              properties:
+                requestEnrichments:
+                  description: The request enrichments. The total number of enrichment rules is limited by the account's enrichment limit (5 by default).
+                  items:
+                    $ref: '#/components/schemas/EnrichmentRequestModel'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+              required:
+              - requestEnrichments
+              title: Enrichments Creation Request
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddEnrichmentsResponse'
+          description: ''
+      summary: Add Enrichments
+      tags:
+      - Enrichments Service
+    delete:
+      description: Deletes all enrichment rules for the team.
+      operationId: EnrichmentService_RemoveEnrichments
+      parameters:
+      - description: The unique identifiers of the enrichment rules to delete.
+        in: query
+        name: enrichment_ids
+        required: true
+        schema:
+          description: The unique identifiers of the enrichment rules to delete.
+          examples:
+          - - 1
+            - 2
+            - 3
+          items:
+            description: The unique identifiers of the enrichment rules to delete.
+            format: int64
+            maximum: 2147483647
+            minimum: 0
+            type: integer
+          maxItems: 1000
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveEnrichmentsResponse'
+          description: ''
+      summary: Delete Enrichments
+      tags:
+      - Enrichments Service
+  /enrichment-rules/enrichment-rules/v1/all:
+    put:
+      description: 'Atomic Overwrite for ALL types of enrichments. The request is the desired state which will override ALL enrichments. WARNING: This operation will delete all existing enrichments and replace them with the provided ones.'
+      operationId: EnrichmentService_AtomicOverwriteAllEnrichments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to atomically replace all enrichment rules.
+              properties:
+                requestEnrichments:
+                  description: Complete list of enrichment rules to replace all existing rules. The total number of enrichment rules is limited by the account's enrichment limit (5 by default).
+                  items:
+                    $ref: '#/components/schemas/EnrichmentRequestModel'
+                  maxItems: 100
+                  minItems: 0
+                  type: array
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtomicOverwriteAllEnrichmentsResponse'
+          description: ''
+      summary: Atomic Overwrite for ALL types of enrichments
+      tags:
+      - Enrichments Service
+  /enrichment-rules/enrichment-rules/v1/limit:
+    get:
+      description: Returns the maximum number of enrichment rules allowed.
+      operationId: EnrichmentService_GetEnrichmentLimit
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEnrichmentLimitResponse'
+          description: ''
+      summary: Get Enrichment Limit
+      tags:
+      - Enrichments Service
+  /enrichment-rules/enrichment-rules/v1/settings:
+    get:
+      description: Returns the current enrichment settings for the team.
+      operationId: EnrichmentService_GetCompanyEnrichmentSettings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCompanyEnrichmentSettingsResponse'
+          description: ''
+      summary: Get Company Enrichment Settings
+      tags:
+      - Enrichments Service
+components:
+  schemas:
+    AtomicOverwriteAllEnrichmentsResponse:
+      type: object
+      properties:
+        enrichments:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Enrichment'
+          description: List of enrichments.
+      description: Response returned after atomically replacing all enrichment rules.
+    EnrichmentFieldDefinition:
+      type: object
+      properties:
+        enrichedFieldName:
+          description: The enriched field name.
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        fieldName:
+          description: The field name.
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        selectedColumns:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The selected columns.
+          description: The selected columns.
+        targets:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetTarget'
+          description: The targets for the enrichment
+          examples:
+          - - dataset: dataset1
+    CustomEnrichmentType:
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          examples:
+          - 1
+          format: int64
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Custom enrichment type.
+    AddEnrichmentsResponse:
+      title: Encrichments Creation Response
+      required:
+      - enrichments
+      type: object
+      properties:
+        enrichments:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Enrichment'
+          description: List of enrichments.
+      description: Response data structure for enrichments creation
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    DatasetTarget:
+      title: Dataset Target
+      type: object
+      properties:
+        dataset:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9_][a-zA-Z0-9_./-]*$
+          type: string
+          description: The dataset name in which the enrichment will be applied.
+          examples:
+          - dataset1
+      description: This data structure represents a target for enrichments. It defines a dataset in which the enrichment will be applied to.
+    GetEnrichmentLimitResponse:
+      title: Enrichment Limit
+      required:
+      - limit
+      - used
+      type: object
+      properties:
+        limit:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Maximum number of enrichment rules allowed for the account. Defaults to 5.
+          format: int64
+          examples:
+          - 10
+        used:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Number of enrichment rules currently in use.
+          format: int64
+          examples:
+          - 5
+      description: This response data structure represents the enrichments limit
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    GetCompanyEnrichmentSettingsResponse:
+      type: object
+      properties:
+        enrichmentSettings:
+          $ref: '#/components/schemas/CompanyEnrichmentSettings'
+      description: Response containing the company-level enrichment settings.
+    EnrichmentType:
+      type: object
+      oneOf:
+      - required:
+        - geoIp
+        type: object
+      - required:
+        - suspiciousIp
+        type: object
+      - required:
+        - aws
+        type: object
+      - required:
+        - customEnrichment
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - geoIp
+            type: object
+          - required:
+            - suspiciousIp
+            type: object
+          - required:
+            - aws
+            type: object
+          - required:
+            - customEnrichment
+            type: object
+      properties:
+        aws:
+          $ref: '#/components/schemas/AwsType'
+        customEnrichment:
+          $ref: '#/components/schemas/CustomEnrichmentType'
+        geoIp:
+          $ref: '#/components/schemas/GeoIpType'
+        suspiciousIp:
+          $ref: '#/components/schemas/SuspiciousIpType'
+      description: Enrichment type.
+    SuspiciousIpType:
+      type: object
+      additionalProperties: false
+      description: Suspicious ip type.
+    Enrichment:
+      title: Enrichment
+      required:
+      - id
+      - fieldName
+      - enrichmentType
+      type: object
+      properties:
+        enrichedFieldName:
+          description: The enriched field name.
+          examples:
+          - '1'
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        enrichmentType:
+          $ref: '#/components/schemas/EnrichmentType'
+        fieldName:
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: The field name.
+          examples:
+          - '1'
+        id:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Unique identifier.
+          format: int64
+          examples:
+          - 1
+        selectedColumns:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The selected columns.
+          description: The selected columns.
+          examples:
+          - - city
+            - population
+        targets:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetTarget'
+          description: The targets for the enrichment
+          examples:
+          - - dataset: dataset1
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    GeoIpType:
+      type: object
+      properties:
+        withAsn:
+          description: The with asn.
+          type: boolean
+          x-coralogix-presence: true
+      description: Geo ip type.
+    AwsType:
+      type: object
+      properties:
+        resourceType:
+          description: The resource type. Must be one of the AWS resource types available for the account.
+          examples:
+          - aws:ec2:instance
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Aws type.
+    CompanyEnrichmentSettings:
+      type: object
+      properties:
+        enrichmentAmountLimit:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Maximum number of enrichment rules allowed for the account.
+          format: int64
+          examples:
+          - 5
+        enrichmentsInUse:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Number of enrichment rules currently in use by the account.
+          format: int64
+          examples:
+          - 2
+        queryOnlyRowLimit:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Row count above which a custom enrichment becomes query-only (usable in queries but not applied at ingest time). Defaults to 10000.
+          format: int64
+          examples:
+          - 10000
+        queryOnlySizeLimitBytes:
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          description: File size in bytes above which a custom enrichment becomes query-only (usable in queries but not applied at ingest time). Defaults to 524288 (512 KiB).
+          examples:
+          - '524288'
+        rowLimit:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Maximum number of rows allowed in a custom enrichment file. Defaults to 150000.
+          format: int64
+          examples:
+          - 150000
+        sizeLimitBytes:
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          description: Maximum custom enrichment file size in bytes. Defaults to 20971520 (20 MiB).
+          examples:
+          - '20971520'
+      description: Company enrichment settings.
+    RemoveEnrichmentsResponse:
+      title: Encrichments Delettion Response
+      type: object
+      properties:
+        remainingEnrichments:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Enrichment'
+          description: The remaining enrichments.
+      description: Response data structure for enrichments deletion
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    GetEnrichmentsResponse:
+      title: Enrichment Collection
+      required:
+      - enrichments
+      type: object
+      properties:
+        enrichments:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Enrichment'
+          description: List of enrichments.
+      description: This response data structure represents a collection of enrichments
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    EnrichmentRequestModel:
+      title: Enrichment Prototype
+      required:
+      - fieldName
+      - enrichmentType
+      type: object
+      properties:
+        enrichedFieldName:
+          description: The enriched field name.
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        enrichmentType:
+          $ref: '#/components/schemas/EnrichmentType'
+        fieldName:
+          description: The field name.
+          examples:
+          - sourceIPs
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        selectedColumns:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            maxLength: 1024
+            minLength: 1
+            pattern: ^[\s\S]*$
+            type: string
+            description: The selected columns.
+          description: The selected columns.
+        targets:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetTarget'
+          description: The targets for the enrichment
+          examples:
+          - - dataset: dataset1
+      description: The enrichment request model
+      externalDocs:
+        description: Find out more about enrichments
+        url: https://coralogix.com/docs/user-guides/data-transformation/enrichments/custom-enrichment/
+    AtomicOverwriteEnrichmentsResponse:
+      type: object
+      properties:
+        enrichments:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Enrichment'
+          description: List of enrichments.
+      description: Response returned after atomically updating enrichment rules.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

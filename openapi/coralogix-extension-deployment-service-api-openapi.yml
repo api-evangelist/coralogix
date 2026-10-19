@@ -1,0 +1,723 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Extension deployment service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Extension deployment service
+  description: A service that enables querying for extension deployment information.
+  externalDocs:
+    description: Find out more about extensions in our documentation.
+    url: https://coralogix.com/docs/integrations/extensions/
+paths:
+  /integrations/extensions/v1/deployed:
+    get:
+      description: 'Returns all deployed extensions.
+
+
+        Requires the following permissions:
+
+        - `extensions:ReadConfig`'
+      operationId: ExtensionDeploymentService_GetDeployedExtensions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDeployedExtensionsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get deployed extensions
+      tags:
+      - Extension deployment service
+      x-coralogixPermissions:
+      - extensions:ReadConfig
+    put:
+      description: 'Deploys an extension.
+
+
+        Requires the following permissions:
+
+        - `extensions:Deploy`'
+      operationId: ExtensionDeploymentService_DeployExtension
+      parameters:
+      - description: Unique identifier.
+        in: query
+        name: id
+        required: false
+        schema:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: Version number.
+        in: query
+        name: version
+        required: false
+        schema:
+          description: Version number.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: The item ids.
+        in: query
+        name: item_ids
+        required: false
+        schema:
+          default: []
+          description: The item ids.
+          items:
+            description: The item ids.
+            minLength: 0
+            type: string
+          maxItems: 10000
+          minItems: 0
+          type: array
+      - description: The applications.
+        in: query
+        name: applications
+        required: false
+        schema:
+          default: []
+          description: The applications.
+          items:
+            description: The applications.
+            minLength: 0
+            type: string
+          maxItems: 10000
+          minItems: 0
+          type: array
+      - description: The subsystems.
+        in: query
+        name: subsystems
+        required: false
+        schema:
+          default: []
+          description: The subsystems.
+          items:
+            description: The subsystems.
+            minLength: 0
+            type: string
+          maxItems: 10000
+          minItems: 0
+          type: array
+      - description: The extension deployment configuration.
+        in: query
+        name: extension_deployment
+        required: false
+        schema:
+          description: Extension deployment.
+          properties:
+            applications:
+              default: []
+              description: The applications.
+              items:
+                description: The applications.
+                minLength: 0
+                type: string
+              maxItems: 10000
+              minItems: 0
+              type: array
+            id:
+              description: Unique identifier.
+              maxLength: 65535
+              minLength: 0
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            itemIds:
+              default: []
+              description: The item ids.
+              items:
+                description: The item ids.
+                minLength: 0
+                type: string
+              maxItems: 10000
+              minItems: 0
+              type: array
+            subsystems:
+              default: []
+              description: The subsystems.
+              items:
+                description: The subsystems.
+                minLength: 0
+                type: string
+              maxItems: 10000
+              minItems: 0
+              type: array
+            version:
+              description: Version number.
+              maxLength: 65535
+              minLength: 0
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+          title: Extension deployment
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeployExtensionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Deploy extension
+      tags:
+      - Extension deployment service
+      x-coralogixPermissions:
+      - extensions:Deploy
+    post:
+      description: 'Updates a deployed extension.
+
+
+        Requires the following permissions:
+
+        - `extensions:Deploy`'
+      operationId: ExtensionDeploymentService_UpdateExtension
+      parameters:
+      - description: Unique identifier.
+        in: query
+        name: id
+        required: false
+        schema:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: Version number.
+        in: query
+        name: version
+        required: false
+        schema:
+          description: Version number.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      - description: The item ids.
+        in: query
+        name: item_ids
+        required: false
+        schema:
+          default: []
+          description: The item ids.
+          items:
+            description: The item ids.
+            minLength: 0
+            type: string
+          maxItems: 10000
+          minItems: 0
+          type: array
+      - description: The applications.
+        in: query
+        name: applications
+        required: false
+        schema:
+          default: []
+          description: The applications.
+          items:
+            description: The applications.
+            minLength: 0
+            type: string
+          maxItems: 10000
+          minItems: 0
+          type: array
+      - description: The subsystems.
+        in: query
+        name: subsystems
+        required: false
+        schema:
+          default: []
+          description: The subsystems.
+          items:
+            description: The subsystems.
+            minLength: 0
+            type: string
+          maxItems: 10000
+          minItems: 0
+          type: array
+      - description: The extension deployment configuration to update.
+        in: query
+        name: extension_deployment
+        required: false
+        schema:
+          description: Extension deployment.
+          properties:
+            applications:
+              default: []
+              description: The applications.
+              items:
+                description: The applications.
+                minLength: 0
+                type: string
+              maxItems: 10000
+              minItems: 0
+              type: array
+            id:
+              description: Unique identifier.
+              maxLength: 65535
+              minLength: 0
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            itemIds:
+              default: []
+              description: The item ids.
+              items:
+                description: The item ids.
+                minLength: 0
+                type: string
+              maxItems: 10000
+              minItems: 0
+              type: array
+            subsystems:
+              default: []
+              description: The subsystems.
+              items:
+                description: The subsystems.
+                minLength: 0
+                type: string
+              maxItems: 10000
+              minItems: 0
+              type: array
+            version:
+              description: Version number.
+              maxLength: 65535
+              minLength: 0
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+          title: Extension deployment
+          type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateExtensionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update extension
+      tags:
+      - Extension deployment service
+      x-coralogixPermissions:
+      - extensions:Deploy
+    delete:
+      description: 'Undeploys the specified extension.
+
+
+        Requires the following permissions:
+
+        - `extensions:Deploy`'
+      operationId: ExtensionDeploymentService_UndeployExtension
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request for undeploying an extension.
+              properties:
+                id:
+                  description: Unique identifier.
+                  maxLength: 65535
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                keptExtensionItems:
+                  default: []
+                  description: List of extension item IDs to retain after undeploying; all other items will be removed.
+                  items:
+                    description: List of extension item IDs to retain after undeploying; all other items will be removed.
+                    minLength: 0
+                    type: string
+                  maxItems: 10000
+                  minItems: 0
+                  type: array
+              title: Revert deployment of extension request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UndeployExtensionResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Revert deployment of extension
+      tags:
+      - Extension deployment service
+      x-coralogixPermissions:
+      - extensions:Deploy
+components:
+  schemas:
+    ItemCounts:
+      title: Item counts
+      type: object
+      properties:
+        actions:
+          default: 0
+          description: List of actions.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        alerts:
+          default: 0
+          description: List of alerts.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        customDashboards:
+          default: 0
+          description: The custom dashboards.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        enrichments:
+          default: 0
+          description: List of enrichments.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        eventsToMetrics:
+          default: 0
+          description: The events to metrics.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        grafanaDashboards:
+          default: 0
+          description: The grafana dashboards.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        kibanaDashboards:
+          default: 0
+          description: The kibana dashboards.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        metricsRuleGroup:
+          default: 0
+          description: The metrics rule group.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        parsingRules:
+          default: 0
+          description: The parsing rules.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        savedViews:
+          default: 0
+          description: The saved views.
+          format: int64
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Item counts.
+    DeployedExtension:
+      title: Deployed extension
+      type: object
+      properties:
+        applications:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The applications.
+          description: The applications.
+          default: []
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        itemIds:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The item ids.
+          description: The item ids.
+          default: []
+        subsystems:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The subsystems.
+          description: The subsystems.
+          default: []
+        summary:
+          $ref: '#/components/schemas/DeployedExtensionSummary'
+        version:
+          description: Version number.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    FailedItem:
+      title: Failed item
+      type: object
+      properties:
+        itemId:
+          description: The item id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        reason:
+          description: Reason.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        remoteId:
+          description: The remote id.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+    UndeployExtensionResponse:
+      title: Revert deployment of extension response
+      type: object
+      properties:
+        extensionDeployment:
+          $ref: '#/components/schemas/ExtensionDeployment'
+        failedItems:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedItem'
+          description: The failed items.
+          default: []
+      description: Response returned after successfully undeploying an extension.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    ExtensionDeployment:
+      title: Extension deployment
+      type: object
+      properties:
+        applications:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The applications.
+          description: The applications.
+          default: []
+        id:
+          description: Unique identifier.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        itemIds:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The item ids.
+          description: The item ids.
+          default: []
+        subsystems:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The subsystems.
+          description: The subsystems.
+          default: []
+        version:
+          description: Version number.
+          maxLength: 65535
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+      description: Extension deployment.
+    DeployExtensionResponse:
+      title: Deploy extension response
+      type: object
+      properties:
+        extensionDeployment:
+          $ref: '#/components/schemas/ExtensionDeployment'
+      description: Response returned after successfully deploying an extension.
+    GetDeployedExtensionsResponse:
+      title: Get deployed extensions response
+      type: object
+      properties:
+        deployedExtensions:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/DeployedExtension'
+          description: The deployed extensions.
+          default: []
+      description: Response containing a list of deployed extensions.
+    DeployedExtensionSummary:
+      title: Deployed extension summary
+      type: object
+      properties:
+        deployedItemCounts:
+          $ref: '#/components/schemas/ItemCounts'
+      description: Deployed extension summary.
+    UpdateExtensionResponse:
+      title: Update extension response
+      type: object
+      properties:
+        extensionDeployment:
+          $ref: '#/components/schemas/ExtensionDeployment'
+      description: Response returned after successfully updating a deployed extension.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

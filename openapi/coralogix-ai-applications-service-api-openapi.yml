@@ -1,0 +1,385 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management AI Applications Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: AI Applications Service
+  description: Manage the catalog of AI applications discovered from spans.
+paths:
+  /ai/applications/v3:
+    get:
+      description: Lists AI applications, optionally filtered by evaluation type.
+      operationId: AiApplicationsService_ListAiApplications
+      parameters:
+      - description: Number of items per page. Default 200 if omitted.
+        in: query
+        name: page_size
+        required: false
+        schema:
+          description: Number of items per page. Default 200 if omitted.
+          format: int32
+          maximum: 1000
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+      - description: Zero-based page offset. Default 0 if omitted.
+        in: query
+        name: page_offset
+        required: false
+        schema:
+          description: Zero-based page offset. Default 0 if omitted.
+          format: int64
+          maximum: 10000
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      - description: 'Optional filter: only include applications that have at least one evaluation of any of these types.'
+        in: query
+        name: evaluation_types
+        required: false
+        schema:
+          description: 'Optional filter: only include applications that have at least one evaluation of any of these types.'
+          items:
+            $ref: '#/components/schemas/EvaluationType'
+          maxItems: 100
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                aiApplications:
+                - application: checkout
+                  companyId: '12345'
+                  createdAt: '2026-06-02T15:30:00.000Z'
+                  guardrailsIntegrated: true
+                  id: 175677d1-fc90-4a89-9e35-0590b188ebb2
+                  subsystem: api
+                  updatedAt: '2026-06-02T15:35:00.000Z'
+              schema:
+                $ref: '#/components/schemas/ListAiApplicationsResponse'
+          description: ''
+      summary: List AI applications
+      tags:
+      - AI Applications Service
+  /ai/applications/v3/{id}:
+    get:
+      description: Gets an AI application by its unique identifier.
+      operationId: AiApplicationsService_GetAiApplicationById
+      parameters:
+      - description: Unique identifier of the AI application.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier of the AI application.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                aiApplication:
+                  application: checkout
+                  companyId: '12345'
+                  createdAt: '2026-06-02T15:30:00.000Z'
+                  guardrailsIntegrated: true
+                  id: 175677d1-fc90-4a89-9e35-0590b188ebb2
+                  subsystem: api
+                  updatedAt: '2026-06-02T15:35:00.000Z'
+              schema:
+                $ref: '#/components/schemas/GetAiApplicationByIdResponse'
+          description: ''
+      summary: Get AI application
+      tags:
+      - AI Applications Service
+    delete:
+      description: Deletes an AI application by its unique identifier.
+      operationId: AiApplicationsService_DeleteAiApplication
+      parameters:
+      - description: Unique identifier of the AI application to delete.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier of the AI application to delete.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 175677d1-fc90-4a89-9e35-0590b188ebb2
+              schema:
+                $ref: '#/components/schemas/DeleteAiApplicationResponse'
+          description: ''
+      summary: Delete AI application
+      tags:
+      - AI Applications Service
+  /ai/model-pricing/v3:
+    get:
+      description: Returns the company-wide custom model pricing configuration.
+      operationId: AiApplicationsService_GetCompanyModelPricing
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                pricing:
+                  companyId: '12345'
+                  id: 9d4f7c1a-2b3e-4f5a-8c1d-6e2f9a0b1c2d
+                  prices:
+                    gpt-4o:
+                      inputPricePerMillionTokens: 2.5
+                      outputPricePerMillionTokens: 10
+              schema:
+                $ref: '#/components/schemas/GetCompanyModelPricingResponse'
+          description: ''
+      summary: Get company model pricing
+      tags:
+      - AI Applications Service
+    put:
+      description: Replaces the company-wide custom model pricing configuration.
+      operationId: AiApplicationsService_SetCompanyModelPricing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to set (replace) the company's custom model pricing.
+              properties:
+                prices:
+                  additionalProperties:
+                    $ref: '#/components/schemas/ModelPrice'
+                  description: Full replacement map of model name to custom price.
+                  type: object
+              required:
+              - prices
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                pricing:
+                  companyId: '12345'
+                  id: 9d4f7c1a-2b3e-4f5a-8c1d-6e2f9a0b1c2d
+                  prices:
+                    gpt-4o:
+                      inputPricePerMillionTokens: 2.5
+                      outputPricePerMillionTokens: 10
+              schema:
+                $ref: '#/components/schemas/SetCompanyModelPricingResponse'
+          description: ''
+      summary: Set company model pricing
+      tags:
+      - AI Applications Service
+    delete:
+      description: Deletes the company-wide custom model pricing configuration.
+      operationId: AiApplicationsService_DeleteCompanyModelPricing
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 9d4f7c1a-2b3e-4f5a-8c1d-6e2f9a0b1c2d
+              schema:
+                $ref: '#/components/schemas/DeleteCompanyModelPricingResponse'
+          description: ''
+      summary: Delete company model pricing
+      tags:
+      - AI Applications Service
+components:
+  schemas:
+    CompanyModelPricing:
+      type: object
+      properties:
+        companyId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]+$
+          type: string
+          description: Company identifier.
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the pricing record.
+        prices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ModelPrice'
+          description: Map of model name to custom price. Replaces all existing prices on set.
+      description: Company-wide custom model pricing configuration.
+    ModelPrice:
+      type: object
+      properties:
+        cacheReadPricePerMillionTokens:
+          type: number
+          description: Cache read token price per one million tokens (USD).
+          format: double
+        cacheWritePricePerMillionTokens:
+          type: number
+          description: Cache write token price per one million tokens (USD).
+          format: double
+        inputPricePerMillionTokens:
+          type: number
+          description: Input token price per one million tokens (USD).
+          format: double
+        outputPricePerMillionTokens:
+          type: number
+          description: Output token price per one million tokens (USD).
+          format: double
+      description: Custom price for a single model, per one million tokens (USD).
+    ListAiApplicationsResponse:
+      type: object
+      properties:
+        aiApplications:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/AiApplication'
+          description: The list of AI applications on this page.
+      description: Response containing a page of AI applications.
+    SetCompanyModelPricingResponse:
+      type: object
+      properties:
+        pricing:
+          allOf:
+          - $ref: '#/components/schemas/CompanyModelPricing'
+          description: The updated company model pricing.
+      description: Response containing the updated company model pricing.
+    AiApplication:
+      type: object
+      properties:
+        application:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]+$
+          type: string
+          description: Application name.
+        companyId:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]+$
+          type: string
+          description: Company ID
+        createdAt:
+          description: RFC3339 timestamp when the application was first observed.
+          format: date-time
+          maxLength: 35
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+        guardrailsIntegrated:
+          type: boolean
+          description: Whether guardrails are integrated for this application.
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the AI application.
+        subsystem:
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]+$
+          type: string
+          description: Subsystem name
+        updatedAt:
+          description: RFC3339 timestamp when the application was last updated.
+          format: date-time
+          maxLength: 35
+          minLength: 20
+          type: string
+          x-coralogix-presence: true
+      description: AI Application
+    DeleteCompanyModelPricingResponse:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the deleted pricing record.
+      description: Response returned after deleting company model pricing.
+    GetCompanyModelPricingResponse:
+      type: object
+      properties:
+        pricing:
+          allOf:
+          - $ref: '#/components/schemas/CompanyModelPricing'
+          description: The company's custom model pricing.
+      description: Response containing the company's custom model pricing.
+    GetAiApplicationByIdResponse:
+      type: object
+      properties:
+        aiApplication:
+          allOf:
+          - $ref: '#/components/schemas/AiApplication'
+          description: The AI application.
+      description: Response containing the requested AI application.
+    EvaluationType:
+      enum:
+      - ALLOWED_TOPICS
+      - COMPETITION
+      - HALLUCINATION_COMPLETENESS
+      - HALLUCINATION_CONTEXT_ADHERENCE
+      - HALLUCINATION_CONTEXT_RELEVANCE
+      - HALLUCINATION_CORRECTNESS
+      - PII
+      - PROMPT_INJECTION
+      - RESTRICTED_TOPICS
+      - SEXISM
+      - SQL_ALLOWED_TABLES
+      - SQL_HALLUCINATION
+      - SQL_READ_ONLY
+      - SQL_RESTRICTED_TABLES
+      - TOXICITY
+      - HALLUCINATION_TASK_ADHERENCE
+      - SQL_LOAD
+      - LANGUAGE_MISMATCH
+      - CUSTOM_EVALUATION
+      type: string
+    DeleteAiApplicationResponse:
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: Unique identifier of the deleted AI application.
+      description: Response returned after deleting an AI application.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

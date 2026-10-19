@@ -207,6 +207,520 @@ apis:
     url: json-schema/coralogix-get-dashboards-dashboards-v1-slugs-slug-response-schema.json
   - type: JSONSchema
     url: json-schema/coralogix-post-dashboards-dashboards-v1-response-schema.json
+- aid: coralogix:coralogix-actions-service-api
+  name: Coralogix Actions Service API
+  description: View and manage your Actions.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Actions Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-actions-service-api-openapi.yml
+- aid: coralogix:coralogix-ai-applications-service-api
+  name: Coralogix AI Applications Service API
+  description: Manage the catalog of AI applications discovered from spans.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - AI Applications Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-ai-applications-service-api-openapi.yml
+- aid: coralogix:coralogix-ai-evaluations-service-api
+  name: Coralogix AI Evaluations Service API
+  description: Manage AI evaluations and the custom evaluation catalog for AI applications.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - AI Evaluations Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-ai-evaluations-service-api-openapi.yml
+- aid: coralogix:coralogix-alert-definitions-service-api
+  name: Coralogix Alert definitions service API
+  description: >-
+    View and manage your alerts using alert definitions - data structures that contain the configuration
+    required to create an alert.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Alert definitions service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-alert-definitions-service-api-openapi.yml
+- aid: coralogix:coralogix-alert-events-service-api
+  name: Coralogix Alert events service API
+  description: Get information regarding your alert events - instances of alerts being triggered.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Alert events service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-alert-events-service-api-openapi.yml
+- aid: coralogix:coralogix-alert-scheduler-rule-service-api
+  name: Coralogix Alert Scheduler Rule service API
+  description: Manage your alert scheduler rules.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Alert Scheduler Rule service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-alert-scheduler-rule-service-api-openapi.yml
+- aid: coralogix:coralogix-api-keys-admin-service-api
+  name: Coralogix API Keys Admin Service API
+  description: Administrative operations for API Keys management.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - API Keys Admin Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-api-keys-admin-service-api-openapi.yml
+- aid: coralogix:coralogix-api-keys-service-api
+  name: Coralogix API Keys Service API
+  description: Manage your API Keys.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - API Keys Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-api-keys-service-api-openapi.yml
+- aid: coralogix:coralogix-case-events-service-api
+  name: Coralogix Case Events service API
+  description: Manage case events, comments, and external thread synchronization.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Case Events service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-case-events-service-api-openapi.yml
+- aid: coralogix:coralogix-case-settings-service-api
+  name: Coralogix Case Settings service API
+  description: Manage case settings team configurations.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Case Settings service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-case-settings-service-api-openapi.yml
+- aid: coralogix:coralogix-cases-notification-service-api
+  name: Coralogix Cases notification service API
+  description: Track notification adjacent data for cases.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Cases notification service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-cases-notification-service-api-openapi.yml
+- aid: coralogix:coralogix-cases-service-api
+  name: Coralogix Cases service API
+  description: >-
+    Manage cases throughout their lifecycle. Create, view, assign, acknowledge, unacknowledge, resolve,
+    and close cases to streamline investigations and follow-ups.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Cases service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-cases-service-api-openapi.yml
+- aid: coralogix:coralogix-connector-schema-service-api
+  name: Coralogix Connector Schema service API
+  description: Retrieve connector schemas for notification center integrations
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Connector Schema service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-connector-schema-service-api-openapi.yml
+- aid: coralogix:coralogix-connectors-service-api
+  name: Coralogix Connectors service API
+  description: View and manage your connectors - integration instances for notification destinations
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Connectors service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-connectors-service-api-openapi.yml
+- aid: coralogix:coralogix-contextual-data-integration-service-api
+  name: Coralogix Contextual data integration service API
+  description: Query for contextual data integration information.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Contextual data integration service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-contextual-data-integration-service-api-openapi.yml
+- aid: coralogix:coralogix-custom-enrichments-service-api
+  name: Coralogix Custom Enrichments Service API
+  description: Manage your enrichments.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Custom Enrichments Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-custom-enrichments-service-api-openapi.yml
+- aid: coralogix:coralogix-dashboard-folders-service-api
+  name: Coralogix Dashboard folders service API
+  description: Manage your dashboard folders.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Dashboard folders service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-dashboard-folders-service-api-openapi.yml
+- aid: coralogix:coralogix-dashboard-service-api
+  name: Coralogix Dashboard service API
+  description: Get information about the Coralogix Dashboard catalog.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Dashboard service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-dashboard-service-api-openapi.yml
+- aid: coralogix:coralogix-data-usage-query-service-api
+  name: Coralogix Data Usage Query Service API
+  description: >-
+    Query billable data usage through the public Coralogix API using daily or hourly bucketed aggregations
+    over supported labels.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Data Usage Query Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-data-usage-query-service-api-openapi.yml
+- aid: coralogix:coralogix-enrichments-service-api
+  name: Coralogix Enrichments Service API
+  description: Manage your enrichments.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Enrichments Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-enrichments-service-api-openapi.yml
+- aid: coralogix:coralogix-entities-service-api
+  name: Coralogix Entities service API
+  description: Query information about registered entities in the notification center
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Entities service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-entities-service-api-openapi.yml
+- aid: coralogix:coralogix-events-service-api
+  name: Coralogix Events Service API
+  description: A service for querying events.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Events Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-events-service-api-openapi.yml
+- aid: coralogix:coralogix-events2metrics-service-api
+  name: Coralogix Events2Metrics Service API
+  description: Manage your events2metrics.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Events2Metrics Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-events2metrics-service-api-openapi.yml
+- aid: coralogix:coralogix-extension-deployment-service-api
+  name: Coralogix Extension deployment service API
+  description: A service that enables querying for extension deployment information.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Extension deployment service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-extension-deployment-service-api-openapi.yml
+- aid: coralogix:coralogix-extension-service-api
+  name: Coralogix Extension service API
+  description: A service that enables querying for extension information.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Extension service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-extension-service-api-openapi.yml
+- aid: coralogix:coralogix-fleet-manager-configuration-groups-api
+  name: Coralogix Fleet Manager Configuration Groups API
+  description: Create, read, update, and archive fleet-manager configuration groups.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Fleet Manager Configuration Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-fleet-manager-configuration-groups-api-openapi.yml
+- aid: coralogix:coralogix-folders-for-views-service-api
+  name: Coralogix Folders for views service API
+  description: Create and manage view folders.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Folders for views service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-folders-for-views-service-api-openapi.yml
+- aid: coralogix:coralogix-global-routers-service-api
+  name: Coralogix Global routers service API
+  description: >-
+    View and manage your global routers - entities that direct notifications to configured destinations
+    based on conditions
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Global routers service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-global-routers-service-api-openapi.yml
+- aid: coralogix:coralogix-identity-service-api
+  name: Coralogix Identity Service API
+  description: Resolve the team and user behind the presented credentials.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Identity Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-identity-service-api-openapi.yml
+- aid: coralogix:coralogix-incidents-service-api
+  name: Coralogix Incidents service API
+  description: >-
+    Handle all operations related to incident management within Coralogix. Identify, manage, and resolve
+    incidents efficiently through automated workflows and team collaboration.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Incidents service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-incidents-service-api-openapi.yml
+- aid: coralogix:coralogix-integration-service-api
+  name: Coralogix Integration service API
+  description: A service that enables querying for integration information.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Integration service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-integration-service-api-openapi.yml
+- aid: coralogix:coralogix-ip-access-service-api
+  name: Coralogix IP access service API
+  description: IP access service provides the API for managing company IP access settings.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - IP access service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-ip-access-service-api-openapi.yml
+- aid: coralogix:coralogix-metrics-data-archive-service-api
+  name: Coralogix Metrics Data Archive Service API
+  description: View and manage your storage targets for metrics.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Metrics Data Archive Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-metrics-data-archive-service-api-openapi.yml
+- aid: coralogix:coralogix-notifications-testing-service-api
+  name: Coralogix Notifications testing service API
+  description: >-
+    Test your notification center configurations including connectors, presets, and templates
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Notifications testing service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-notifications-testing-service-api-openapi.yml
+- aid: coralogix:coralogix-outgoing-webhooks-service-api
+  name: Coralogix Outgoing webhooks service API
+  description: >-
+    The Outgoing webhooks service API from Coralogix — 8 operation(s) for outgoing webhooks service.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Outgoing webhooks service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-outgoing-webhooks-service-api-openapi.yml
+- aid: coralogix:coralogix-policies-service-api
+  name: Coralogix Policies Service API
+  description: View and manage your TCO policies
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Policies Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-policies-service-api-openapi.yml
+- aid: coralogix:coralogix-presets-service-api
+  name: Coralogix Presets service API
+  description: >-
+    View and manage your presets - pre-configured templates for notification content rendering
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Presets service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-presets-service-api-openapi.yml
+- aid: coralogix:coralogix-quota-allocation-rule-set-service-api
+  name: Coralogix Quota Allocation Rule Set service API
+  description: Manage quota allocation rules for different entity types.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Quota Allocation Rule Set service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-quota-allocation-rule-set-service-api-openapi.yml
+- aid: coralogix:coralogix-recording-rules-service-api
+  name: Coralogix Recording Rules Service API
+  description: A service to manage recording rules.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Recording Rules Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-recording-rules-service-api-openapi.yml
+- aid: coralogix:coralogix-retentions-service-api
+  name: Coralogix Retentions Service API
+  description: View and manage retentions
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Retentions Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-retentions-service-api-openapi.yml
+- aid: coralogix:coralogix-role-management-service-api
+  name: Coralogix Role Management Service API
+  description: Service for managing system and custom roles.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Role Management Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-role-management-service-api-openapi.yml
+- aid: coralogix:coralogix-rule-groups-service-api
+  name: Coralogix Rule Groups Service API
+  description: A service to manage rule groups.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Rule Groups Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-rule-groups-service-api-openapi.yml
+- aid: coralogix:coralogix-saml-configuration-service-api
+  name: Coralogix SAML Configuration Service API
+  description: Manage your SAML configuration
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - SAML Configuration Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-saml-configuration-service-api-openapi.yml
+- aid: coralogix:coralogix-scopes-service-api
+  name: Coralogix Scopes Service API
+  description: A service to manage scopes
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Scopes Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-scopes-service-api-openapi.yml
+- aid: coralogix:coralogix-slos-service-api
+  name: Coralogix Slos Service API
+  description: A service for managing Service Level Objectives (SLOs).
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Slos Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-slos-service-api-openapi.yml
+- aid: coralogix:coralogix-target-service-api
+  name: Coralogix Target Service API
+  description: View and manage your storage targets for logs.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Target Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-target-service-api-openapi.yml
+- aid: coralogix:coralogix-team-groups-management-service-api
+  name: Coralogix Team Groups Management Service API
+  description: Manage Team Groups.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Team Groups Management Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-team-groups-management-service-api-openapi.yml
+- aid: coralogix:coralogix-teams-service-api
+  name: Coralogix Teams Service API
+  description: >-
+    Deprecated. Read and manage the teams in an organization and the daily quota assigned to each of them.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Teams Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-teams-service-api-openapi.yml
+- aid: coralogix:coralogix-users-management-service-api
+  name: Coralogix Users Management Service API
+  description: Manage team members (users) including creation, updates, search, and status management.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Users Management Service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-users-management-service-api-openapi.yml
+- aid: coralogix:coralogix-views-service-api
+  name: Coralogix Views service API
+  description: Create and manage views.
+  humanURL: https://coralogix.com
+  baseURL: https://api.eu2.coralogix.com
+  tags:
+  - Views service
+  properties:
+  - type: OpenAPI
+    url: openapi/coralogix-views-service-api-openapi.yml
 x-enrichment:
   date: '2026-10-03'
   status: enriched

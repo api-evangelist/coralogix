@@ -1,0 +1,1300 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Events2Metrics Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Events2Metrics Service
+  description: Manage your events2metrics.
+paths:
+  /events2metrics/events2metrics/v2:
+    get:
+      description: Returns all events-to-metrics rules for the team.
+      operationId: Events2MetricService_ListE2M
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListE2MResponse'
+          description: ''
+      summary: List E2Ms
+      tags:
+      - Events2Metrics Service
+    put:
+      description: Updates an existing events-to-metrics rule.
+      operationId: Events2MetricService_ReplaceE2M
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - required:
+                - spansQuery
+                type: object
+              - required:
+                - logsQuery
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - spansQuery
+                    type: object
+                  - required:
+                    - logsQuery
+                    type: object
+                type: object
+              properties:
+                createTime:
+                  description: RFC3339 timestamp of when this E2M was created.
+                  examples:
+                  - '2022-06-30T12:30:00.000Z'
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                dataSource:
+                  description: Optional data source in namespace/dataset_name format. If not set, defaults to the standard logs/spans stream.
+                  examples:
+                  - my_namespace/my_dataset
+                  maxLength: 300
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                description:
+                  description: Human-readable description of this E2M.
+                  examples:
+                  - avg and max the latency of catalog service
+                  maxLength: 2000
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                id:
+                  description: Unique identifier for this E2M. Required on update requests.
+                  examples:
+                  - d6a3658e-78d2-47d0-9b81-b2c551f01b09
+                  maxLength: 36
+                  minLength: 36
+                  pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                  type: string
+                  x-coralogix-presence: true
+                isInternal:
+                  description: Indicates whether this E2M is for internal use only.
+                  type: boolean
+                  x-coralogix-presence: true
+                logsQuery:
+                  $ref: '#/components/schemas/v2.LogsQuery'
+                metricFields:
+                  description: Metric fields to extract and aggregate from the events.
+                  items:
+                    $ref: '#/components/schemas/v2.MetricField'
+                  maxItems: 10
+                  minItems: 0
+                  type: array
+                metricLabels:
+                  description: Metric labels to attach to the generated metrics.
+                  items:
+                    $ref: '#/components/schemas/MetricLabel'
+                  maxItems: 10
+                  minItems: 0
+                  type: array
+                name:
+                  description: Human-readable name for this E2M.
+                  examples:
+                  - Service_catalog_latency
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                permutations:
+                  $ref: '#/components/schemas/E2MPermutations'
+                spansQuery:
+                  $ref: '#/components/schemas/v2.SpansQuery'
+                type:
+                  $ref: '#/components/schemas/E2MType'
+                updateTime:
+                  description: RFC3339 timestamp of when this E2M was last updated.
+                  examples:
+                  - '2022-06-30T12:30:00.000Z'
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+              required:
+              - id
+              - name
+              - type
+              title: E2M
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceE2MResponse'
+          description: ''
+      summary: Replace an E2M
+      tags:
+      - Events2Metrics Service
+    post:
+      description: Creates a new events-to-metrics rule.
+      operationId: Events2MetricService_CreateE2M
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - required:
+                - spansQuery
+                type: object
+              - required:
+                - logsQuery
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - spansQuery
+                    type: object
+                  - required:
+                    - logsQuery
+                    type: object
+                type: object
+              properties:
+                dataSource:
+                  description: Optional data source in namespace/dataset_name format. If not set, defaults to the standard logs/spans stream.
+                  examples:
+                  - my_namespace/my_dataset
+                  maxLength: 300
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                description:
+                  description: Human-readable description for the new E2M.
+                  examples:
+                  - avg and max the latency of catalog service
+                  maxLength: 2000
+                  minLength: 0
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                logsQuery:
+                  $ref: '#/components/schemas/v2.LogsQuery'
+                metricFields:
+                  description: Metric fields to create and aggregate from the events.
+                  items:
+                    $ref: '#/components/schemas/v2.MetricField'
+                  maxItems: 10
+                  minItems: 0
+                  type: array
+                metricLabels:
+                  description: Metric labels to attach to the generated metrics.
+                  items:
+                    $ref: '#/components/schemas/MetricLabel'
+                  maxItems: 10
+                  minItems: 0
+                  type: array
+                name:
+                  description: Human-readable name for the new E2M.
+                  examples:
+                  - Service catalog latency
+                  maxLength: 255
+                  minLength: 1
+                  pattern: ^[\s\S]*$
+                  type: string
+                  x-coralogix-presence: true
+                permutationsLimit:
+                  description: Maximum number of unique metric permutations allowed for this E2M.
+                  examples:
+                  - 30000
+                  format: int32
+                  maximum: 10000000
+                  minimum: 1
+                  type: integer
+                  x-coralogix-presence: true
+                spansQuery:
+                  $ref: '#/components/schemas/v2.SpansQuery'
+                type:
+                  $ref: '#/components/schemas/E2MType'
+              required:
+              - name
+              - type
+              title: E2M Create Params
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateE2MResponse'
+          description: ''
+      summary: Create a new E2M
+      tags:
+      - Events2Metrics Service
+  /events2metrics/events2metrics/v2/all/execute:
+    post:
+      description: Atomically executes a batch of events-to-metrics rules.
+      operationId: Events2MetricService_AtomicBatchExecuteE2M
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request containing an atomic list of events-to-metrics actions to execute.
+              properties:
+                requests:
+                  description: The requests.
+                  items:
+                    $ref: '#/components/schemas/E2MExecutionRequest'
+                  maxItems: 100
+                  minItems: 1
+                  type: array
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtomicBatchExecuteE2MResponse'
+          description: ''
+      summary: Atomic Batch Execute E2M
+      tags:
+      - Events2Metrics Service
+  /events2metrics/events2metrics/v2/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: Unique identifier.
+      required: true
+      schema:
+        description: Unique identifier.
+        examples:
+        - d6a3658e-78d2-47d0-9b81-b2c551f01b09
+        maxLength: 36
+        minLength: 36
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        type: string
+        x-coralogix-presence: true
+    get:
+      description: Returns the details of the specified events-to-metrics rule.
+      operationId: Events2MetricService_GetE2M
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetE2MResponse'
+          description: ''
+      summary: Get an E2M
+      tags:
+      - Events2Metrics Service
+    delete:
+      description: Deletes the events-to-metrics rule with the specified ID.
+      operationId: Events2MetricService_DeleteE2M
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteE2MResponse'
+          description: ''
+      summary: Delete an E2M
+      tags:
+      - Events2Metrics Service
+  /events2metrics/labels/v2/cardinalities:
+    get:
+      description: Returns cardinality information for events-to-metrics labels.
+      operationId: Events2MetricService_ListLabelsCardinality
+      parameters:
+      - description: Spans-based query used to evaluate label cardinality.
+        in: query
+        name: spans_query
+        required: false
+        schema:
+          externalDocs:
+            description: Find out more about events2metrics
+            url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+          properties:
+            actionFilters:
+              description: The action filters.
+              items:
+                description: The action filters.
+                examples:
+                - myAction
+                maxLength: 4096
+                minLength: 0
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+            applicationnameFilters:
+              description: The applicationname filters.
+              items:
+                description: The applicationname filters.
+                examples:
+                - myApp
+                maxLength: 4096
+                minLength: 0
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+            lucene:
+              description: The lucene.
+              examples:
+              - applicationName:myApp
+              maxLength: 10000
+              minLength: 0
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            serviceFilters:
+              description: The service filters.
+              items:
+                description: The service filters.
+                examples:
+                - myService
+                maxLength: 4096
+                minLength: 0
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+            subsystemnameFilters:
+              description: The subsystemname filters.
+              items:
+                description: The subsystemname filters.
+                examples:
+                - mySubsystem
+                maxLength: 4096
+                minLength: 0
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+          title: SpansQuery
+          type: object
+      - description: Logs-based query used to evaluate label cardinality.
+        in: query
+        name: logs_query
+        required: false
+        schema:
+          externalDocs:
+            description: Find out more about events2metrics
+            url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+          properties:
+            alias:
+              description: The alias.
+              examples:
+              - new_query
+              maxLength: 255
+              minLength: 1
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            applicationnameFilters:
+              description: The applicationname filters.
+              items:
+                description: The applicationname filters.
+                examples:
+                - app_name
+                maxLength: 4096
+                minLength: 0
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+            lucene:
+              description: The lucene.
+              examples:
+              - 'log_obj.numeric_field: [50 TO 100]'
+              maxLength: 10000
+              minLength: 0
+              pattern: ^[\s\S]*$
+              type: string
+              x-coralogix-presence: true
+            severityFilters:
+              description: The severity filters.
+              items:
+                $ref: '#/components/schemas/logs2metrics.v2.Severity'
+              maxItems: 7
+              minItems: 0
+              type: array
+            subsystemnameFilters:
+              description: The subsystemname filters.
+              items:
+                description: The subsystemname filters.
+                examples:
+                - sub_name
+                maxLength: 4096
+                minLength: 0
+                pattern: ^[\s\S]*$
+                type: string
+              maxItems: 1000
+              minItems: 0
+              type: array
+          title: SpansQuery
+          type: object
+      - description: The metric labels to evaluate cardinality for.
+        in: query
+        name: metric_labels
+        required: false
+        schema:
+          description: The metric labels to evaluate cardinality for.
+          items:
+            externalDocs:
+              description: Find out more about events2metrics
+              url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+            properties:
+              sourceField:
+                description: The source field.
+                examples:
+                - log_obj.string_value
+                maxLength: 255
+                minLength: 1
+                pattern: ^[\s\S]*$
+                type: string
+                x-coralogix-presence: true
+              targetLabel:
+                description: The target label.
+                examples:
+                - alias_label_name
+                maxLength: 255
+                minLength: 1
+                pattern: ^[\w/-]+$
+                type: string
+                x-coralogix-presence: true
+            required:
+            - targetLabel
+            - sourceField
+            title: Metric Label
+            type: object
+          maxItems: 10
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLabelsCardinalityResponse'
+          description: ''
+      summary: List E2M Labels Cardinality
+      tags:
+      - Events2Metrics Service
+  /events2metrics/limits/v2:
+    get:
+      description: Returns the events-to-metrics quota limits for the team.
+      operationId: Events2MetricService_GetLimits
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLimitsResponse'
+          description: ''
+      summary: Get E2M Limits
+      tags:
+      - Events2Metrics Service
+components:
+  schemas:
+    E2M:
+      title: E2M
+      required:
+      - id
+      - name
+      - type
+      type: object
+      oneOf:
+      - required:
+        - spansQuery
+        type: object
+      - required:
+        - logsQuery
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - spansQuery
+            type: object
+          - required:
+            - logsQuery
+            type: object
+      properties:
+        createTime:
+          description: RFC3339 timestamp of when this E2M was created.
+          examples:
+          - '2022-06-30T12:30:00.000Z'
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        dataSource:
+          description: Optional data source in namespace/dataset_name format. If not set, defaults to the standard logs/spans stream.
+          examples:
+          - my_namespace/my_dataset
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description of this E2M.
+          examples:
+          - avg and max the latency of catalog service
+          maxLength: 2000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        id:
+          description: Unique identifier for this E2M. Required on update requests.
+          examples:
+          - d6a3658e-78d2-47d0-9b81-b2c551f01b09
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+        isInternal:
+          description: Indicates whether this E2M is for internal use only.
+          type: boolean
+          x-coralogix-presence: true
+        logsQuery:
+          $ref: '#/components/schemas/v2.LogsQuery'
+        metricFields:
+          maxItems: 10
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v2.MetricField'
+          description: Metric fields to extract and aggregate from the events.
+        metricLabels:
+          maxItems: 10
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricLabel'
+          description: Metric labels to attach to the generated metrics.
+        name:
+          description: Human-readable name for this E2M.
+          examples:
+          - Service_catalog_latency
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permutations:
+          $ref: '#/components/schemas/E2MPermutations'
+        spansQuery:
+          $ref: '#/components/schemas/v2.SpansQuery'
+        type:
+          $ref: '#/components/schemas/E2MType'
+        updateTime:
+          description: RFC3339 timestamp of when this E2M was last updated.
+          examples:
+          - '2022-06-30T12:30:00.000Z'
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    ReplaceE2MResponse:
+      title: Replace E2M Response
+      required:
+      - e2m
+      type: object
+      properties:
+        e2m:
+          allOf:
+          - $ref: '#/components/schemas/E2M'
+          description: The e2m.
+      description: This data structure is obtained when replacing an existing event to metric definition
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    v2.Aggregation:
+      title: Aggregation
+      required:
+      - aggType
+      - targetMetricName
+      type: object
+      oneOf:
+      - required:
+        - none
+        type: object
+      - required:
+        - samples
+        type: object
+      - required:
+        - histogram
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - none
+            type: object
+          - required:
+            - samples
+            type: object
+          - required:
+            - histogram
+            type: object
+      properties:
+        aggType:
+          $ref: '#/components/schemas/AggType'
+        enabled:
+          type: boolean
+          description: Whether this resource is enabled.
+        histogram:
+          allOf:
+          - $ref: '#/components/schemas/E2MAggHistogram'
+          description: e2m aggregate histogram type metadata
+        none:
+          type: object
+          description: Marker indicating no additional metadata is needed for this aggregation type.
+        samples:
+          $ref: '#/components/schemas/E2MAggSamples'
+        targetMetricName:
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          description: Name of the target metric produced by this aggregation.
+          examples:
+          - alias_field_name_agg_func
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    v2.LogsQuery:
+      title: SpansQuery
+      type: object
+      properties:
+        alias:
+          description: The alias.
+          examples:
+          - new_query
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        applicationnameFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The applicationname filters.
+            examples:
+            - app_name
+          description: The applicationname filters.
+        lucene:
+          description: The lucene.
+          examples:
+          - 'log_obj.numeric_field: [50 TO 100]'
+          maxLength: 10000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        severityFilters:
+          maxItems: 7
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/logs2metrics.v2.Severity'
+          description: The severity filters.
+        subsystemnameFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The subsystemname filters.
+            examples:
+            - sub_name
+          description: The subsystemname filters.
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    AggType:
+      enum:
+      - AGG_TYPE_UNSPECIFIED
+      - AGG_TYPE_MIN
+      - AGG_TYPE_MAX
+      - AGG_TYPE_COUNT
+      - AGG_TYPE_AVG
+      - AGG_TYPE_SUM
+      - AGG_TYPE_HISTOGRAM
+      - AGG_TYPE_SAMPLES
+      type: string
+      description: Agg type.
+    DeleteE2MRequest:
+      title: Delete E2M Request
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          examples:
+          - d6a3658e-78d2-47d0-9b81-b2c551f01b09
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    E2MExecutionRequest:
+      type: object
+      oneOf:
+      - required:
+        - create
+        type: object
+      - required:
+        - replace
+        type: object
+      - required:
+        - delete
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - create
+            type: object
+          - required:
+            - replace
+            type: object
+          - required:
+            - delete
+            type: object
+      properties:
+        create:
+          $ref: '#/components/schemas/CreateE2MRequest'
+        delete:
+          $ref: '#/components/schemas/DeleteE2MRequest'
+        replace:
+          $ref: '#/components/schemas/ReplaceE2MRequest'
+    E2MExecutionResponse:
+      type: object
+      oneOf:
+      - required:
+        - created
+        type: object
+      - required:
+        - replaced
+        type: object
+      - required:
+        - deleted
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - created
+            type: object
+          - required:
+            - replaced
+            type: object
+          - required:
+            - deleted
+            type: object
+      properties:
+        created:
+          $ref: '#/components/schemas/CreateE2MResponse'
+        deleted:
+          $ref: '#/components/schemas/DeleteE2MResponse'
+        replaced:
+          $ref: '#/components/schemas/ReplaceE2MResponse'
+    E2MPermutations:
+      title: E2M Permutations
+      required:
+      - limit
+      - hasExceededLimit
+      type: object
+      properties:
+        hasExceededLimit:
+          type: boolean
+          description: Whether the permutations exceeded the limit. Set by the server; a value sent by the client is ignored.
+          readOnly: true
+        limit:
+          maximum: 10000000
+          minimum: 1
+          type: integer
+          description: Limit.
+          format: int32
+          examples:
+          - 30000
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    LabelsPermutationsCardinalityDay:
+      type: object
+      properties:
+        day:
+          maxLength: 10
+          minLength: 10
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          type: string
+          description: The day, formatted as YYYY-MM-DD.
+        permutations:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Number of label permutations for this day.
+          format: int32
+    E2MAggSamples:
+      title: E2M Aggregate Samples
+      required:
+      - sampleType
+      type: object
+      properties:
+        sampleType:
+          $ref: '#/components/schemas/SampleType'
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    DeleteE2MResponse:
+      title: Delete E2M Request
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          description: Unique identifier.
+          maxLength: 36
+          minLength: 36
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          x-coralogix-presence: true
+      description: This data structure is obtained when deleting an existing event to metric definition
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    logs2metrics.v2.Severity:
+      enum:
+      - SEVERITY_UNSPECIFIED
+      - SEVERITY_DEBUG
+      - SEVERITY_VERBOSE
+      - SEVERITY_INFO
+      - SEVERITY_WARNING
+      - SEVERITY_ERROR
+      - SEVERITY_CRITICAL
+      type: string
+      description: Severity.
+    CreateE2MResponse:
+      type: object
+      properties:
+        e2m:
+          allOf:
+          - $ref: '#/components/schemas/E2M'
+          description: The e2m.
+      description: Create e2m response.
+    CreateE2MRequest:
+      title: Create E2M Request
+      required:
+      - e2m
+      type: object
+      properties:
+        e2m:
+          allOf:
+          - $ref: '#/components/schemas/E2MCreateParams'
+          description: The e2m.
+      description: This is used to create a new event to metric definition
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    v2.MetricField:
+      title: Metric Field
+      required:
+      - targetBaseMetricName
+      - sourceField
+      - aggregations
+      type: object
+      properties:
+        aggregations:
+          maxItems: 7
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v2.Aggregation'
+          description: The aggregations.
+        sourceField:
+          description: The source field.
+          examples:
+          - log_obj.numeric_field
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        targetBaseMetricName:
+          description: The target base metric name.
+          examples:
+          - alias_field_name
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\w/-]+$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    GetE2MResponse:
+      title: Get E2M Response
+      required:
+      - e2m
+      type: object
+      properties:
+        e2m:
+          allOf:
+          - $ref: '#/components/schemas/E2M'
+          description: The e2m.
+      description: This data structure is obtained when retrieving an existing event to metric definition
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    GetLimitsResponse:
+      type: object
+      properties:
+        companyId:
+          description: The company id.
+          examples:
+          - '123456'
+          maxLength: 20
+          minLength: 1
+          pattern: ^[0-9]+$
+          type: string
+          x-coralogix-presence: true
+        labelsLimit:
+          maximum: 255
+          minimum: 0
+          type: integer
+          description: The labels limit.
+          format: int32
+        metricsLimit:
+          $ref: '#/components/schemas/LimitUsage'
+        permutationsLimit:
+          $ref: '#/components/schemas/LimitUsage'
+      description: Response containing the events-to-metrics quota limits.
+    AtomicBatchExecuteE2MResponse:
+      type: object
+      properties:
+        matchingResponses:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/E2MExecutionResponse'
+          description: The matching responses.
+      description: Response returned after atomically executing a batch of events-to-metrics rules.
+    E2MAggHistogram:
+      title: E2M Aggregate Histogram
+      type: object
+      properties:
+        buckets:
+          maxItems: 64
+          minItems: 0
+          type: array
+          items:
+            type: number
+            description: The buckets.
+            format: float
+            examples:
+            - 2
+          description: The buckets.
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    ListE2MResponse:
+      title: List E2M Response
+      required:
+      - e2m
+      type: object
+      properties:
+        e2m:
+          maxItems: 10000
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/E2M'
+          description: The e2m.
+      description: This is the response obtained when listing all event to metric definitions
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    v2.SpansQuery:
+      title: SpansQuery
+      type: object
+      properties:
+        actionFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The action filters.
+            examples:
+            - myAction
+          description: The action filters.
+        applicationnameFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The applicationname filters.
+            examples:
+            - myApp
+          description: The applicationname filters.
+        lucene:
+          description: The lucene.
+          examples:
+          - applicationName:myApp
+          maxLength: 10000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        serviceFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The service filters.
+            examples:
+            - myService
+          description: The service filters.
+        subsystemnameFilters:
+          maxItems: 1000
+          minItems: 0
+          type: array
+          items:
+            maxLength: 4096
+            minLength: 0
+            pattern: ^[\s\S]*$
+            type: string
+            description: The subsystemname filters.
+            examples:
+            - mySubsystem
+          description: The subsystemname filters.
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    LimitUsage:
+      type: object
+      properties:
+        limit:
+          description: Limit.
+          format: int32
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+        used:
+          description: Used.
+          format: int32
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          x-coralogix-presence: true
+      description: Limit usage.
+    E2MType:
+      enum:
+      - E2M_TYPE_UNSPECIFIED
+      - E2M_TYPE_LOGS2METRICS
+      - E2M_TYPE_SPANS2METRICS
+      type: string
+      description: E2 m type.
+    SampleType:
+      enum:
+      - SAMPLE_TYPE_UNSPECIFIED
+      - SAMPLE_TYPE_MIN
+      - SAMPLE_TYPE_MAX
+      type: string
+      description: Sample type.
+    MetricLabel:
+      title: Metric Label
+      required:
+      - targetLabel
+      - sourceField
+      type: object
+      properties:
+        sourceField:
+          description: The source field.
+          examples:
+          - log_obj.string_value
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        targetLabel:
+          description: The target label.
+          examples:
+          - alias_label_name
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\w/-]+$
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    E2MCreateParams:
+      title: E2M Create Params
+      required:
+      - name
+      - type
+      type: object
+      oneOf:
+      - required:
+        - spansQuery
+        type: object
+      - required:
+        - logsQuery
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - spansQuery
+            type: object
+          - required:
+            - logsQuery
+            type: object
+      properties:
+        dataSource:
+          description: Optional data source in namespace/dataset_name format. If not set, defaults to the standard logs/spans stream.
+          examples:
+          - my_namespace/my_dataset
+          maxLength: 300
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description for the new E2M.
+          examples:
+          - avg and max the latency of catalog service
+          maxLength: 2000
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        logsQuery:
+          $ref: '#/components/schemas/v2.LogsQuery'
+        metricFields:
+          maxItems: 10
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/v2.MetricField'
+          description: Metric fields to create and aggregate from the events.
+        metricLabels:
+          maxItems: 10
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricLabel'
+          description: Metric labels to attach to the generated metrics.
+        name:
+          description: Human-readable name for the new E2M.
+          examples:
+          - Service catalog latency
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+          x-coralogix-presence: true
+        permutationsLimit:
+          description: Maximum number of unique metric permutations allowed for this E2M.
+          examples:
+          - 30000
+          format: int32
+          maximum: 10000000
+          minimum: 1
+          type: integer
+          x-coralogix-presence: true
+        spansQuery:
+          $ref: '#/components/schemas/v2.SpansQuery'
+        type:
+          $ref: '#/components/schemas/E2MType'
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    ReplaceE2MRequest:
+      title: Replace E2M Request
+      required:
+      - e2m
+      type: object
+      properties:
+        e2m:
+          allOf:
+          - $ref: '#/components/schemas/E2M'
+          description: The e2m.
+      externalDocs:
+        description: Find out more about events2metrics
+        url: https://coralogix.com/docs/user-guides/monitoring-and-insights/events2metrics/
+    ListLabelsCardinalityResponse:
+      type: object
+      properties:
+        permutations:
+          maxItems: 366
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelsPermutationsCardinalityDay'
+          description: List of permutations.
+      description: Response containing label cardinality data for events-to-metrics rules.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

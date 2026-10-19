@@ -1,0 +1,340 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management API Keys Admin Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: API Keys Admin Service
+  description: Administrative operations for API Keys management.
+paths:
+  /aaa/api-keys/v3:
+    get:
+      description: Retrieve all API keys for team members.
+      operationId: ApiKeysAdminService_GetTeamMembersApiKeys
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTeamMembersApiKeysResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Team Members API Keys
+      tags:
+      - API Keys Admin Service
+  /aaa/api-keys/v3/all/delete:
+    post:
+      description: Delete specified API keys.
+      operationId: ApiKeysAdminService_DeleteApiKeys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                keyIds:
+                  description: List of API key IDs to delete.
+                  items:
+                    description: List of API key IDs to delete.
+                    examples:
+                    - key_abc123
+                    minLength: 0
+                    type: string
+                  minItems: 0
+                  type: array
+              title: Delete API Keys Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteApiKeysResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete API Keys
+      tags:
+      - API Keys Admin Service
+  /aaa/api-keys/v3/all/status:
+    post:
+      description: Activate or deactivate specified API keys.
+      operationId: ApiKeysAdminService_UpdateApiKeysStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                updates:
+                  description: The updates.
+                  items:
+                    $ref: '#/components/schemas/ApiKeyStatusUpdate'
+                  minItems: 0
+                  type: array
+              title: Update API Keys Status Request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateApiKeysStatusResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Update API Keys Status
+      tags:
+      - API Keys Admin Service
+components:
+  schemas:
+    ApiKeySummary:
+      title: API Key Summary
+      type: object
+      properties:
+        apiKey:
+          $ref: '#/components/schemas/v3.ApiKey'
+        permissions:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of permissions.
+            examples:
+            - logs:read
+          description: List of permissions.
+        presets:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionsPreset'
+          description: List of permission presets.
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    PermissionsPreset:
+      title: Permissions Preset
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier.
+          format: int32
+          examples:
+          - 1
+        name:
+          minLength: 0
+          type: string
+          description: Display name.
+          examples:
+          - my_preset
+        permissions:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of permissions.
+            examples:
+            - logs:read
+          description: List of permissions.
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    ApiKeyStatusUpdate:
+      title: API Key Status Update
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Whether this resource is active.
+          examples:
+          - true
+        keyId:
+          minLength: 0
+          type: string
+          description: Key identifier.
+          examples:
+          - key_abc123
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    GetTeamMembersApiKeysResponse:
+      title: Get Team Members API Keys Response
+      type: object
+      properties:
+        keys:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKeySummary'
+          description: The keys.
+      description: This data structure is the response obtained when retrieving team members API keys.
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    v3.ApiKey:
+      title: API Key
+      type: object
+      properties:
+        createdAt:
+          description: The timestamp when the API key was created.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        id:
+          minLength: 0
+          type: string
+          description: Unique identifier.
+          examples:
+          - key_abc123
+        isActive:
+          type: boolean
+          description: Whether this resource is active.
+        keyName:
+          minLength: 0
+          type: string
+          description: The key name.
+          examples:
+          - my_api_key
+        lastActivated:
+          description: The timestamp when the API key was last activated.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        owner:
+          $ref: '#/components/schemas/ApiKeyOwner'
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    ApiKeyUserOwner:
+      title: API Key User Owner
+      type: object
+      properties:
+        userEmail:
+          minLength: 0
+          type: string
+          description: The user email.
+          examples:
+          - test@example.com
+        userId:
+          minLength: 0
+          type: string
+          description: The user id.
+          examples:
+          - user_123
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    DeleteApiKeysResponse:
+      title: Delete API Keys Response
+      type: object
+      additionalProperties: false
+      description: This data structure is the response obtained after deleting API keys.
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    ApiKeyOwner:
+      title: API Key Owner
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/ApiKeyUserOwner'
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+    UpdateApiKeysStatusResponse:
+      title: Update API Keys Status Response
+      type: object
+      additionalProperties: false
+      description: This data structure is the response obtained after updating API keys status.
+      externalDocs:
+        description: Find out more about api keys
+        url: https://coralogix.com/docs/user-guides/account-management/api-keys/api-keys/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

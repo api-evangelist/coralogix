@@ -1,0 +1,289 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Target Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Target Service
+  description: View and manage your storage targets for logs.
+  externalDocs:
+    description: Find out more about archives
+    url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+paths:
+  /logs/data-setup/v2:
+    get:
+      description: Returns the current log archive target configuration.
+      operationId: S3TargetService_GetTarget
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/S3TargetServiceGetTargetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get target
+      tags:
+      - Target Service
+    post:
+      description: Sets the log archive target configuration.
+      operationId: S3TargetService_SetTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                format:
+                  $ref: '#/components/schemas/TargetFormat'
+                isActive:
+                  description: Whether archiving to this target is active.
+                  examples:
+                  - true
+                  type: boolean
+                s3:
+                  $ref: '#/components/schemas/S3TargetSpec'
+              required:
+              - isActive
+              - s3
+              title: Set Target Response
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/S3TargetServiceSetTargetResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Set target
+      tags:
+      - Target Service
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    IBMCosTargetSpec:
+      title: IBM COS Target Spec
+      required:
+      - bucketCrn
+      - endpoint
+      type: object
+      properties:
+        bucketCrn:
+          minLength: 0
+          type: string
+          description: The bucket crn.
+          examples:
+          - bucket_crn
+        bucketType:
+          allOf:
+          - $ref: '#/components/schemas/IbmBucketType'
+          examples:
+          - '0'
+          x-coralogix-presence: true
+        endpoint:
+          minLength: 0
+          type: string
+          description: Endpoint.
+          examples:
+          - http://some.endpoint.com:8081
+        serviceCrn:
+          description: The service crn.
+          examples:
+          - service_crn
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    ArchiveSpec:
+      title: Archive Spec
+      type: object
+      properties:
+        archivingFormatId:
+          minLength: 0
+          type: string
+          description: The archiving format ID.
+          examples:
+          - json_id
+          deprecated: true
+        enableTags:
+          type: boolean
+          description: The enable tags.
+          examples:
+          - true
+        format:
+          $ref: '#/components/schemas/TargetFormat'
+        isActive:
+          type: boolean
+          description: Whether archiving to this target is active.
+          examples:
+          - true
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    S3TargetServiceGetTargetResponse:
+      title: Get Target Response
+      required:
+      - target
+      type: object
+      properties:
+        target:
+          $ref: '#/components/schemas/v2.Target'
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    S3TargetSpec:
+      title: S3 Target Spec
+      required:
+      - bucket
+      type: object
+      properties:
+        bucket:
+          minLength: 3
+          type: string
+          description: Bucket name.
+          examples:
+          - bucket
+        externalId:
+          description: External identifier.
+          examples:
+          - f47ac10b-58cc-4372-a567-0e02b2c3d479
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        region:
+          description: Region.
+          examples:
+          - us-west-2
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        roleArn:
+          description: The role arn.
+          examples:
+          - arn:aws:iam::123456789012:role/CoralogixArchive
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    TargetFormat:
+      enum:
+      - TARGET_FORMAT_UNSPECIFIED
+      - TARGET_FORMAT_CX_DATA_V1
+      type: string
+      description: Target format.
+    IbmBucketType:
+      enum:
+      - IBM_BUCKET_TYPE_UNSPECIFIED
+      - IBM_BUCKET_TYPE_EXTERNAL
+      - IBM_BUCKET_TYPE_INTERNAL
+      type: string
+      description: Ibm bucket type.
+    S3TargetServiceSetTargetResponse:
+      title: Set Target Response
+      required:
+      - target
+      type: object
+      properties:
+        target:
+          $ref: '#/components/schemas/v2.Target'
+      description: This data structure is obtained after setting a storage target for logs.
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+    v2.Target:
+      title: Target
+      required:
+      - archiveSpec
+      type: object
+      oneOf:
+      - required:
+        - s3
+        type: object
+      - required:
+        - ibmCos
+        type: object
+      properties:
+        archiveSpec:
+          $ref: '#/components/schemas/ArchiveSpec'
+        ibmCos:
+          $ref: '#/components/schemas/IBMCosTargetSpec'
+        s3:
+          $ref: '#/components/schemas/S3TargetSpec'
+      externalDocs:
+        description: Find out more about archives
+        url: https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

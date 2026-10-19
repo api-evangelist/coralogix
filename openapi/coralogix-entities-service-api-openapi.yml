@@ -1,0 +1,162 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Entities service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Entities service
+  description: Query information about registered entities in the notification center
+  externalDocs:
+    description: Lean more about the notification center in our documentation
+    url: https://coralogix.com/docs/user-guides/notification-center/introduction/
+paths:
+  /notifications/notification-center/v1/entity-types:
+    get:
+      description: Returns all available notification entity types.
+      operationId: EntitiesService_ListEntityTypes
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEntityTypesResponse'
+          description: ''
+      summary: List Entity Types
+      tags:
+      - Entities service
+  /notifications/notification-center/v1/entity-types/{entity_type}/attachment-types:
+    get:
+      description: Returns all supported attachment types for the specified entity type.
+      operationId: EntitiesService_ListEntityTypeAttachmentTypes
+      parameters:
+      - description: Entity type whose supported attachment types to list.
+        in: path
+        name: entity_type
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: Entity type whose supported attachment types to list.
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                supportedAttachmentTypes:
+                - defaultEnabled: true
+                  name: alert_graph
+                - defaultEnabled: false
+                  name: log_example
+              schema:
+                $ref: '#/components/schemas/ListEntityTypeAttachmentTypesResponse'
+          description: ''
+      summary: List Entity Type Attachment Types
+      tags:
+      - Entities service
+  /notifications/notification-center/v1/entity-types/{entity_type}/entity-subtypes:
+    get:
+      description: Returns all sub-types for the specified entity type.
+      operationId: EntitiesService_ListEntitySubTypes
+      parameters:
+      - description: Entity type whose sub-types to list.
+        in: path
+        name: entity_type
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/notification_center.EntityType'
+          description: Entity type whose sub-types to list.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEntitySubTypesResponse'
+          description: ''
+      summary: List Entity Subtypes
+      tags:
+      - Entities service
+components:
+  schemas:
+    ListEntityTypeAttachmentTypesResponse:
+      type: object
+      properties:
+        supportedAttachmentTypes:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityTypeAttachmentType'
+          description: The supported attachment types.
+      description: Response containing a list of supported attachment types for the entity type.
+    EntityTypeAttachmentType:
+      type: object
+      properties:
+        defaultEnabled:
+          type: boolean
+          description: Whether this attachment type is included by default when policy is Auto.
+          examples:
+          - true
+        name:
+          maxLength: 100
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Attachment type identifier (e.g. 'alert_graph', 'log_example').
+          examples:
+          - alert_graph
+      description: Supported attachment type with its default enabled state.
+    notification_center.EntityType:
+      enum:
+      - ENTITY_TYPE_UNSPECIFIED
+      - ALERTS
+      - TEST_NOTIFICATIONS
+      - CASES
+      - OLLY_SCHEDULED_TASKS
+      type: string
+      description: Entity type.
+    ListEntityTypesResponse:
+      type: object
+      properties:
+        entityTypes:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/notification_center.EntityType'
+          description: The supported payload types.
+      description: Response containing a list of notification entity types.
+    ListEntitySubTypesResponse:
+      type: object
+      properties:
+        entitySubTypes:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The entity sub types.
+          description: The entity sub types.
+      description: Response containing a list of notification entity sub-types.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

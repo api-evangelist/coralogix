@@ -1,0 +1,1874 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management Slos Service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: Slos Service
+  description: A service for managing Service Level Objectives (SLOs).
+paths:
+  /slo/slos/v1:
+    get:
+      description: Returns SLOs matching the given criteria.
+      operationId: SlosService_ListSlos
+      parameters:
+      - description: The filters.
+        in: query
+        name: filters
+        required: false
+        schema:
+          description: The filters.
+          items:
+            description: A filter for SLOs, consisting of a field and a predicate
+            properties:
+              field:
+                description: Field used for filtering SLOs
+                oneOf:
+                - required:
+                  - constFilter
+                  type: object
+                - required:
+                  - labelName
+                  type: object
+                - required:
+                  - sloType
+                  type: object
+                - required:
+                  - productType
+                  type: object
+                - required:
+                  - serviceName
+                  type: object
+                - required:
+                  - ownershipServiceValues
+                  type: object
+                - required:
+                  - ownershipEnvironmentValues
+                  type: object
+                - required:
+                  - ownershipTeamValues
+                  type: object
+                - not:
+                    anyOf:
+                    - required:
+                      - constFilter
+                      type: object
+                    - required:
+                      - labelName
+                      type: object
+                    - required:
+                      - sloType
+                      type: object
+                    - required:
+                      - productType
+                      type: object
+                    - required:
+                      - serviceName
+                      type: object
+                    - required:
+                      - ownershipServiceValues
+                      type: object
+                    - required:
+                      - ownershipEnvironmentValues
+                      type: object
+                    - required:
+                      - ownershipTeamValues
+                      type: object
+                  type: object
+                properties:
+                  constFilter:
+                    $ref: '#/components/schemas/SloConstantFilterField'
+                  labelName:
+                    description: Filter by a specific SLO label key.
+                    examples:
+                    - environment
+                    minLength: 0
+                    type: string
+                  ownershipEnvironmentValues:
+                    allOf:
+                    - $ref: '#/components/schemas/StringValues'
+                    description: 'Filter by the SLO ownership environment tag (static or resolved). IN semantics: match if the value equals any of the given strings. Applies whenever the SLO has ownership configured for environment; not limited to a specific product type.'
+                  ownershipServiceValues:
+                    allOf:
+                    - $ref: '#/components/schemas/StringValues'
+                    description: 'Filter by the SLO ownership service tag (static or resolved). IN semantics: match if the value equals any of the given strings. Applies whenever the SLO has ownership configured for service; not limited to a specific product type.'
+                  ownershipTeamValues:
+                    allOf:
+                    - $ref: '#/components/schemas/StringValues'
+                    description: 'Filter by the SLO ownership team tag (static or resolved). IN semantics: match if the value equals any of the given strings. Applies whenever the SLO has ownership configured for team; not limited to a specific product type.'
+                  productType:
+                    description: Filter discriminator for SLO product type values.
+                    type: boolean
+                  serviceName:
+                    description: Filter by service name from the APM SLI services list (not ownership tags). Only valid for APM product SLOs. MUST be used together with a product_type filter that includes APM; the server may reject the request otherwise. To filter by configured ownership service on any SLO type, use ownership_service_values instead.
+                    examples:
+                    - payment-service
+                    minLength: 0
+                    type: string
+                  sloType:
+                    description: Filter discriminator for SLO type values.
+                    type: boolean
+                title: SloFilterField
+                type: object
+              predicate:
+                description: Predicate used for filtering SLOs
+                properties:
+                  is:
+                    description: Predicate for SLO filters that checks if a field is equal to one of multiple values
+                    oneOf:
+                    - required:
+                      - stringValues
+                      type: object
+                    - required:
+                      - typeValues
+                      type: object
+                    - required:
+                      - productTypeValues
+                      type: object
+                    - not:
+                        anyOf:
+                        - required:
+                          - stringValues
+                          type: object
+                        - required:
+                          - typeValues
+                          type: object
+                        - required:
+                          - productTypeValues
+                          type: object
+                      type: object
+                    properties:
+                      productTypeValues:
+                        $ref: '#/components/schemas/ProductTypeValues'
+                      stringValues:
+                        $ref: '#/components/schemas/StringValues'
+                      typeValues:
+                        $ref: '#/components/schemas/TypeValues'
+                    title: IsFilterPredicate
+                    type: object
+                title: SloFilterPredicate
+                type: object
+            title: SloFilter
+            type: object
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSlosResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: List Slos
+      tags:
+      - Slos Service
+    put:
+      description: Updates an existing SLO.
+      operationId: SlosService_ReplaceSlo
+      parameters:
+      - description: Whether to silence data validations.
+        in: query
+        name: silence_data_validations
+        required: false
+        schema:
+          deprecated: true
+          description: Whether to silence data validations.
+          type: boolean
+          x-coralogix-presence: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Definition of an SLO
+              oneOf:
+              - required:
+                - requestBasedMetricSli
+                type: object
+              - required:
+                - windowBasedMetricSli
+                type: object
+              - required:
+                - apmSli
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - requestBasedMetricSli
+                    type: object
+                  - required:
+                    - windowBasedMetricSli
+                    type: object
+                  - required:
+                    - apmSli
+                    type: object
+                type: object
+              properties:
+                apmSli:
+                  $ref: '#/components/schemas/ApmSli'
+                apmSliMetadata:
+                  allOf:
+                  - $ref: '#/components/schemas/ApmSli'
+                  description: Server copy of apmSli for APM SLOs. Set by the server; sending it instead of apmSli is rejected.
+                  readOnly: true
+                createTime:
+                  description: RFC3339 timestamp of when the SLO was created. Set by the server; a value sent by the client is ignored.
+                  format: date-time
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                creator:
+                  description: Email or identifier of the user who created the SLO. Set by the server; a value sent by the client is ignored.
+                  examples:
+                  - test@domain.com
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                description:
+                  description: Human-readable description of the SLO.
+                  examples:
+                  - A brief description of my SLO
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                grouping:
+                  allOf:
+                  - $ref: '#/components/schemas/v1.Grouping'
+                  description: Grouping labels derived by the server from the SLI. A value sent by the client is rejected.
+                  readOnly: true
+                id:
+                  description: Unique identifier of the SLO.
+                  examples:
+                  - b11919d5-ef85-4bb1-8655-02640dbe94d9
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                labels:
+                  additionalProperties:
+                    minLength: 0
+                    type: string
+                  description: List of labels.
+                  type: object
+                name:
+                  description: Human-readable display name for the SLO. Required. A missing or empty name is rejected.
+                  examples:
+                  - Example Slo Name
+                  minLength: 1
+                  type: string
+                ownershipTags:
+                  allOf:
+                  - $ref: '#/components/schemas/SloOwnershipTags'
+                  description: Service, environment, and team ownership configuration for the SLO group and its permutations.
+                productType:
+                  allOf:
+                  - $ref: '#/components/schemas/SloProductType'
+                  description: 'Product type: APM for application performance monitoring SLOs, UNSPECIFIED for manual/custom SLOs'
+                  examples:
+                  - SLO_PRODUCT_TYPE_APM
+                  x-coralogix-presence: true
+                requestBasedMetricSli:
+                  $ref: '#/components/schemas/RequestBasedMetricSli'
+                revision:
+                  allOf:
+                  - $ref: '#/components/schemas/v1.Revision'
+                  description: Revision of the SLO. Set by the server; a value sent by the client is ignored.
+                  readOnly: true
+                sloTimeFrame:
+                  $ref: '#/components/schemas/SloTimeFrame'
+                sloType:
+                  allOf:
+                  - $ref: '#/components/schemas/SloType'
+                  description: SLO type derived by the server from the SLI. A window-based metric SLI still reads SLO_TYPE_REQUEST. A value sent by the client must match the SLI type; a different value is rejected.
+                  examples:
+                  - SLO_TYPE_REQUEST
+                  readOnly: true
+                  x-coralogix-presence: true
+                targetThresholdPercentage:
+                  description: Target compliance percentage threshold for the SLO (e.g., 99.9 for three nines).
+                  examples:
+                  - 99.999
+                  format: float
+                  type: number
+                type:
+                  deprecated: true
+                  description: 'Deprecated: SLO type string. Set by the server from the SLI; a value sent by the client is ignored.'
+                  examples:
+                  - request
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                updateTime:
+                  description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+                  format: date-time
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                windowBasedMetricSli:
+                  $ref: '#/components/schemas/WindowBasedMetricSli'
+              required:
+              - name
+              - sloTimeFrame
+              title: Slo
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceSloResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace Slo
+      tags:
+      - Slos Service
+    post:
+      description: Creates a new SLO.
+      operationId: SlosService_CreateSlo
+      parameters:
+      - description: Whether to silence data validations.
+        in: query
+        name: silence_data_validations
+        required: false
+        schema:
+          deprecated: true
+          description: Whether to silence data validations.
+          type: boolean
+          x-coralogix-presence: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Definition of an SLO
+              oneOf:
+              - required:
+                - requestBasedMetricSli
+                type: object
+              - required:
+                - windowBasedMetricSli
+                type: object
+              - required:
+                - apmSli
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - requestBasedMetricSli
+                    type: object
+                  - required:
+                    - windowBasedMetricSli
+                    type: object
+                  - required:
+                    - apmSli
+                    type: object
+                type: object
+              properties:
+                apmSli:
+                  $ref: '#/components/schemas/ApmSli'
+                apmSliMetadata:
+                  allOf:
+                  - $ref: '#/components/schemas/ApmSli'
+                  description: Server copy of apmSli for APM SLOs. Set by the server; sending it instead of apmSli is rejected.
+                  readOnly: true
+                createTime:
+                  description: RFC3339 timestamp of when the SLO was created. Set by the server; a value sent by the client is ignored.
+                  format: date-time
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                creator:
+                  description: Email or identifier of the user who created the SLO. Set by the server; a value sent by the client is ignored.
+                  examples:
+                  - test@domain.com
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                description:
+                  description: Human-readable description of the SLO.
+                  examples:
+                  - A brief description of my SLO
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                grouping:
+                  allOf:
+                  - $ref: '#/components/schemas/v1.Grouping'
+                  description: Grouping labels derived by the server from the SLI. A value sent by the client is rejected.
+                  readOnly: true
+                id:
+                  description: Unique identifier of the SLO.
+                  examples:
+                  - b11919d5-ef85-4bb1-8655-02640dbe94d9
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                labels:
+                  additionalProperties:
+                    minLength: 0
+                    type: string
+                  description: List of labels.
+                  type: object
+                name:
+                  description: Human-readable display name for the SLO. Required. A missing or empty name is rejected.
+                  examples:
+                  - Example Slo Name
+                  minLength: 1
+                  type: string
+                ownershipTags:
+                  allOf:
+                  - $ref: '#/components/schemas/SloOwnershipTags'
+                  description: Service, environment, and team ownership configuration for the SLO group and its permutations.
+                productType:
+                  allOf:
+                  - $ref: '#/components/schemas/SloProductType'
+                  description: 'Product type: APM for application performance monitoring SLOs, UNSPECIFIED for manual/custom SLOs'
+                  examples:
+                  - SLO_PRODUCT_TYPE_APM
+                  x-coralogix-presence: true
+                requestBasedMetricSli:
+                  $ref: '#/components/schemas/RequestBasedMetricSli'
+                revision:
+                  allOf:
+                  - $ref: '#/components/schemas/v1.Revision'
+                  description: Revision of the SLO. Set by the server; a value sent by the client is ignored.
+                  readOnly: true
+                sloTimeFrame:
+                  $ref: '#/components/schemas/SloTimeFrame'
+                sloType:
+                  allOf:
+                  - $ref: '#/components/schemas/SloType'
+                  description: SLO type derived by the server from the SLI. A window-based metric SLI still reads SLO_TYPE_REQUEST. A value sent by the client must match the SLI type; a different value is rejected.
+                  examples:
+                  - SLO_TYPE_REQUEST
+                  readOnly: true
+                  x-coralogix-presence: true
+                targetThresholdPercentage:
+                  description: Target compliance percentage threshold for the SLO (e.g., 99.9 for three nines).
+                  examples:
+                  - 99.999
+                  format: float
+                  type: number
+                type:
+                  deprecated: true
+                  description: 'Deprecated: SLO type string. Set by the server from the SLI; a value sent by the client is ignored.'
+                  examples:
+                  - request
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                updateTime:
+                  description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+                  format: date-time
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                windowBasedMetricSli:
+                  $ref: '#/components/schemas/WindowBasedMetricSli'
+              required:
+              - name
+              - sloTimeFrame
+              title: Slo
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSloResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create Slo
+      tags:
+      - Slos Service
+  /slo/slos/v1/all/execute:
+    post:
+      description: Triggers execution for all SLOs.
+      operationId: SlosService_BatchExecuteSlo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Request to batch execute multiple SLO operations.
+              properties:
+                requests:
+                  description: The requests.
+                  items:
+                    $ref: '#/components/schemas/SloExecutionRequest'
+                  minItems: 0
+                  type: array
+              required:
+              - requests
+              title: BatchExecuteSloRequest
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchExecuteSloResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Batch Execute Slo
+      tags:
+      - Slos Service
+  /slo/slos/v1/all/list:
+    get:
+      description: Returns all SLOs for the team.
+      operationId: SlosService_BatchGetSlos
+      parameters:
+      - description: The ids.
+        in: query
+        name: ids
+        required: true
+        schema:
+          description: The ids.
+          items:
+            description: The ids.
+            minLength: 0
+            type: string
+          minItems: 0
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchGetSlosResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Batch Get Slo
+      tags:
+      - Slos Service
+  /slo/slos/v1/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: Unique identifier.
+      required: true
+      schema:
+        minLength: 0
+        type: string
+        description: Unique identifier.
+    get:
+      description: Returns the details of the specified SLO.
+      operationId: SlosService_GetSlo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSloResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Slo
+      tags:
+      - Slos Service
+    delete:
+      description: Deletes the SLO with the specified ID.
+      operationId: SlosService_DeleteSlo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSloResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete Slo
+      tags:
+      - Slos Service
+  /slo/slos/v1/{id}/status:
+    get:
+      description: Returns lowest compliance and remaining error budget (0-1 ratios) for an SLO grouping slice over a time window.
+      operationId: SlosService_GetSloStatus
+      parameters:
+      - description: Unique identifier of the SLO.
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Unique identifier of the SLO.
+          maxLength: 256
+          minLength: 1
+          pattern: ^[\s\S]*$
+          type: string
+      - description: 'Grouping label pairs that identify the slice to evaluate, passed as repeated query values. Each entry is one pair: the substring before the first comma is the label name (must not contain a comma), and the remainder of the entry (which may contain commas, or be empty) is the label value. Example: grouping_key_value=service,api&grouping_key_value=region,eu-west-1 or grouping_key_value=service, for an empty value. When omitted or empty, every permutation is considered. When provided, each label name must appear at most once and must be one of the SLO configured grouping labels; the slice includes every atomic permutation whose labels match the given pairs (a proper subset of grouping dimensions matches all permutations that agree on those labels). `lowestCompliance` and `lowestRemainingErrorBudget` are the minimum ratio across those matching permutations, not ratios recomputed from summed events across omitted dimensions.'
+        in: query
+        name: grouping_key_value
+        required: false
+        schema:
+          description: 'Grouping label pairs that identify the slice to evaluate, passed as repeated query values. Each entry is one pair: the substring before the first comma is the label name (must not contain a comma), and the remainder of the entry (which may contain commas, or be empty) is the label value. Example: grouping_key_value=service,api&grouping_key_value=region,eu-west-1 or grouping_key_value=service, for an empty value. When omitted or empty, every permutation is considered. When provided, each label name must appear at most once and must be one of the SLO configured grouping labels; the slice includes every atomic permutation whose labels match the given pairs (a proper subset of grouping dimensions matches all permutations that agree on those labels). `lowestCompliance` and `lowestRemainingErrorBudget` are the minimum ratio across those matching permutations, not ratios recomputed from summed events across omitted dimensions.'
+          items:
+            description: 'Grouping label pairs that identify the slice to evaluate, passed as repeated query values. Each entry is one pair: the substring before the first comma is the label name (must not contain a comma), and the remainder of the entry (which may contain commas, or be empty) is the label value. Example: grouping_key_value=service,api&grouping_key_value=region,eu-west-1 or grouping_key_value=service, for an empty value. When omitted or empty, every permutation is considered. When provided, each label name must appear at most once and must be one of the SLO configured grouping labels; the slice includes every atomic permutation whose labels match the given pairs (a proper subset of grouping dimensions matches all permutations that agree on those labels). `lowestCompliance` and `lowestRemainingErrorBudget` are the minimum ratio across those matching permutations, not ratios recomputed from summed events across omitted dimensions.'
+            maxLength: 769
+            minLength: 2
+            pattern: ^[^,]+,.*$
+            type: string
+          maxItems: 50
+          minItems: 0
+          type: array
+      - description: Inclusive lower bound of the evaluation window. When omitted, defaults to the start of the SLO configured rolling time frame ending at the effective upper bound. RFC 3339 UTC date-time on a whole-minute instant (suffix `Z`, seconds `00`, no fractional seconds).
+        in: query
+        name: from
+        required: false
+        schema:
+          description: Inclusive lower bound of the evaluation window. When omitted, defaults to the start of the SLO configured rolling time frame ending at the effective upper bound. RFC 3339 UTC date-time on a whole-minute instant (suffix `Z`, seconds `00`, no fractional seconds).
+          format: date-time
+          maxLength: 20
+          minLength: 20
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00Z$
+          type: string
+          x-coralogix-presence: true
+      - description: Exclusive upper bound of the evaluation window. When omitted, defaults to the current time with sub-minute precision truncated toward zero to the preceding whole UTC minute (for example 12:30:37Z becomes 12:30:00Z). When set, RFC 3339 UTC date-time on a whole-minute instant (suffix `Z`, seconds `00`, no fractional seconds).
+        in: query
+        name: to
+        required: false
+        schema:
+          description: Exclusive upper bound of the evaluation window. When omitted, defaults to the current time with sub-minute precision truncated toward zero to the preceding whole UTC minute (for example 12:30:37Z becomes 12:30:00Z). When set, RFC 3339 UTC date-time on a whole-minute instant (suffix `Z`, seconds `00`, no fractional seconds).
+          format: date-time
+          maxLength: 20
+          minLength: 20
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00Z$
+          type: string
+          x-coralogix-presence: true
+      - description: Optional override of the target threshold percentage for this evaluation, in the range 0-100. When omitted, the target threshold percentage configured on the SLO is used.
+        in: query
+        name: target_threshold_percentage
+        required: false
+        schema:
+          description: Optional override of the target threshold percentage for this evaluation, in the range 0-100. When omitted, the target threshold percentage configured on the SLO is used.
+          format: float
+          maximum: 100
+          minimum: 0
+          type: number
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                computedAt: '2026-06-30T12:30:00.000Z'
+                effectiveFrom: '2026-06-01T00:00:00.000Z'
+                effectiveTo: '2026-06-30T12:30:00.000Z'
+                effectiveWindowCompleteData: true
+                lowestCompliance: 0.995
+                lowestRemainingErrorBudget: 0.42
+              schema:
+                $ref: '#/components/schemas/GetSloStatusResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request (for example invalid grouping slice, an evaluation window wider than 28 days after applying defaults for `from` and/or `to`, or `from` and `to` that normalize to an empty window with `effectiveFrom` >= `effectiveTo`).
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: SLO not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Slo Status
+      tags:
+      - Slos Service
+  /slo/validated/v1:
+    put:
+      description: Validates and updates an SLO.
+      operationId: SlosService_ValidateReplaceSloAlerts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Definition of an SLO
+              oneOf:
+              - required:
+                - requestBasedMetricSli
+                type: object
+              - required:
+                - windowBasedMetricSli
+                type: object
+              - required:
+                - apmSli
+                type: object
+              - not:
+                  anyOf:
+                  - required:
+                    - requestBasedMetricSli
+                    type: object
+                  - required:
+                    - windowBasedMetricSli
+                    type: object
+                  - required:
+                    - apmSli
+                    type: object
+                type: object
+              properties:
+                apmSli:
+                  $ref: '#/components/schemas/ApmSli'
+                apmSliMetadata:
+                  allOf:
+                  - $ref: '#/components/schemas/ApmSli'
+                  description: Server copy of apmSli for APM SLOs. Set by the server; sending it instead of apmSli is rejected.
+                  readOnly: true
+                createTime:
+                  description: RFC3339 timestamp of when the SLO was created. Set by the server; a value sent by the client is ignored.
+                  format: date-time
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                creator:
+                  description: Email or identifier of the user who created the SLO. Set by the server; a value sent by the client is ignored.
+                  examples:
+                  - test@domain.com
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                description:
+                  description: Human-readable description of the SLO.
+                  examples:
+                  - A brief description of my SLO
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                grouping:
+                  allOf:
+                  - $ref: '#/components/schemas/v1.Grouping'
+                  description: Grouping labels derived by the server from the SLI. A value sent by the client is rejected.
+                  readOnly: true
+                id:
+                  description: Unique identifier of the SLO.
+                  examples:
+                  - b11919d5-ef85-4bb1-8655-02640dbe94d9
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                labels:
+                  additionalProperties:
+                    minLength: 0
+                    type: string
+                  description: List of labels.
+                  type: object
+                name:
+                  description: Human-readable display name for the SLO. Required. A missing or empty name is rejected.
+                  examples:
+                  - Example Slo Name
+                  minLength: 1
+                  type: string
+                ownershipTags:
+                  allOf:
+                  - $ref: '#/components/schemas/SloOwnershipTags'
+                  description: Service, environment, and team ownership configuration for the SLO group and its permutations.
+                productType:
+                  allOf:
+                  - $ref: '#/components/schemas/SloProductType'
+                  description: 'Product type: APM for application performance monitoring SLOs, UNSPECIFIED for manual/custom SLOs'
+                  examples:
+                  - SLO_PRODUCT_TYPE_APM
+                  x-coralogix-presence: true
+                requestBasedMetricSli:
+                  $ref: '#/components/schemas/RequestBasedMetricSli'
+                revision:
+                  allOf:
+                  - $ref: '#/components/schemas/v1.Revision'
+                  description: Revision of the SLO. Set by the server; a value sent by the client is ignored.
+                  readOnly: true
+                sloTimeFrame:
+                  $ref: '#/components/schemas/SloTimeFrame'
+                sloType:
+                  allOf:
+                  - $ref: '#/components/schemas/SloType'
+                  description: SLO type derived by the server from the SLI. A window-based metric SLI still reads SLO_TYPE_REQUEST. A value sent by the client must match the SLI type; a different value is rejected.
+                  examples:
+                  - SLO_TYPE_REQUEST
+                  readOnly: true
+                  x-coralogix-presence: true
+                targetThresholdPercentage:
+                  description: Target compliance percentage threshold for the SLO (e.g., 99.9 for three nines).
+                  examples:
+                  - 99.999
+                  format: float
+                  type: number
+                type:
+                  deprecated: true
+                  description: 'Deprecated: SLO type string. Set by the server from the SLI; a value sent by the client is ignored.'
+                  examples:
+                  - request
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                updateTime:
+                  description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+                  format: date-time
+                  minLength: 0
+                  readOnly: true
+                  type: string
+                  x-coralogix-presence: true
+                windowBasedMetricSli:
+                  $ref: '#/components/schemas/WindowBasedMetricSli'
+              required:
+              - name
+              - sloTimeFrame
+              title: Slo
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceSloAlertsValidationsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace Slo Pre-Validate Alerts
+      tags:
+      - Slos Service
+  /slo/zero-state/v1:
+    get:
+      description: Returns the zero-state configuration for SLOs.
+      operationId: SlosService_GetZeroState
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetZeroStateResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get Slo Zero State
+      tags:
+      - Slos Service
+components:
+  schemas:
+    GetSloStatusResponse:
+      title: GetSloStatusResponse
+      required:
+      - computedAt
+      - effectiveFrom
+      - effectiveTo
+      - lowestCompliance
+      - lowestRemainingErrorBudget
+      - effectiveWindowCompleteData
+      type: object
+      properties:
+        computedAt:
+          description: Time at which the evaluation was performed, as an RFC 3339 UTC timestamp on a whole-minute instant (suffix `Z`, no fractional seconds).
+          format: date-time
+          maxLength: 20
+          minLength: 20
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00Z$
+          type: string
+          x-coralogix-presence: true
+        effectiveFrom:
+          description: Inclusive lower bound of the evaluation window that was applied, after defaults, as an RFC 3339 UTC whole-minute instant (suffix `Z`).
+          format: date-time
+          maxLength: 20
+          minLength: 20
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00Z$
+          type: string
+          x-coralogix-presence: true
+        effectiveTo:
+          description: Exclusive upper bound of the evaluation window that was applied, after defaults, as an RFC 3339 UTC whole-minute instant (suffix `Z`).
+          format: date-time
+          maxLength: 20
+          minLength: 20
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00Z$
+          type: string
+          x-coralogix-presence: true
+        effectiveWindowCompleteData:
+          type: boolean
+          description: When true, recorded source metrics for the evaluated grouping slice fully cover the applied evaluation window between `effectiveFrom` and `effectiveTo`, so `lowestCompliance` and `lowestRemainingErrorBudget` may be treated as final for that window. When false, the evaluation used partial data within that window. Completeness is determined only from `effectiveFrom` and `effectiveTo` (including after request defaults); it is independent of whether the SLO configured rolling time frame has matured since creation or last revision. For example, a short, fully recorded custom window may report true here while permutations in the configured rolling window still have incomplete historical coverage.
+        lowestCompliance:
+          maximum: 1
+          minimum: 0
+          type: number
+          description: Lowest compliance ratio among atomic permutations that match the evaluated grouping slice for the applied evaluation window, in the range 0-1 (minimum of per-permutation compliance ratios, not compliance from pooled good/total counts). When the slice is a single atomic permutation, this equals that permutation's compliance. When there are no events in the window, the value is 0.
+          format: float
+        lowestRemainingErrorBudget:
+          maximum: 1
+          minimum: 0
+          type: number
+          description: Lowest remaining error budget ratio among atomic permutations that match the evaluated grouping slice for the applied evaluation window, in the range 0-1 (minimum of per-permutation remaining error budget ratios). When the slice is a single atomic permutation, this equals that permutation's remaining error budget. When there are no events in the window, the value is 0.
+          format: float
+      description: Lowest compliance and remaining error budget over the atomic permutations that match the requested grouping slice (minimum of each permutation's ratio, not a recomputed ratio from pooled event counts), for the applied evaluation window (`effectiveFrom` inclusive, `effectiveTo` exclusive). Values are normalized ratios in the range 0-1.
+    SloExecutionRequest:
+      title: SloExecutionRequest
+      type: object
+      oneOf:
+      - required:
+        - createSloRequest
+        type: object
+      - required:
+        - replaceSloRequest
+        type: object
+      - required:
+        - deleteSloRequest
+        type: object
+      properties:
+        createSloRequest:
+          $ref: '#/components/schemas/CreateSloRequest'
+        deleteSloRequest:
+          $ref: '#/components/schemas/DeleteSloRequest'
+        replaceSloRequest:
+          $ref: '#/components/schemas/ReplaceSloRequest'
+      description: Request for executing an SLO operation.
+    SloOwnershipTag:
+      title: SloOwnershipTag
+      type: object
+      properties:
+        labelKeys:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Metric label names to use as sources (label-driven). Actual values come from series at query time. Empty if not using label-driven for this dimension.
+          description: Metric label names to use as sources (label-driven). Actual values come from series at query time. Empty if not using label-driven for this dimension.
+          examples:
+          - - deployment_environment
+            - k8s_namespace
+        resolvedValues:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Flat, deduplicated union of staticValues and the values resolved from labelKeys across observed permutations (empties excluded). Empty when neither source yields any value. Set by the server; a value sent by the client is ignored.
+          description: Flat, deduplicated union of staticValues and the values resolved from labelKeys across observed permutations (empties excluded). Empty when neither source yields any value. Set by the server; a value sent by the client is ignored.
+          readOnly: true
+          examples:
+          - - checkout-api
+            - production
+            - staging
+            - payments-ns
+        staticValues:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Group-wide static values (broad). Empty if not using broad for this dimension.
+          description: Group-wide static values (broad). Empty if not using broad for this dimension.
+          examples:
+          - - checkout-api
+      description: Ownership for one dimension (service, environment, or team). static_values are group-wide (broad) assignments. label_keys are metric label names whose values are read per permutation (label-driven). Both may be set; when both lists are empty, that dimension is unset.
+    ComparisonOperator:
+      enum:
+      - COMPARISON_OPERATOR_UNSPECIFIED
+      - COMPARISON_OPERATOR_GREATER_THAN
+      - COMPARISON_OPERATOR_GREATER_THAN_OR_EQUALS
+      - COMPARISON_OPERATOR_LESS_THAN
+      - COMPARISON_OPERATOR_LESS_THAN_OR_EQUALS
+      type: string
+      description: Comparison operator.
+    GetZeroStateResponse:
+      title: GetZeroStateResponse
+      required:
+      - zeroState
+      type: object
+      properties:
+        zeroState:
+          type: boolean
+          description: The zero state.
+      description: Response with Zero State.
+    SloType:
+      enum:
+      - SLO_TYPE_REQUEST
+      - SLO_TYPE_WINDOW
+      type: string
+      description: Slo type.
+    WindowSloWindow:
+      enum:
+      - WINDOW_SLO_WINDOW_UNSPECIFIED
+      - WINDOW_SLO_WINDOW_1_MINUTE
+      - WINDOW_SLO_WINDOW_5_MINUTES
+      type: string
+      description: Window slo window.
+    GetSloResponse:
+      title: GetSloResponse
+      required:
+      - slo
+      type: object
+      properties:
+        slo:
+          $ref: '#/components/schemas/Slo'
+      description: Response containing the details of a specific SLO.
+    ReplaceSloAlertsValidationsResponse:
+      title: ReplaceSloAlertsValidationsResponse
+      required:
+      - alertsValidationResult
+      type: object
+      properties:
+        alertsValidationResult:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/SloAlertValidityResult'
+          description: The alerts validation result.
+      description: Response with validated alerts before replacing an existing SLO.
+    CreateSloResponse:
+      title: CreateSloResponse
+      required:
+      - slo
+      type: object
+      properties:
+        slo:
+          $ref: '#/components/schemas/Slo'
+      description: Response after creating a new SLO.
+    Slo:
+      title: Slo
+      required:
+      - name
+      - sloTimeFrame
+      type: object
+      oneOf:
+      - required:
+        - requestBasedMetricSli
+        type: object
+      - required:
+        - windowBasedMetricSli
+        type: object
+      - required:
+        - apmSli
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - requestBasedMetricSli
+            type: object
+          - required:
+            - windowBasedMetricSli
+            type: object
+          - required:
+            - apmSli
+            type: object
+      properties:
+        apmSli:
+          $ref: '#/components/schemas/ApmSli'
+        apmSliMetadata:
+          allOf:
+          - $ref: '#/components/schemas/ApmSli'
+          description: Server copy of apmSli for APM SLOs. Set by the server; sending it instead of apmSli is rejected.
+          readOnly: true
+        createTime:
+          description: RFC3339 timestamp of when the SLO was created. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        creator:
+          description: Email or identifier of the user who created the SLO. Set by the server; a value sent by the client is ignored.
+          examples:
+          - test@domain.com
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        description:
+          description: Human-readable description of the SLO.
+          examples:
+          - A brief description of my SLO
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        grouping:
+          allOf:
+          - $ref: '#/components/schemas/v1.Grouping'
+          description: Grouping labels derived by the server from the SLI. A value sent by the client is rejected.
+          readOnly: true
+        id:
+          description: Unique identifier of the SLO.
+          examples:
+          - b11919d5-ef85-4bb1-8655-02640dbe94d9
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        labels:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: List of labels.
+        name:
+          minLength: 1
+          type: string
+          description: Human-readable display name for the SLO. Required. A missing or empty name is rejected.
+          examples:
+          - Example Slo Name
+        ownershipTags:
+          allOf:
+          - $ref: '#/components/schemas/SloOwnershipTags'
+          description: Service, environment, and team ownership configuration for the SLO group and its permutations.
+        productType:
+          allOf:
+          - $ref: '#/components/schemas/SloProductType'
+          description: 'Product type: APM for application performance monitoring SLOs, UNSPECIFIED for manual/custom SLOs'
+          examples:
+          - SLO_PRODUCT_TYPE_APM
+          x-coralogix-presence: true
+        requestBasedMetricSli:
+          $ref: '#/components/schemas/RequestBasedMetricSli'
+        revision:
+          allOf:
+          - $ref: '#/components/schemas/v1.Revision'
+          description: Revision of the SLO. Set by the server; a value sent by the client is ignored.
+          readOnly: true
+        sloTimeFrame:
+          $ref: '#/components/schemas/SloTimeFrame'
+        sloType:
+          allOf:
+          - $ref: '#/components/schemas/SloType'
+          description: SLO type derived by the server from the SLI. A window-based metric SLI still reads SLO_TYPE_REQUEST. A value sent by the client must match the SLI type; a different value is rejected.
+          examples:
+          - SLO_TYPE_REQUEST
+          readOnly: true
+          x-coralogix-presence: true
+        targetThresholdPercentage:
+          type: number
+          description: Target compliance percentage threshold for the SLO (e.g., 99.9 for three nines).
+          format: float
+          examples:
+          - 99.999
+        type:
+          deprecated: true
+          description: 'Deprecated: SLO type string. Set by the server from the SLI; a value sent by the client is ignored.'
+          examples:
+          - request
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        updateTime:
+          description: Timestamp of the last update. Set by the server; a value sent by the client is ignored.
+          format: date-time
+          minLength: 0
+          readOnly: true
+          type: string
+          x-coralogix-presence: true
+        windowBasedMetricSli:
+          $ref: '#/components/schemas/WindowBasedMetricSli'
+      description: Definition of an SLO
+    SloExecutionResponse:
+      title: SloExecutionResponse
+      type: object
+      oneOf:
+      - required:
+        - createSloResponse
+        type: object
+      - required:
+        - replaceSloResponse
+        type: object
+      - required:
+        - deleteSloResponse
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - createSloResponse
+            type: object
+          - required:
+            - replaceSloResponse
+            type: object
+          - required:
+            - deleteSloResponse
+            type: object
+      properties:
+        createSloResponse:
+          $ref: '#/components/schemas/CreateSloResponse'
+        deleteSloResponse:
+          $ref: '#/components/schemas/DeleteSloResponse'
+        replaceSloResponse:
+          $ref: '#/components/schemas/ReplaceSloResponse'
+      description: Response for an executed SLO operation.
+    ApmLatencyQuantile:
+      title: ApmLatencyQuantile
+      type: object
+      properties:
+        percentile:
+          type: number
+          description: Percentile for latency SLOs (0.95 = P95, 0.99 = P99)
+          format: float
+          examples:
+          - 0.95
+      description: Quantile/percentile-based latency measurement
+    DeleteSloResponse:
+      title: DeleteSloResponse
+      type: object
+      properties:
+        effectedSloAlertIds:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The effected slo alert ids.
+          description: The effected slo alert ids.
+      description: Response after deleting an existing SLO.
+    ProductTypeValues:
+      type: object
+      properties:
+        values:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/SloProductType'
+          description: The values.
+      description: Product type values.
+    ApmLatencySli:
+      title: ApmLatencySli
+      required:
+      - timeWindow
+      type: object
+      oneOf:
+      - required:
+        - quantile
+        type: object
+      - required:
+        - average
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - quantile
+            type: object
+          - required:
+            - average
+            type: object
+      properties:
+        average:
+          $ref: '#/components/schemas/ApmLatencyAverage'
+        quantile:
+          $ref: '#/components/schemas/ApmLatencyQuantile'
+        threshold:
+          type: number
+          description: Threshold in milliseconds. Good when latency <= threshold, bad when latency > threshold.
+          format: float
+          examples:
+          - 500
+        timeWindow:
+          allOf:
+          - $ref: '#/components/schemas/WindowSloWindow'
+          description: Time window for latency calculations. Required. Omitting it is rejected.
+          examples:
+          - WINDOW_SLO_WINDOW_5_MINUTES
+      description: Configuration for latency-based APM SLI
+    v1.Revision:
+      title: Revision
+      type: object
+      properties:
+        revision:
+          type: integer
+          description: The revision.
+          format: int32
+          examples:
+          - 1
+        updateTime:
+          description: Timestamp of the last update.
+          format: date-time
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      description: The revision of the slo, used to differentiate between different versions of the same SLO
+    ApmLatencyAverage:
+      title: ApmLatencyAverage
+      type: object
+      additionalProperties: false
+      description: Average/mean-based latency measurement
+    BatchGetSlosResponse:
+      title: BatchGetSlosResponse
+      required:
+      - slos
+      type: object
+      properties:
+        notFoundIds:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The not found ids.
+          description: The not found ids.
+        slos:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Slo'
+          description: The slos.
+      description: Response containing a batch of SLOs and any IDs not found.
+    WindowBasedMetricSli:
+      title: WindowBasedMetricSli
+      required:
+      - query
+      - window
+      - comparisonOperator
+      type: object
+      properties:
+        comparisonOperator:
+          $ref: '#/components/schemas/ComparisonOperator'
+        missingDataStrategy:
+          $ref: '#/components/schemas/MissingDataStrategy'
+        query:
+          $ref: '#/components/schemas/Metric'
+        threshold:
+          type: number
+          description: Threshold value.
+          format: float
+          examples:
+          - 0.95
+        window:
+          $ref: '#/components/schemas/WindowSloWindow'
+      description: Definition of a window-based SLI based on metrics
+    ReplaceSloResponse:
+      title: ReplaceSloResponse
+      required:
+      - slo
+      type: object
+      properties:
+        effectedSloAlertIds:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The effected slo alert ids.
+          description: The effected slo alert ids.
+        slo:
+          $ref: '#/components/schemas/Slo'
+      description: Response after replacing an existing SLO.
+    v1.Grouping:
+      title: Grouping
+      type: object
+      properties:
+        labels:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of labels.
+          description: List of labels.
+      description: Definition of the SLO grouping fields
+    ApmSli:
+      title: ApmSli
+      required:
+      - services
+      type: object
+      oneOf:
+      - required:
+        - errorConfig
+        type: object
+      - required:
+        - latencyConfig
+        type: object
+      - type: object
+        not:
+          anyOf:
+          - required:
+            - errorConfig
+            type: object
+          - required:
+            - latencyConfig
+            type: object
+      properties:
+        errorConfig:
+          $ref: '#/components/schemas/ApmErrorSli'
+        filters:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/ApmFilter'
+          description: Additional label-based filters to apply to the metrics
+        groupingKeys:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: Labels to group SLO results by
+          description: Labels to group SLO results by
+          examples:
+          - - environment
+            - region
+        latencyConfig:
+          $ref: '#/components/schemas/ApmLatencySli'
+        services:
+          minItems: 1
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: List of service names to monitor. Required. At least one service; an empty list is rejected.
+          description: List of service names to monitor. Required. At least one service; an empty list is rejected.
+          examples:
+          - - my-service
+            - payment-service
+      description: Definition of an APM-based SLI with automatic query generation
+    CreateSloRequest:
+      title: CreateSloRequest
+      required:
+      - slo
+      type: object
+      properties:
+        silenceDataValidations:
+          deprecated: true
+          description: Whether to silence data validations.
+          type: boolean
+          x-coralogix-presence: true
+        slo:
+          $ref: '#/components/schemas/Slo'
+      description: Request to create a new SLO.
+    StringValues:
+      type: object
+      properties:
+        values:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: The values.
+          description: The values.
+      description: String values.
+    ListSlosResponse:
+      title: ListSlosResponse
+      required:
+      - slos
+      type: object
+      properties:
+        slos:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/Slo'
+          description: The slos.
+      description: Response containing a list of SLOs.
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    SloConstantFilterField:
+      enum:
+      - SLO_CONST_FILTER_FIELD_UNSPECIFIED
+      - SLO_CONST_FILTER_FIELD_USER_NAME
+      - SLO_CONST_FILTER_FIELD_SLO_NAME
+      type: string
+      description: Slo constant filter field.
+    BatchExecuteSloResponse:
+      title: BatchExecuteSloResponse
+      required:
+      - matchingResponses
+      type: object
+      properties:
+        matchingResponses:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/SloExecutionResponse'
+          description: The matching responses.
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+      description: Response containing the results of batch executed SLO operations.
+    SloProductType:
+      enum:
+      - SLO_PRODUCT_TYPE_UNSPECIFIED
+      - SLO_PRODUCT_TYPE_APM
+      type: string
+      description: Slo product type.
+    TypeValues:
+      type: object
+      properties:
+        values:
+          minItems: 0
+          type: array
+          items:
+            $ref: '#/components/schemas/SloType'
+          description: The values.
+      description: Type values.
+    ApmErrorSli:
+      title: ApmErrorSli
+      type: object
+      additionalProperties: false
+      description: Configuration for error-based APM SLI
+    ReplaceSloRequest:
+      title: ReplaceSloRequest
+      required:
+      - slo
+      type: object
+      properties:
+        silenceDataValidations:
+          deprecated: true
+          description: Whether to silence data validations.
+          type: boolean
+          x-coralogix-presence: true
+        slo:
+          $ref: '#/components/schemas/Slo'
+      description: Request to replace an existing SLO.
+    ApmFilter:
+      title: ApmFilter
+      required:
+      - key
+      type: object
+      properties:
+        key:
+          minLength: 1
+          type: string
+          description: Label/tag name to filter on. Required. A missing or empty key is rejected.
+          examples:
+          - environment
+        value:
+          minLength: 0
+          type: string
+          description: 'Deprecated: use values instead. Single value to match (kept for backward compatibility)'
+          examples:
+          - production
+          deprecated: true
+        values:
+          minItems: 0
+          type: array
+          items:
+            minLength: 0
+            type: string
+            description: 'Preferred: multiple values to match (OR semantics, e.g. status IN [500, 503])'
+            examples:
+            - '500'
+          description: 'Preferred: multiple values to match (OR semantics, e.g. status IN [500, 503])'
+      description: Key-value filter for APM metrics. Supports single value (legacy) or multiple values (OR semantics)
+    MissingDataStrategy:
+      enum:
+      - MISSING_DATA_STRATEGY_UNCOUNTED
+      - MISSING_DATA_STRATEGY_GOOD
+      - MISSING_DATA_STRATEGY_BAD
+      type: string
+      description: Missing data strategy.
+    SloAlertValidityResult:
+      type: object
+      properties:
+        alertVersionId:
+          minLength: 0
+          type: string
+          description: The alert version id.
+        errorMessage:
+          description: The error message.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        id:
+          minLength: 0
+          type: string
+          description: Unique identifier.
+        name:
+          minLength: 0
+          type: string
+          description: Display name.
+    Metric:
+      title: Metric
+      required:
+      - query
+      type: object
+      properties:
+        query:
+          minLength: 1
+          type: string
+          description: Query string. Required. A missing or empty query is rejected.
+          examples:
+          - sum(rate(http_requests_total{status="200"}[1m]))
+      description: Definition of a metric used in SLOs
+    SloTimeFrame:
+      enum:
+      - SLO_TIME_FRAME_UNSPECIFIED
+      - SLO_TIME_FRAME_1_DAY
+      - SLO_TIME_FRAME_7_DAYS
+      - SLO_TIME_FRAME_14_DAYS
+      - SLO_TIME_FRAME_21_DAYS
+      - SLO_TIME_FRAME_28_DAYS
+      - SLO_TIME_FRAME_30_DAYS
+      type: string
+      description: Slo time frame.
+    SloOwnershipTags:
+      title: SloOwnershipTags
+      type: object
+      properties:
+        environment:
+          $ref: '#/components/schemas/SloOwnershipTag'
+        service:
+          $ref: '#/components/schemas/SloOwnershipTag'
+        team:
+          $ref: '#/components/schemas/SloOwnershipTag'
+      description: Service, environment, and team ownership for the SLO group. At most one SloOwnershipTag per dimension; omit a dimension when unset.
+    RequestBasedMetricSli:
+      title: RequestBasedMetricSli
+      required:
+      - goodEvents
+      - totalEvents
+      type: object
+      properties:
+        goodEvents:
+          $ref: '#/components/schemas/Metric'
+        totalEvents:
+          $ref: '#/components/schemas/Metric'
+      description: Definition of a request-based SLI based on metrics
+    Code:
+      enum:
+      - OK
+      - CANCELLED
+      - UNKNOWN
+      - INVALID_ARGUMENT
+      - DEADLINE_EXCEEDED
+      - NOT_FOUND
+      - ALREADY_EXISTS
+      - PERMISSION_DENIED
+      - UNAUTHENTICATED
+      - RESOURCE_EXHAUSTED
+      - FAILED_PRECONDITION
+      - ABORTED
+      - OUT_OF_RANGE
+      - UNIMPLEMENTED
+      - INTERNAL
+      - UNAVAILABLE
+      - DATA_LOSS
+      type: string
+    DeleteSloRequest:
+      title: DeleteSloRequest
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          minLength: 0
+          type: string
+          description: Unique identifier.
+      description: Request to delete an existing SLO.
+    ResponseStatus:
+      title: ResponseStatus
+      required:
+      - statusCode
+      type: object
+      properties:
+        details:
+          type: object
+          additionalProperties:
+            minLength: 0
+            type: string
+          description: List of details.
+        message:
+          description: Human-readable message.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+        statusCode:
+          $ref: '#/components/schemas/Code'
+      description: Status of the response, including error code and message.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/

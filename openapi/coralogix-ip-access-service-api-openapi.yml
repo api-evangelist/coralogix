@@ -1,0 +1,321 @@
+openapi: 3.2.0
+info:
+  title: Coralogix Management IP access service API
+  version: '5'
+  description: 'Management API for the Coralogix observability platform. The base URL is region-specific: pick the `servers` entry matching your Coralogix domain. Authentication is a bearer API key.'
+servers:
+- url: https://api.eu1.coralogix.com/mgmt/openapi/5
+- url: https://api.eu2.coralogix.com/mgmt/openapi/5
+- url: https://api.us1.coralogix.com/mgmt/openapi/5
+- url: https://api.us2.coralogix.com/mgmt/openapi/5
+- url: https://api.us3.coralogix.com/mgmt/openapi/5
+- url: https://api.ap1.coralogix.com/mgmt/openapi/5
+- url: https://api.ap2.coralogix.com/mgmt/openapi/5
+- url: https://api.ap3.coralogix.com/mgmt/openapi/5
+- url: https://api.gov1.coralogixgov.us/mgmt/openapi/5
+security:
+- apiKeyAuth: []
+tags:
+- name: IP access service
+  description: IP access service provides the API for managing company IP access settings.
+paths:
+  /aaa/team-sec-ip-access/v1:
+    get:
+      description: Returns the current IP access settings for the team.
+      operationId: IpAccessService_GetCompanyIpAccessSettings
+      parameters:
+      - description: The ID of the company IP access settings to get. If it's not provided, the id will be derived from the authorization header.
+        in: query
+        name: id
+        required: false
+        schema:
+          description: The ID of the company IP access settings to get. If it's not provided, the id will be derived from the authorization header.
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCompanyIpAccessSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get company IP access settings
+      tags:
+      - IP access service
+    put:
+      description: Updates the IP access restrictions for the team.
+      operationId: IpAccessService_ReplaceCompanyIpAccessSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                enableCoralogixCustomerSupportAccess:
+                  allOf:
+                  - $ref: '#/components/schemas/CoralogixCustomerSupportAccess'
+                  description: The Coralogix customer support access setting. Defaults to DISABLED if not provided.
+                  examples:
+                  - CORALOGIX_CUSTOMER_SUPPORT_ACCESS_ENABLED
+                id:
+                  description: Unique identifier of the existing IP access settings resource to replace.
+                  examples:
+                  - d662a2f1-21c3-493c-8f8a-595d3ab05ef3
+                  minLength: 0
+                  type: string
+                  x-coralogix-presence: true
+                ipAccess:
+                  description: List of IP access entries to replace.
+                  items:
+                    $ref: '#/components/schemas/IpAccess'
+                  minItems: 0
+                  type: array
+              title: Replace company IP access settings request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceCompanyIpAccessSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Replace company IP access settings
+      tags:
+      - IP access service
+    post:
+      description: Sets the IP access restrictions for the team.
+      operationId: IpAccessService_CreateCompanyIpAccessSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                enableCoralogixCustomerSupportAccess:
+                  allOf:
+                  - $ref: '#/components/schemas/CoralogixCustomerSupportAccess'
+                  description: The Coralogix customer support access setting.
+                  examples:
+                  - CORALOGIX_CUSTOMER_SUPPORT_ACCESS_ENABLED
+                ipAccess:
+                  description: List of IP access entries to create.
+                  items:
+                    $ref: '#/components/schemas/IpAccess'
+                  minItems: 0
+                  type: array
+              title: Create company IP access settings request
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCompanyIpAccessSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create company IP access settings
+      tags:
+      - IP access service
+    delete:
+      description: Removes the IP access restrictions for the team.
+      operationId: IpAccessService_DeleteCompanyIpAccessSettings
+      parameters:
+      - description: The unique identifier of the company IP access settings to delete.
+        in: query
+        name: id
+        required: false
+        schema:
+          description: The unique identifier of the company IP access settings to delete.
+          examples:
+          - d662a2f1-21c3-493c-8f8a-595d3ab05ef3
+          minLength: 0
+          type: string
+          x-coralogix-presence: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCompanyIpAccessSettingsResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unauthorized request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Delete company IP access settings
+      tags:
+      - IP access service
+components:
+  schemas:
+    IpAccess:
+      title: IP Access
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether this IP access entry is enabled.
+          examples:
+          - true
+        ipRange:
+          minLength: 0
+          type: string
+          description: The IP range in CIDR notation.
+          examples:
+          - 192.168.0.1/24
+        name:
+          minLength: 0
+          type: string
+          description: The name of the IP access entry.
+          examples:
+          - Office Network
+      description: Represents a single IP access entry.
+      externalDocs:
+        description: Find out more about IP access control in our documentation
+        url: https://coralogix.com/docs/user-guides/account-management/account-settings/ip-access-control/
+    Error:
+      type: object
+      properties:
+        code:
+          maximum: 599
+          minimum: 100
+          type: integer
+          description: HTTP status code of the error (for example 400, 404, 500).
+          format: int32
+        message:
+          maxLength: 4096
+          minLength: 0
+          pattern: ^[\s\S]*$
+          type: string
+          description: Human-readable description of the error.
+      description: Standard error response body returned for a failed request.
+    CompanyIpAccessSettings:
+      title: Company IP access settings
+      type: object
+      properties:
+        enableCoralogixCustomerSupportAccess:
+          allOf:
+          - $ref: '#/components/schemas/CoralogixCustomerSupportAccess'
+          description: The Coralogix customer support access setting.
+          examples:
+          - CORALOGIX_CUSTOMER_SUPPORT_ACCESS_ENABLED
+        id:
+          minLength: 0
+          type: string
+          description: The unique identifier for the company IP access settings. This is typically a company ID.
+          examples:
+          - d662a2f1-21c3-493c-8f8a-595d3ab05ef3
+        ipAccess:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/IpAccess'
+          description: The list of IP access entries.
+    DeleteCompanyIpAccessSettingsResponse:
+      title: Delete company IP access settings response
+      type: object
+      additionalProperties: false
+    CreateCompanyIpAccessSettingsResponse:
+      title: Create company IP access settings response
+      type: object
+      properties:
+        settings:
+          allOf:
+          - $ref: '#/components/schemas/CompanyIpAccessSettings'
+          description: The created company IP access settings.
+    CoralogixCustomerSupportAccess:
+      enum:
+      - CORALOGIX_CUSTOMER_SUPPORT_ACCESS_UNSPECIFIED
+      - CORALOGIX_CUSTOMER_SUPPORT_ACCESS_DISABLED
+      - CORALOGIX_CUSTOMER_SUPPORT_ACCESS_ENABLED
+      type: string
+      description: Coralogix customer support access.
+    GetCompanyIpAccessSettingsResponse:
+      title: Get company IP access settings response
+      type: object
+      properties:
+        settings:
+          allOf:
+          - $ref: '#/components/schemas/CompanyIpAccessSettings'
+          description: The company IP access settings.
+    ReplaceCompanyIpAccessSettingsResponse:
+      title: Replace company IP access settings response
+      type: object
+      properties:
+        settings:
+          allOf:
+          - $ref: '#/components/schemas/CompanyIpAccessSettings'
+          description: The replaced company IP access settings.
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key authentication
+externalDocs:
+  description: Coralogix API reference
+  url: https://coralogix.com/docs/api-reference/v5/
