@@ -65,28 +65,6 @@
   relationship: platform-app
   status: not-a-workflow
   arazzo: null
-- slug: coralogix-a2a-protocol-own-agent-card
-  label: A2A protocol (own Agent Card)
-  partner_name: A2A protocol (own Agent Card)
-  category: A2A agent
-  type: register
-  channel: provider-built
-  evidence: https://docs.coralogix.com/.well-known/agent-card.json
-  source: edge
-  relationship: compatible
-  contract_reference:
-    register: provider's own /.well-known/agent-card.json
-    spec_file: null
-    standard: A2A
-    role: a2a-agent-card
-    registered_name: Coralogix Developer Docs
-    organization: Coralogix Developer Docs
-    matched_domain: coralogix.com
-    matched_by: own-domain
-    detected_by: sweep-ai-agents.py
-    detected: '2026-10-15'
-  status: not-a-workflow
-  arazzo: null
 - slug: coralogix-microsoft-teams-own
   label: Microsoft Teams (own)
   partner: microsoft-teams
