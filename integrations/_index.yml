@@ -39,58 +39,6 @@
   relationship: distribution-channel
   status: not-a-workflow
   arazzo: null
-- slug: coralogix-okta-own
-  label: Okta (own)
-  partner: okta
-  partner_name: Okta (own)
-  category: Single Sign-On
-  type: marketplace
-  marketplace: own
-  channel: partner-built
-  evidence: https://www.okta.com/integrations/coralogix/
-  source: edge
-  relationship: platform-app
-  status: not-a-workflow
-  arazzo: null
-- slug: coralogix-palo-alto-networks-own
-  label: Palo Alto Networks (own)
-  partner: palo-alto-networks
-  partner_name: Palo Alto Networks (own)
-  category: Analytics & SIEM
-  type: marketplace
-  marketplace: own
-  channel: partner-built
-  evidence: https://cortex.marketplace.pan.dev/marketplace/details/Coralogix/
-  source: edge
-  relationship: platform-app
-  status: not-a-workflow
-  arazzo: null
-- slug: coralogix-microsoft-teams-own
-  label: Microsoft Teams (own)
-  partner: microsoft-teams
-  partner_name: Microsoft Teams (own)
-  category: Microsoft Teams app
-  type: marketplace
-  marketplace: own
-  channel: partner-built
-  evidence: https://appsource.microsoft.com/en-us/product/office/WA200011784
-  source: edge
-  relationship: platform-app
-  status: not-a-workflow
-  arazzo: null
-- slug: coralogix-zoom-own
-  label: Zoom (own)
-  partner: zoom
-  partner_name: Zoom (own)
-  category: Zoom app
-  type: marketplace
-  marketplace: own
-  channel: partner-built
-  evidence: https://marketplace.zoom.us/apps/2taNw1KkTCOrW59izsF1Tg
-  source: edge
-  relationship: platform-app
-  status: not-a-workflow
-  arazzo: null
 - slug: coralogix-pypi
   label: PyPI
   partner: pypi
@@ -166,5 +114,96 @@
     - cx-ai-center
     detected_by: sweep-agent-skills.py
     detected: '2026-10-20'
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-okta-own
+  label: Okta (own)
+  partner: okta
+  partner_name: Okta (own)
+  category: Single Sign-On
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://www.okta.com/integrations/coralogix/
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-palo-alto-networks-own
+  label: Palo Alto Networks (own)
+  partner: palo-alto-networks
+  partner_name: Palo Alto Networks (own)
+  category: Analytics & SIEM
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://cortex.marketplace.pan.dev/marketplace/details/Coralogix/
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-microsoft-teams-own
+  label: Microsoft Teams (own)
+  partner: microsoft-teams
+  partner_name: Microsoft Teams (own)
+  category: Microsoft Teams app
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://appsource.microsoft.com/en-us/product/office/WA200011784
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-zoom-own
+  label: Zoom (own)
+  partner: zoom
+  partner_name: Zoom (own)
+  category: Zoom app
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://marketplace.zoom.us/apps/2taNw1KkTCOrW59izsF1Tg
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-opentofu-opentofu-registry
+  label: OpenTofu (opentofu-registry)
+  partner: opentofu
+  partner_name: OpenTofu (opentofu-registry)
+  category: infrastructure-as-code provider registry listing
+  type: marketplace
+  marketplace: opentofu-registry
+  channel: partner-built
+  evidence: https://search.opentofu.org/provider/coralogix/coralogix
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-pulumi-pulumi-registry
+  label: Pulumi (pulumi-registry)
+  partner: pulumi
+  partner_name: Pulumi (pulumi-registry)
+  category: infrastructure-as-code provider registry listing
+  type: marketplace
+  marketplace: pulumi-registry
+  channel: partner-built
+  evidence: https://www.pulumi.com/registry/packages/coralogix/
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: coralogix-terraform-terraform-registry
+  label: Terraform (terraform-registry)
+  partner: terraform
+  partner_name: Terraform (terraform-registry)
+  category: infrastructure-as-code provider registry listing
+  type: marketplace
+  marketplace: terraform-registry
+  channel: partner-built
+  evidence: https://registry.terraform.io/providers/coralogix/coralogix
+  source: edge
+  relationship: platform-app
   status: not-a-workflow
   arazzo: null
