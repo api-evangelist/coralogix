@@ -387,6 +387,8 @@ apis:
   humanURL: https://coralogix.com
   baseURL: https://api.eu2.coralogix.com
   tags:
+  - DashboardService
+  tags_raw:
   - Dashboard service
   properties:
   - type: OpenAPI
@@ -459,6 +461,8 @@ apis:
   humanURL: https://coralogix.com
   baseURL: https://api.eu2.coralogix.com
   tags:
+  - Extension Service
+  tags_raw:
   - Extension service
   properties:
   - type: OpenAPI
@@ -523,6 +527,8 @@ apis:
   humanURL: https://coralogix.com
   baseURL: https://api.eu2.coralogix.com
   tags:
+  - IntegrationService
+  tags_raw:
   - Integration service
   properties:
   - type: OpenAPI
